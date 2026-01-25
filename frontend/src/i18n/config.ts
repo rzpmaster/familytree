@@ -9,14 +9,15 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: 'zh',
-    debug: true,
+    debug: false,
     resources: {
       zh,
       en
     },
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
-    }
+    },
+    lng:'zh'
   });
 
 export default i18n;

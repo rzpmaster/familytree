@@ -90,7 +90,6 @@ export default {
       role_viewer: "可读",
       role_editor: "可写",
       role_admin: "管理员",
-      role_superadmin: "超级管理员",
       close: "关闭",
       request_access: "申请权限",
       request_sent: "申请已发送",
@@ -100,7 +99,11 @@ export default {
       approve: "同意",
       reject: "拒绝",
       approved: "已同意",
-      rejected: "已拒绝"
+      rejected: "已拒绝",
+      remove_collaborator: "移除协作者",
+      confirm_remove_collaborator: "确定要移除该协作者吗？",
+      collaborator_removed: "协作者已移除",
+      remove_collaborator_failed: "移除协作者失败"
     },
     member: {
       add: "添加成员",
@@ -161,7 +164,13 @@ export default {
       role: "角色",
       actions: "操作",
       delete_user: "删除用户",
-      confirm_delete_user: "确定要删除用户“{{name}}”吗？"
+      confirm_delete_user: "确定要删除用户“{{name}}”吗？",
+      no_users_found: "未找到匹配的用户",
+      search_placeholder: "搜索姓名或邮箱...",
+      showing: "显示",
+      to: "至",
+      of: "共",
+      results: "条结果"
     },
     presets: {
       han_dynasty: "汉朝皇室",

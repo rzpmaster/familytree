@@ -135,7 +135,15 @@ const Layout: React.FC = () => {
                 >
                     <Bell size={20} />
                     {pendingRequests.length > 0 && (
-                        <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                        <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4">
+                            {pendingRequests.length > 9 ? (
+                                <span className="flex items-center justify-center w-4 h-4 bg-red-500 rounded-full border-2 border-white" />
+                            ) : (
+                                <span className="flex items-center justify-center w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full border-2 border-white">
+                                    {pendingRequests.length}
+                                </span>
+                            )}
+                        </div>
                     )}
                 </button>
                 
@@ -191,9 +199,6 @@ const Layout: React.FC = () => {
                 >
                     <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 relative">
                         <UserIcon size={16} />
-                        {pendingRequests.length > 0 && (
-                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
-                        )}
                     </div>
                     {/* ... (rest of user menu) ... */}
                     <span className="text-sm text-gray-700 font-medium hidden md:block">{user?.name}</span>

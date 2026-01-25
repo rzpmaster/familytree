@@ -90,7 +90,6 @@ export default {
       role_viewer: "Read",
       role_editor: "Write",
       role_admin: "Admin",
-      role_superadmin: "SuperAdmin",
       close: "Close",
       request_access: "Request Access",
       request_sent: "Request sent",
@@ -100,7 +99,11 @@ export default {
       approve: "Approve",
       reject: "Reject",
       approved: "Approved",
-      rejected: "Rejected"
+      rejected: "Rejected",
+      remove_collaborator: "Remove Collaborator",
+      confirm_remove_collaborator: "Are you sure you want to remove this collaborator?",
+      collaborator_removed: "Collaborator removed",
+      remove_collaborator_failed: "Failed to remove collaborator"
     },
     member: {
       add: "Add Member",
@@ -161,7 +164,13 @@ export default {
       role: "Role",
       actions: "Actions",
       delete_user: "Delete User",
-      confirm_delete_user: "Are you sure you want to delete user \"{{name}}\"?"
+      confirm_delete_user: "Are you sure you want to delete user \"{{name}}\"?",
+      no_users_found: "No users found matching your search.",
+      search_placeholder: "Search by name or email...",
+      showing: "Showing",
+      to: "to",
+      of: "of",
+      results: "results"
     },
     presets: {
       han_dynasty: "Han Dynasty",

@@ -38,7 +38,7 @@ const Manage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const historicalMenuRef = useRef<HTMLDivElement>(null);
 
-  const getOrCreateUser = useCallback(async (): Promise<string | null> => {
+  const getCurrentUser = useCallback(async (): Promise<string | null> => {
       // Use auth context user
       if (user) return user.id;
       return null;
@@ -47,7 +47,7 @@ const Manage: React.FC = () => {
   const fetchFamilies = useCallback(async () => {
     try {
       setLoading(true);
-      const userId = await getOrCreateUser();
+      const userId = await getCurrentUser();
       const data = await getFamilies(userId || undefined);
       
       const familiesWithMembers = await Promise.all(data.map(async (family) => {
@@ -66,7 +66,7 @@ const Manage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [t, getOrCreateUser]);
+  }, [t, getCurrentUser]);
 
   useEffect(() => {
     fetchFamilies();
@@ -88,7 +88,7 @@ const Manage: React.FC = () => {
   const handleCreate = async () => {
     if (!newFamilyName.trim()) return;
     try {
-      const userId = await getOrCreateUser();
+      const userId = await getCurrentUser();
 
       if (!userId) {
            toast.error(t('auth.no_user_found', { defaultValue: 'No user context found.' }));
@@ -255,7 +255,7 @@ const Manage: React.FC = () => {
 
   const handleImportHistorical = async (key: string) => {
     try {
-        const userId = await getOrCreateUser();
+        const userId = await getCurrentUser();
         
         if (!userId) {
             toast.error(t('auth.no_user_found', { defaultValue: 'No user context found.' }));
@@ -279,17 +279,16 @@ const Manage: React.FC = () => {
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
-        const json = JSON.parse(e.target?.result as string);
+        const userId = await getCurrentUser();
         
-        // Ensure user_id exists
-        if (!json.user_id) {
-             const userId = await getOrCreateUser();
-             if (userId) {
-                 json.user_id = userId;
-             }
+        if (!userId) {
+            toast.error(t('auth.no_user_found', { defaultValue: 'No user context found.' }));
+            return;
         }
         
-        await importFamily(json);
+        const json = JSON.parse(e.target?.result as string);
+        
+        await importFamily(json, userId);
         toast.success(t('family.import_success', { defaultValue: 'Import successful' }));
         fetchFamilies();
       } catch (err) {
@@ -412,6 +411,7 @@ const Manage: React.FC = () => {
                   onEdit={handleEditClick}
                   onExport={handleExport}
                   onShare={handleShareClick}
+                  currentUserId={user.id}
               />
             ))
           )}
@@ -467,9 +467,9 @@ const Manage: React.FC = () => {
                                         <div className="flex bg-gray-100 rounded-md p-0.5">
                                             {/* Viewer Button (Always Active) */}
                                             <button
-                                                onClick={() => handleRoleChange(c.user_id, 'viewer')}
-                                                className="px-2 py-1 text-xs rounded transition-colors bg-blue-100 text-blue-700 font-medium"
-                                                title={t('family.role_viewer')}
+                                                disabled={true}
+                                                className="px-2 py-1 text-xs rounded transition-colors bg-blue-100 text-blue-700 font-medium cursor-not-allowed opacity-80"
+                                                title={t('family.role_viewer_always', { defaultValue: 'Read access is always enabled' })}
                                             >
                                                 {t('family.role_viewer')}
                                             </button>

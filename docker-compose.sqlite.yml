@@ -9,7 +9,7 @@ services:
     environment:
       # Use SQLite database path inside container
       # Ensure path is in the mounted volume (/app/data)
-      - DATABASE_URL=sqlite:///./data/family_tree.db
+      - DATABASE_URL=sqlite:///./app/data/family_tree.db
       - SUPERUSER_IDS=${SUPERUSER_IDS}
     volumes:
       # Mount a local directory to persist SQLite database

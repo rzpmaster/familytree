@@ -15,7 +15,10 @@ def create_family(family: schemas.FamilyCreate, db: Session = Depends(get_db)):
     return crud.create_family(db=db, family=family)
 
 @router.post("/import", response_model=schemas.Family)
-def import_family(family_import: schemas.FamilyImport, db: Session = Depends(get_db)):
+def import_family(family_import: schemas.FamilyImport, user_id: str = None, db: Session = Depends(get_db)):
+    # If user_id is provided via query param (or in future via auth token), override the JSON content
+    if user_id:
+        family_import.user_id = user_id
     return crud.import_family(db=db, import_data=family_import)
 
 @router.post("/import-preset/{key}", response_model=schemas.Family)
@@ -81,6 +84,12 @@ def read_family(family_id: str, user_id: str = None, db: Session = Depends(get_d
     
     return family_data
 
+@router.get("/{family_id}/name", response_model=dict)
+def get_family_name(family_id: str, db: Session = Depends(get_db)):
+    db_family = crud.get_family(db, family_id=family_id)
+    if db_family is None:
+        raise HTTPException(status_code=404, detail="Family not found")
+    return {"family_name": db_family.family_name}
 @router.post("/{family_id}/invite", response_model=schemas.FamilyCollaborator)
 def invite_user(family_id: str, invite: schemas.FamilyInvite, db: Session = Depends(get_db)):
     # 1. Find user by email

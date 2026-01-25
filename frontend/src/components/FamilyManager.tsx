@@ -103,7 +103,7 @@ const FamilyManager: React.FC<FamilyManagerProps> = ({ families, currentFamily, 
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-2 font-bold text-xl text-gray-800 hover:bg-gray-100 px-2 py-1 rounded transition-colors relative z-50"
             >
-                {currentFamily ? currentFamily.family_name : t('select_family')}
+                {currentFamily ? currentFamily.family_name : t('family.select')}
                 <ChevronDown size={20} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -141,12 +141,12 @@ const FamilyManager: React.FC<FamilyManagerProps> = ({ families, currentFamily, 
                                 className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded border border-dashed border-blue-200"
                             >
                                 <Plus size={16} />
-                                {t('create_new_family') || 'Create New Family'}
+                                {t('family.create_new') || 'Create New Family'}
                             </button>
                         </>
                     ) : (
                         <div className="p-1 space-y-3">
-                            <h3 className="font-medium text-gray-900">{t('create_new_family') || 'Create New Family'}</h3>
+                            <h3 className="font-medium text-gray-900">{t('family.create_new') || 'Create New Family'}</h3>
                             <div>
                                 <label className="block text-xs text-gray-500 mb-1">{t('family_name') || 'Family Name'}</label>
                                 <input

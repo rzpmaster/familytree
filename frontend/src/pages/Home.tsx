@@ -87,7 +87,7 @@ const Home: React.FC = () => {
   // Initial load
   useEffect(() => {
     const init = async () => {
-      console.log("Home init");
+    //   console.log("Home init");
       setLoading(true);
       await fetchFamilies();
       setLoading(false);

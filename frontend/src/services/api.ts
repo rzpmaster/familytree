@@ -81,6 +81,15 @@ export const deleteParentChildRelationship = async (id: string) => {
   return response.data;
 };
 
+export const getFamilyName = async (familyId: string) => {
+    try {
+        const response = await api.get<{ family_name: string }>(`/families/${familyId}/name`);
+        return response.data.family_name;
+    } catch {
+        return null;
+    }
+};
+
 export const getFamily = async (familyId: string, userId?: string) => {
     const url = userId ? `/families/${familyId}?user_id=${userId}` : `/families/${familyId}`;
     const response = await api.get<Family>(url);
@@ -158,12 +167,16 @@ export interface ImportData {
     [key: string]: unknown;
 }
 
-export const importFamily = async (data: ImportData) => {
-    const response = await api.post<Family>('/families/import', data);
+export const importFamily = async (data: ImportData, userId?: string) => {
+    // If userId is provided, pass it as query param to override ownership
+    const url = userId ? `/families/import?user_id=${userId}` : '/families/import';
+    const response = await api.post<Family>(url, data);
     return response.data;
 };
 
 export const importFamilyPreset = async (key: string, userId: string) => {
+    // Ideally we should pass userId in body, but the backend endpoint uses query param.
+    // Let's stick to query param for now, but ensure we pass it correctly.
     const response = await api.post<Family>(`/families/import-preset/${key}?user_id=${userId}`);
     return response.data;
 };

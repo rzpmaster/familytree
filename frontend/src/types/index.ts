@@ -13,6 +13,7 @@ export interface FamilyCollaborator {
     role: 'viewer' | 'editor' | 'admin';
     created_at: string;
     user?: User;
+    family?: Family;
 }
 
 export interface AccessRequest {
