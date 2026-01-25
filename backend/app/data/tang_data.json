@@ -1,0 +1,429 @@
+{
+    "user": {
+        "email": "gaozu@tang.dynasty",
+        "name": "Emperor Gaozu"
+    },
+    "family": {
+        "name": "大唐皇族 (Tang Dynasty)"
+    },
+    "members": [
+        {
+            "id": "li_yuan",
+            "name": "李渊 (Gaozu)",
+            "gender": "male",
+            "birth": "0566-04-07",
+            "death": "0635-06-25"
+        },
+        {
+            "id": "empress_dou",
+            "name": "窦皇后 (Empress Dou)",
+            "gender": "female",
+            "death": "0613-01-01"
+        },
+        {
+            "id": "li_jiancheng",
+            "name": "李建成 (Crown Prince)",
+            "gender": "male",
+            "birth": "0589-01-01",
+            "death": "0626-07-02"
+        },
+        {
+            "id": "li_shimin",
+            "name": "李世民 (Taizong)",
+            "gender": "male",
+            "birth": "0598-01-23",
+            "death": "0649-07-10"
+        },
+        {
+            "id": "li_yuanji",
+            "name": "李元吉 (Prince of Qi)",
+            "gender": "male",
+            "birth": "0603-01-01",
+            "death": "0626-07-02"
+        },
+        {
+            "id": "princess_pingyang",
+            "name": "平阳昭公主 (Princess Pingyang)",
+            "gender": "female",
+            "death": "0623-03-14"
+        },
+        {
+            "id": "empress_zhangsun",
+            "name": "长孙皇后 (Empress Zhangsun)",
+            "gender": "female",
+            "birth": "0601-03-15",
+            "death": "0636-07-28"
+        },
+        {
+            "id": "consort_yang",
+            "name": "杨妃 (Consort Yang)",
+            "gender": "female"
+        },
+        {
+            "id": "wu_zetian",
+            "name": "武则天 (Wu Zetian)",
+            "gender": "female",
+            "birth": "0624-02-17",
+            "death": "0705-12-16"
+        },
+        {
+            "id": "li_chengqian",
+            "name": "李承乾 (Crown Prince)",
+            "gender": "male",
+            "birth": "0619-01-01",
+            "death": "0645-01-04"
+        },
+        {
+            "id": "li_tai",
+            "name": "李泰 (Prince of Wei)",
+            "gender": "male",
+            "birth": "0620-01-01",
+            "death": "0652-01-01"
+        },
+        {
+            "id": "li_ke",
+            "name": "李恪 (Prince of Wu)",
+            "gender": "male",
+            "birth": "0619-01-01",
+            "death": "0653-03-06"
+        },
+        {
+            "id": "li_zhi",
+            "name": "李治 (Gaozong)",
+            "gender": "male",
+            "birth": "0628-07-21",
+            "death": "0683-12-27"
+        },
+        {
+            "id": "empress_wang",
+            "name": "王皇后 (Empress Wang)",
+            "gender": "female",
+            "death": "0655-01-01"
+        },
+        {
+            "id": "consort_xiao",
+            "name": "萧淑妃 (Consort Xiao)",
+            "gender": "female",
+            "death": "0655-01-01"
+        },
+        {
+            "id": "li_hong",
+            "name": "李弘 (Crown Prince)",
+            "gender": "male",
+            "birth": "0652-01-01",
+            "death": "0675-05-25"
+        },
+        {
+            "id": "li_xian_zhang",
+            "name": "李贤 (Prince of Zhanghuai)",
+            "gender": "male",
+            "birth": "0655-01-29",
+            "death": "0684-03-13"
+        },
+        {
+            "id": "li_xian_zhong",
+            "name": "李显 (Zhongzong)",
+            "gender": "male",
+            "birth": "0656-11-26",
+            "death": "0710-07-03"
+        },
+        {
+            "id": "li_dan",
+            "name": "李旦 (Ruizong)",
+            "gender": "male",
+            "birth": "0662-06-22",
+            "death": "0716-07-13"
+        },
+        {
+            "id": "princess_taiping",
+            "name": "太平公主 (Princess Taiping)",
+            "gender": "female",
+            "death": "0713-08-02"
+        },
+        {
+            "id": "empress_wei",
+            "name": "韦皇后 (Empress Wei)",
+            "gender": "female",
+            "death": "0710-07-21"
+        },
+        {
+            "id": "consort_dou",
+            "name": "窦德妃 (Consort Dou)",
+            "gender": "female",
+            "death": "0693-01-01"
+        },
+        {
+            "id": "li_chongmao",
+            "name": "李重茂 (Shangdi)",
+            "gender": "male",
+            "birth": "0695-01-01",
+            "death": "0714-01-01"
+        },
+        {
+            "id": "li_longji",
+            "name": "李隆基 (Xuanzong)",
+            "gender": "male",
+            "birth": "0685-09-08",
+            "death": "0762-05-03"
+        },
+        {
+            "id": "princess_yuzhen",
+            "name": "玉真公主 (Princess Yuzhen)",
+            "gender": "female",
+            "death": "0762-01-01"
+        },
+        {
+            "id": "empress_wang_xuan",
+            "name": "王皇后 (Empress Wang)",
+            "gender": "female",
+            "death": "0724-01-01"
+        },
+        {
+            "id": "consort_wu",
+            "name": "武惠妃 (Consort Wu)",
+            "gender": "female",
+            "death": "0737-01-01"
+        },
+        {
+            "id": "consort_yang_guifei",
+            "name": "杨贵妃 (Yang Guifei)",
+            "gender": "female",
+            "birth": "0719-06-26",
+            "death": "0756-07-15"
+        },
+        {
+            "id": "empress_yuan",
+            "name": "元献皇后 (Empress Yuan)",
+            "gender": "female",
+            "death": "0729-01-01"
+        },
+        {
+            "id": "li_heng",
+            "name": "李亨 (Suzong)",
+            "gender": "male",
+            "birth": "0711-02-21",
+            "death": "0762-05-16"
+        },
+        {
+            "id": "li_mao",
+            "name": "李 瑁 (Prince of Shou)",
+            "gender": "male",
+            "death": "0775-01-01"
+        },
+        {
+            "id": "empress_zhang_su",
+            "name": "张皇后 (Empress Zhang)",
+            "gender": "female",
+            "death": "0762-05-16"
+        },
+        {
+            "id": "li_yu",
+            "name": "李豫 (Daizong)",
+            "gender": "male",
+            "birth": "0726-11-11",
+            "death": "0779-05-23"
+        },
+        {
+            "id": "empress_dugu",
+            "name": "独孤贵妃 (Empress Dugu)",
+            "gender": "female",
+            "death": "0775-01-01"
+        },
+        {
+            "id": "li_gua",
+            "name": "李适 (Dezong)",
+            "gender": "male",
+            "birth": "0742-05-27",
+            "death": "0805-02-25"
+        },
+        {
+            "id": "empress_wang_de",
+            "name": "王皇后 (Empress Wang)",
+            "gender": "female",
+            "death": "0786-01-01"
+        },
+        {
+            "id": "li_song",
+            "name": "李诵 (Shunzong)",
+            "gender": "male",
+            "birth": "0761-01-01",
+            "death": "0806-01-01"
+        },
+        {
+            "id": "li_chun",
+            "name": "李纯 (Xianzong)",
+            "gender": "male",
+            "birth": "0778-01-01",
+            "death": "0820-02-14"
+        },
+        {
+            "id": "empress_guo",
+            "name": "郭皇后 (Empress Guo)",
+            "gender": "female",
+            "death": "0848-01-01"
+        }
+    ],
+    "spouses": [
+        [
+            "li_yuan",
+            "empress_dou"
+        ],
+        [
+            "li_shimin",
+            "empress_zhangsun"
+        ],
+        [
+            "li_shimin",
+            "consort_yang"
+        ],
+        [
+            "li_shimin",
+            "wu_zetian"
+        ],
+        [
+            "li_zhi",
+            "empress_wang"
+        ],
+        [
+            "li_zhi",
+            "consort_xiao"
+        ],
+        [
+            "li_zhi",
+            "wu_zetian"
+        ],
+        [
+            "li_xian_zhong",
+            "empress_wei"
+        ],
+        [
+            "li_dan",
+            "consort_dou"
+        ],
+        [
+            "li_longji",
+            "empress_wang_xuan"
+        ],
+        [
+            "li_longji",
+            "consort_wu"
+        ],
+        [
+            "li_longji",
+            "consort_yang_guifei"
+        ],
+        [
+            "li_longji",
+            "empress_yuan"
+        ],
+        [
+            "li_heng",
+            "empress_zhang_su"
+        ],
+        [
+            "li_yu",
+            "empress_dugu"
+        ],
+        [
+            "li_gua",
+            "empress_wang_de"
+        ],
+        [
+            "li_chun",
+            "empress_guo"
+        ]
+    ],
+    "parents": [
+        {
+            "father": "li_yuan",
+            "mother": "empress_dou",
+            "children": [
+                "li_jiancheng",
+                "li_shimin",
+                "li_yuanji",
+                "princess_pingyang"
+            ]
+        },
+        {
+            "father": "li_shimin",
+            "mother": "empress_zhangsun",
+            "children": [
+                "li_chengqian",
+                "li_tai",
+                "li_zhi"
+            ]
+        },
+        {
+            "father": "li_shimin",
+            "mother": "consort_yang",
+            "children": [
+                "li_ke"
+            ]
+        },
+        {
+            "father": "li_zhi",
+            "mother": "wu_zetian",
+            "children": [
+                "li_hong",
+                "li_xian_zhang",
+                "li_xian_zhong",
+                "li_dan",
+                "princess_taiping"
+            ]
+        },
+        {
+            "father": "li_xian_zhong",
+            "mother": "empress_wei",
+            "children": [
+                "li_chongmao"
+            ]
+        },
+        {
+            "father": "li_dan",
+            "mother": "consort_dou",
+            "children": [
+                "li_longji",
+                "princess_yuzhen"
+            ]
+        },
+        {
+            "father": "li_longji",
+            "mother": "consort_wu",
+            "children": [
+                "li_mao"
+            ]
+        },
+        {
+            "father": "li_longji",
+            "mother": "empress_yuan",
+            "children": [
+                "li_heng"
+            ]
+        },
+        {
+            "father": "li_heng",
+            "children": [
+                "li_yu"
+            ]
+        },
+        {
+            "father": "li_yu",
+            "children": [
+                "li_gua"
+            ]
+        },
+        {
+            "father": "li_gua",
+            "mother": "empress_wang_de",
+            "children": [
+                "li_song"
+            ]
+        },
+        {
+            "father": "li_song",
+            "children": [
+                "li_chun"
+            ]
+        }
+    ]
+}

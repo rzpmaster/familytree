@@ -1,0 +1,60 @@
+services:
+  # Database Service (PostgreSQL)
+  db:
+    image: postgres:14-alpine
+    container_name: family_tree_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-family_tree}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - family-tree-network
+
+  # Backend Service (FastAPI)
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: family_tree_backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-family_tree}
+      - SUPERUSER_IDS=${SUPERUSER_IDS}
+    #volumes:
+      # Optional: Mount app code for dev hot reload (if using dev command)
+      # - ./backend/app:/app/app
+    networks:
+      - family-tree-network
+
+  # Frontend Service (React + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: family_tree_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_URL=${BACKEND_URL:-http://backend:8000}
+    volumes:
+      # Mount config.json for runtime configuration
+      - ./frontend/public/config.json:/usr/share/nginx/html/config.json
+      # Mount nginx config template
+      - ./frontend/nginx.conf.template:/etc/nginx/templates/default.conf.template
+    networks:
+      - family-tree-network
+
+volumes:
+  postgres_data:
+
+networks:
+  family-tree-network:
+    driver: bridge

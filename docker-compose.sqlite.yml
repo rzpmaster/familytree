@@ -1,0 +1,43 @@
+services:
+  # Backend Service (FastAPI)
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: family_tree_backend
+    restart: always
+    environment:
+      # Use SQLite database path inside container
+      # Ensure path is in the mounted volume (/app/data)
+      - DATABASE_URL=sqlite:///./data/family_tree.db
+      - SUPERUSER_IDS=${SUPERUSER_IDS}
+    volumes:
+      # Mount a local directory to persist SQLite database
+      - ./backend_data:/app/data
+    networks:
+      - family-tree-network
+
+  # Frontend Service (React + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: family_tree_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_URL=${BACKEND_URL:-http://backend:8000}
+    volumes:
+      # Mount config.json for runtime configuration
+      - ./frontend/public/config.json:/usr/share/nginx/html/config.json
+      # Mount nginx config template
+      - ./frontend/nginx.conf.template:/etc/nginx/templates/default.conf.template
+    networks:
+      - family-tree-network
+
+networks:
+  family-tree-network:
+    driver: bridge

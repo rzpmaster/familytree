@@ -1,0 +1,25 @@
+# Set default behavior, in case people don't have core.autocrlf set.
+* text=auto eol=crlf
+
+# Explicitly declare text files to make sure they are normalized
+*.js text eol=crlf
+*.jsx text eol=crlf
+*.ts text eol=crlf
+*.tsx text eol=crlf
+*.css text eol=crlf
+*.html text eol=crlf
+*.json text eol=crlf
+*.md text eol=crlf
+*.py text eol=crlf
+*.txt text eol=crlf
+.gitignore text eol=crlf
+.env.example text eol=crlf
+
+# Denote all binary files that should not be normalized
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text eol=crlf
+*.db binary

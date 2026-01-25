@@ -1,0 +1,306 @@
+{
+    "user": {
+        "email": "gaozu@han.dynasty",
+        "name": "Emperor Gaozu"
+    },
+    "family": {
+        "name": "大汉皇族 (Han Dynasty)"
+    },
+    "members": [
+        {
+            "id": "liu_bang",
+            "name": "刘邦 (Gaozu)",
+            "gender": "male",
+            "birth": "-0256-01-01",
+            "death": "-0195-06-01"
+        },
+        {
+            "id": "empress_lu",
+            "name": "吕后 (Empress Lu)",
+            "gender": "female",
+            "birth": "-0241-01-01",
+            "death": "-0180-08-18"
+        },
+        {
+            "id": "liu_ying",
+            "name": "刘盈 (Huidi)",
+            "gender": "male",
+            "birth": "-0210-01-01",
+            "death": "-0188-09-26"
+        },
+        {
+            "id": "liu_fei",
+            "name": "刘肥 (Prince of Qi)",
+            "gender": "male",
+            "birth": "-0221-01-01",
+            "death": "-0189-01-01"
+        },
+        {
+            "id": "liu_heng",
+            "name": "刘恒 (Wendi)",
+            "gender": "male",
+            "birth": "-0202-01-01",
+            "death": "-0157-07-06"
+        },
+        {
+            "id": "liu_ruyi",
+            "name": "刘如意 (Prince of Zhao)",
+            "gender": "male",
+            "birth": "-0208-01-01",
+            "death": "-0194-01-01"
+        },
+        {
+            "id": "empress_zhang_yan",
+            "name": "张嫣 (Empress Zhang)",
+            "gender": "female",
+            "death": "-0163-01-01"
+        },
+        {
+            "id": "empress_dou",
+            "name": "窦皇后 (Empress Dou)",
+            "gender": "female",
+            "death": "-0135-01-01"
+        },
+        {
+            "id": "liu_qi",
+            "name": "刘启 (Jingdi)",
+            "gender": "male",
+            "birth": "-0188-01-01",
+            "death": "-0141-03-09"
+        },
+        {
+            "id": "liu_wu",
+            "name": "刘武 (Prince of Liang)",
+            "gender": "male",
+            "birth": "-0184-01-01",
+            "death": "-0144-01-01"
+        },
+        {
+            "id": "empress_wang",
+            "name": "王娡 (Empress Wang)",
+            "gender": "female",
+            "death": "-0126-01-01"
+        },
+        {
+            "id": "liu_che",
+            "name": "刘彻 (Wudi)",
+            "gender": "male",
+            "birth": "-0157-07-30",
+            "death": "-0087-03-29"
+        },
+        {
+            "id": "empress_chen_jiao",
+            "name": "陈阿娇 (Empress Chen)",
+            "gender": "female"
+        },
+        {
+            "id": "empress_wei_zifu",
+            "name": "卫子夫 (Empress Wei)",
+            "gender": "female",
+            "death": "-0091-09-08"
+        },
+        {
+            "id": "liu_ju",
+            "name": "刘据 (Crown Prince)",
+            "gender": "male",
+            "birth": "-0128-01-01",
+            "death": "-0091-01-01"
+        },
+        {
+            "id": "liu_bo",
+            "name": "刘髆 (Prince of Changyi)",
+            "gender": "male",
+            "death": "-0086-01-01"
+        },
+        {
+            "id": "liu_fuling",
+            "name": "刘弗陵 (Zhaodi)",
+            "gender": "male",
+            "birth": "-0094-01-01",
+            "death": "-0074-06-05"
+        },
+        {
+            "id": "liu_jin",
+            "name": "刘进 (Shihuangsun)",
+            "gender": "male",
+            "birth": "-0113-01-01",
+            "death": "-0091-01-01"
+        },
+        {
+            "id": "liu_xun",
+            "name": "刘询 (Xuandi)",
+            "gender": "male",
+            "birth": "-0091-01-01",
+            "death": "-0049-01-10"
+        },
+        {
+            "id": "empress_xu_pingjun",
+            "name": "许平君 (Empress Xu)",
+            "gender": "female",
+            "birth": "-0089-01-01",
+            "death": "-0071-01-01"
+        },
+        {
+            "id": "empress_huo",
+            "name": "霍成君 (Empress Huo)",
+            "gender": "female",
+            "death": "-0054-01-01"
+        },
+        {
+            "id": "liu_shi",
+            "name": "刘奭 (Yuandi)",
+            "gender": "male",
+            "birth": "-0075-01-01",
+            "death": "-0033-07-08"
+        },
+        {
+            "id": "empress_wang_zhengjun",
+            "name": "王政君 (Empress Wang)",
+            "gender": "female",
+            "birth": "-0071-01-01",
+            "death": "0013-02-03"
+        },
+        {
+            "id": "liu_ao",
+            "name": "刘骜 (Chengdi)",
+            "gender": "male",
+            "birth": "-0051-01-01",
+            "death": "-0007-04-17"
+        },
+        {
+            "id": "liu_kang",
+            "name": "刘康 (Prince of Dingtao)",
+            "gender": "male",
+            "death": "-0023-01-01"
+        },
+        {
+            "id": "liu_xin",
+            "name": "刘欣 (Aidi)",
+            "gender": "male",
+            "birth": "-0027-01-01",
+            "death": "-0001-08-15"
+        }
+    ],
+    "spouses": [
+        [
+            "liu_bang",
+            "empress_lu"
+        ],
+        [
+            "liu_ying",
+            "empress_zhang_yan"
+        ],
+        [
+            "liu_heng",
+            "empress_dou"
+        ],
+        [
+            "liu_qi",
+            "empress_wang"
+        ],
+        [
+            "liu_che",
+            "empress_chen_jiao"
+        ],
+        [
+            "liu_che",
+            "empress_wei_zifu"
+        ],
+        [
+            "liu_xun",
+            "empress_xu_pingjun"
+        ],
+        [
+            "liu_xun",
+            "empress_huo"
+        ],
+        [
+            "liu_shi",
+            "empress_wang_zhengjun"
+        ]
+    ],
+    "parents": [
+        {
+            "father": "liu_bang",
+            "mother": "empress_lu",
+            "children": [
+                "liu_ying"
+            ]
+        },
+        {
+            "father": "liu_bang",
+            "children": [
+                "liu_fei",
+                "liu_heng",
+                "liu_ruyi"
+            ]
+        },
+        {
+            "father": "liu_heng",
+            "mother": "empress_dou",
+            "children": [
+                "liu_qi",
+                "liu_wu"
+            ]
+        },
+        {
+            "father": "liu_qi",
+            "mother": "empress_wang",
+            "children": [
+                "liu_che"
+            ]
+        },
+        {
+            "father": "liu_che",
+            "mother": "empress_wei_zifu",
+            "children": [
+                "liu_ju"
+            ]
+        },
+        {
+            "father": "liu_che",
+            "children": [
+                "liu_bo",
+                "liu_fuling"
+            ]
+        },
+        {
+            "father": "liu_ju",
+            "children": [
+                "liu_jin"
+            ]
+        },
+        {
+            "father": "liu_jin",
+            "children": [
+                "liu_xun"
+            ]
+        },
+        {
+            "father": "liu_xun",
+            "mother": "empress_xu_pingjun",
+            "children": [
+                "liu_shi"
+            ]
+        },
+        {
+            "father": "liu_shi",
+            "mother": "empress_wang_zhengjun",
+            "children": [
+                "liu_ao"
+            ]
+        },
+        {
+            "father": "liu_shi",
+            "children": [
+                "liu_kang"
+            ]
+        },
+        {
+            "father": "liu_kang",
+            "children": [
+                "liu_xin"
+            ]
+        }
+    ]
+}

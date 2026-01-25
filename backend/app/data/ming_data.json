@@ -1,0 +1,627 @@
+{
+    "user": {
+        "email": "hongwu@ming.dynasty",
+        "name": "Emperor Hongwu"
+    },
+    "family": {
+        "name": "大明皇族 (Ming Dynasty)"
+    },
+    "members": [
+        {
+            "id": "zhu_yuanzhang",
+            "name": "朱元璋 (Hongwu)",
+            "gender": "male",
+            "birth": "1328-10-21",
+            "death": "1398-06-24"
+        },
+        {
+            "id": "empress_ma",
+            "name": "马皇后 (Empress Ma)",
+            "gender": "female",
+            "birth": "1332-07-18",
+            "death": "1382-09-23"
+        },
+        {
+            "id": "zhu_biao",
+            "name": "朱标 (Zhu Biao)",
+            "gender": "male",
+            "birth": "1355-10-10",
+            "death": "1392-05-17"
+        },
+        {
+            "id": "zhu_shuang",
+            "name": "朱樉 (Zhu Shuang)",
+            "gender": "male",
+            "birth": "1356-12-03",
+            "death": "1395-04-09"
+        },
+        {
+            "id": "zhu_gang",
+            "name": "朱棡 (Zhu Gang)",
+            "gender": "male",
+            "birth": "1358-12-18",
+            "death": "1398-03-30"
+        },
+        {
+            "id": "zhu_di",
+            "name": "朱棣 (Yongle)",
+            "gender": "male",
+            "birth": "1360-05-02",
+            "death": "1424-08-12"
+        },
+        {
+            "id": "zhu_su",
+            "name": "朱橚 (Zhu Su)",
+            "gender": "male",
+            "birth": "1361-10-08",
+            "death": "1425-09-02"
+        },
+        {
+            "id": "empress_chang",
+            "name": "常氏 (Consort Chang)",
+            "gender": "female",
+            "death": "1378-12-04"
+        },
+        {
+            "id": "empress_xu",
+            "name": "徐皇后 (Empress Xu)",
+            "gender": "female",
+            "birth": "1362-03-05",
+            "death": "1407-08-06"
+        },
+        {
+            "id": "zhu_yunwen",
+            "name": "朱允炆 (Jianwen)",
+            "gender": "male",
+            "birth": "1377-12-05",
+            "death": "1402-07-13"
+        },
+        {
+            "id": "zhu_wenkui",
+            "name": "朱文奎 (Zhu Wenkui)",
+            "gender": "male",
+            "birth": "1396-11-30",
+            "death": "1402-07-13"
+        },
+        {
+            "id": "zhu_gaochi",
+            "name": "朱高炽 (Hongxi)",
+            "gender": "male",
+            "birth": "1378-08-16",
+            "death": "1425-05-29"
+        },
+        {
+            "id": "zhu_gaoxu",
+            "name": "朱高煦 (Zhu Gaoxu)",
+            "gender": "male",
+            "birth": "1380-12-30",
+            "death": "1426-10-06"
+        },
+        {
+            "id": "zhu_gaosui",
+            "name": "朱高燧 (Zhu Gaosui)",
+            "gender": "male",
+            "birth": "1383-01-19",
+            "death": "1431-10-05"
+        },
+        {
+            "id": "empress_zhang",
+            "name": "张皇后 (Empress Zhang)",
+            "gender": "female",
+            "death": "1442-11-20"
+        },
+        {
+            "id": "zhu_zhanji",
+            "name": "朱瞻基 (Xuande)",
+            "gender": "male",
+            "birth": "1399-03-16",
+            "death": "1435-01-31"
+        },
+        {
+            "id": "zhu_zhanshan",
+            "name": "朱瞻埏 (Zhu Zhanshan)",
+            "gender": "male",
+            "birth": "1406-04-04",
+            "death": "1478-01-03"
+        },
+        {
+            "id": "zhu_zhanyong",
+            "name": "朱瞻墉 (Zhu Zhanyong)",
+            "gender": "male",
+            "birth": "1405-02-09",
+            "death": "1439-08-05"
+        },
+        {
+            "id": "empress_sun",
+            "name": "孙皇后 (Empress Sun)",
+            "gender": "female",
+            "death": "1462-09-26"
+        },
+        {
+            "id": "empress_hu",
+            "name": "胡善祥 (Empress Hu)",
+            "gender": "female",
+            "death": "1443-12-05"
+        },
+        {
+            "id": "zhu_qizhen",
+            "name": "朱祁镇 (Zhengtong)",
+            "gender": "male",
+            "birth": "1427-11-29",
+            "death": "1464-02-23"
+        },
+        {
+            "id": "zhu_qiyu",
+            "name": "朱祁钰 (Jingtai)",
+            "gender": "male",
+            "birth": "1428-09-21",
+            "death": "1457-03-14"
+        },
+        {
+            "id": "empress_qian",
+            "name": "钱皇后 (Empress Qian)",
+            "gender": "female",
+            "death": "1468-07-26"
+        },
+        {
+            "id": "empress_zhou",
+            "name": "周皇后 (Empress Zhou)",
+            "gender": "female",
+            "death": "1504-03-16"
+        },
+        {
+            "id": "empress_hang",
+            "name": "杭皇后 (Empress Hang)",
+            "gender": "female",
+            "death": "1456-02-21"
+        },
+        {
+            "id": "zhu_jianshen",
+            "name": "朱见深 (Chenghua)",
+            "gender": "male",
+            "birth": "1447-12-09",
+            "death": "1487-09-09"
+        },
+        {
+            "id": "zhu_jianji",
+            "name": "朱见济 (Zhu Jianji)",
+            "gender": "male",
+            "birth": "1448-08-01",
+            "death": "1453-12-18"
+        },
+        {
+            "id": "empress_wang",
+            "name": "王皇后 (Empress Wang)",
+            "gender": "female",
+            "death": "1518-02-12"
+        },
+        {
+            "id": "consort_ji",
+            "name": "纪妃 (Consort Ji)",
+            "gender": "female",
+            "death": "1475-07-04"
+        },
+        {
+            "id": "consort_wan",
+            "name": "万贵妃 (Consort Wan)",
+            "gender": "female",
+            "birth": "1428-01-01",
+            "death": "1487-03-10"
+        },
+        {
+            "id": "zhu_youtang",
+            "name": "朱祐樘 (Hongzhi)",
+            "gender": "male",
+            "birth": "1470-07-30",
+            "death": "1505-06-08"
+        },
+        {
+            "id": "zhu_youyuan",
+            "name": "朱祐杬 (Prince of Xing)",
+            "gender": "male",
+            "birth": "1476-07-22",
+            "death": "1519-07-13"
+        },
+        {
+            "id": "empress_zhang_hz",
+            "name": "张皇后 (Empress Zhang)",
+            "gender": "female",
+            "birth": "1471-01-01",
+            "death": "1541-08-28"
+        },
+        {
+            "id": "empress_jiang",
+            "name": "蒋妃 (Consort Jiang)",
+            "gender": "female",
+            "death": "1538-12-06"
+        },
+        {
+            "id": "zhu_houzhao",
+            "name": "朱厚照 (Zhengde)",
+            "gender": "male",
+            "birth": "1491-10-27",
+            "death": "1521-04-20"
+        },
+        {
+            "id": "zhu_houcong",
+            "name": "朱厚熜 (Jiajing)",
+            "gender": "male",
+            "birth": "1507-09-16",
+            "death": "1567-01-23"
+        },
+        {
+            "id": "empress_xia",
+            "name": "夏皇后 (Empress Xia)",
+            "gender": "female",
+            "death": "1535-01-25"
+        },
+        {
+            "id": "empress_chen",
+            "name": "陈皇后 (Empress Chen)",
+            "gender": "female",
+            "birth": "1508-01-01",
+            "death": "1528-10-21"
+        },
+        {
+            "id": "consort_du",
+            "name": "杜康妃 (Consort Du)",
+            "gender": "female",
+            "death": "1554-02-12"
+        },
+        {
+            "id": "zhu_zaihou",
+            "name": "朱载坖 (Longqing)",
+            "gender": "male",
+            "birth": "1537-03-04",
+            "death": "1572-07-05"
+        },
+        {
+            "id": "empress_li",
+            "name": "李贵妃 (Consort Li)",
+            "gender": "female",
+            "death": "1614-02-09"
+        },
+        {
+            "id": "zhu_yijun",
+            "name": "朱翊钧 (Wanli)",
+            "gender": "male",
+            "birth": "1563-09-04",
+            "death": "1620-08-18"
+        },
+        {
+            "id": "empress_wang_wl",
+            "name": "王皇后 (Empress Wang)",
+            "gender": "female",
+            "birth": "1565-01-01",
+            "death": "1620-04-07"
+        },
+        {
+            "id": "consort_wang",
+            "name": "王恭妃 (Consort Wang)",
+            "gender": "female",
+            "birth": "1565-02-27",
+            "death": "1611-10-18"
+        },
+        {
+            "id": "consort_zheng",
+            "name": "郑贵妃 (Consort Zheng)",
+            "gender": "female",
+            "birth": "1565-01-01",
+            "death": "1630-01-01"
+        },
+        {
+            "id": "zhu_changluo",
+            "name": "朱常洛 (Taichang)",
+            "gender": "male",
+            "birth": "1582-08-28",
+            "death": "1620-09-26"
+        },
+        {
+            "id": "zhu_changxun",
+            "name": "朱常洵 (Prince of Fu)",
+            "gender": "male",
+            "birth": "1586-02-22",
+            "death": "1641-03-02"
+        },
+        {
+            "id": "consort_wang_tc",
+            "name": "王才人 (Consort Wang)",
+            "gender": "female",
+            "death": "1619-01-01"
+        },
+        {
+            "id": "consort_liu",
+            "name": "刘淑女 (Consort Liu)",
+            "gender": "female",
+            "death": "1615-01-01"
+        },
+        {
+            "id": "zhu_youjiao",
+            "name": "朱由校 (Tianqi)",
+            "gender": "male",
+            "birth": "1605-12-23",
+            "death": "1627-09-30"
+        },
+        {
+            "id": "zhu_youjian",
+            "name": "朱由检 (Chongzhen)",
+            "gender": "male",
+            "birth": "1611-02-06",
+            "death": "1644-04-25"
+        },
+        {
+            "id": "empress_zhou_cz",
+            "name": "周皇后 (Empress Zhou)",
+            "gender": "female",
+            "birth": "1611-05-10",
+            "death": "1644-04-24"
+        },
+        {
+            "id": "zhu_cilang",
+            "name": "朱慈烺 (Crown Prince)",
+            "gender": "male",
+            "birth": "1629-02-26",
+            "death": "1644-01-01"
+        },
+        {
+            "id": "zhu_cixuan",
+            "name": "朱慈 泫 (Prince)",
+            "gender": "male",
+            "birth": "1629-01-01",
+            "death": "1630-01-15"
+        },
+        {
+            "id": "zhu_cijiong",
+            "name": "朱慈 炯 (Prince)",
+            "gender": "male",
+            "birth": "1632-01-01",
+            "death": "1644-01-01"
+        }
+    ],
+    "spouses": [
+        [
+            "zhu_yuanzhang",
+            "empress_ma"
+        ],
+        [
+            "zhu_biao",
+            "empress_chang"
+        ],
+        [
+            "zhu_di",
+            "empress_xu"
+        ],
+        [
+            "zhu_gaochi",
+            "empress_zhang"
+        ],
+        [
+            "zhu_zhanji",
+            "empress_sun"
+        ],
+        [
+            "zhu_zhanji",
+            "empress_hu"
+        ],
+        [
+            "zhu_qizhen",
+            "empress_qian"
+        ],
+        [
+            "zhu_qizhen",
+            "empress_zhou"
+        ],
+        [
+            "zhu_qiyu",
+            "empress_hang"
+        ],
+        [
+            "zhu_jianshen",
+            "empress_wang"
+        ],
+        [
+            "zhu_jianshen",
+            "consort_ji"
+        ],
+        [
+            "zhu_jianshen",
+            "consort_wan"
+        ],
+        [
+            "zhu_youtang",
+            "empress_zhang_hz"
+        ],
+        [
+            "zhu_youyuan",
+            "empress_jiang"
+        ],
+        [
+            "zhu_houzhao",
+            "empress_xia"
+        ],
+        [
+            "zhu_houcong",
+            "empress_chen"
+        ],
+        [
+            "zhu_houcong",
+            "consort_du"
+        ],
+        [
+            "zhu_zaihou",
+            "empress_li"
+        ],
+        [
+            "zhu_yijun",
+            "empress_wang_wl"
+        ],
+        [
+            "zhu_yijun",
+            "consort_wang"
+        ],
+        [
+            "zhu_yijun",
+            "consort_zheng"
+        ],
+        [
+            "zhu_changluo",
+            "consort_wang_tc"
+        ],
+        [
+            "zhu_changluo",
+            "consort_liu"
+        ],
+        [
+            "zhu_youjian",
+            "empress_zhou_cz"
+        ]
+    ],
+    "parents": [
+        {
+            "father": "zhu_yuanzhang",
+            "mother": "empress_ma",
+            "children": [
+                "zhu_biao",
+                "zhu_shuang",
+                "zhu_gang",
+                "zhu_di",
+                "zhu_su"
+            ]
+        },
+        {
+            "father": "zhu_biao",
+            "children": [
+                "zhu_yunwen",
+                "zhu_wenkui"
+            ]
+        },
+        {
+            "father": "zhu_di",
+            "mother": "empress_xu",
+            "children": [
+                "zhu_gaochi",
+                "zhu_gaoxu",
+                "zhu_gaosui"
+            ]
+        },
+        {
+            "father": "zhu_gaochi",
+            "mother": "empress_zhang",
+            "children": [
+                "zhu_zhanji",
+                "zhu_zhanshan",
+                "zhu_zhanyong"
+            ]
+        },
+        {
+            "father": "zhu_zhanji",
+            "mother": "empress_sun",
+            "children": [
+                "zhu_qizhen"
+            ]
+        },
+        {
+            "father": "zhu_zhanji",
+            "children": [
+                "zhu_qiyu"
+            ]
+        },
+        {
+            "father": "zhu_qizhen",
+            "mother": "empress_zhou",
+            "children": [
+                "zhu_jianshen"
+            ]
+        },
+        {
+            "father": "zhu_qiyu",
+            "mother": "empress_hang",
+            "children": [
+                "zhu_jianji"
+            ]
+        },
+        {
+            "father": "zhu_jianshen",
+            "mother": "consort_ji",
+            "children": [
+                "zhu_youtang"
+            ]
+        },
+        {
+            "father": "zhu_jianshen",
+            "children": [
+                "zhu_youyuan"
+            ]
+        },
+        {
+            "father": "zhu_youtang",
+            "mother": "empress_zhang_hz",
+            "children": [
+                "zhu_houzhao"
+            ]
+        },
+        {
+            "father": "zhu_youyuan",
+            "mother": "empress_jiang",
+            "children": [
+                "zhu_houcong"
+            ]
+        },
+        {
+            "father": "zhu_houcong",
+            "mother": "consort_du",
+            "children": [
+                "zhu_zaihou"
+            ]
+        },
+        {
+            "father": "zhu_zaihou",
+            "mother": "empress_li",
+            "children": [
+                "zhu_yijun"
+            ]
+        },
+        {
+            "father": "zhu_yijun",
+            "mother": "consort_wang",
+            "children": [
+                "zhu_changluo"
+            ]
+        },
+        {
+            "father": "zhu_yijun",
+            "mother": "consort_zheng",
+            "children": [
+                "zhu_changxun"
+            ]
+        },
+        {
+            "father": "zhu_changluo",
+            "mother": "consort_wang_tc",
+            "children": [
+                "zhu_youjiao"
+            ]
+        },
+        {
+            "father": "zhu_changluo",
+            "mother": "consort_liu",
+            "children": [
+                "zhu_youjian"
+            ]
+        },
+        {
+            "father": "zhu_youjian",
+            "mother": "empress_zhou_cz",
+            "children": [
+                "zhu_cilang"
+            ]
+        },
+        {
+            "father": "zhu_youjian",
+            "children": [
+                "zhu_cixuan",
+                "zhu_cijiong"
+            ]
+        }
+    ]
+}
