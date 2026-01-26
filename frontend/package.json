@@ -12,6 +12,7 @@
     "check": "tsc -b --noEmit"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.11.2",
     "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "dagre": "^0.8.5",
@@ -22,8 +23,10 @@
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.6.0",
     "react-i18next": "^16.5.3",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.13.0",
     "reactflow": "^11.11.4",
+    "redux-persist": "^6.0.0",
     "tailwind-merge": "^3.4.0",
     "zustand": "^5.0.3"
   },
