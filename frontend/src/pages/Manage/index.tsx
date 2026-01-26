@@ -4,10 +4,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import ConfirmDialog from '../components/ConfirmDialog';
-import FamilyCard from '../components/FamilyCard';
-import { createFamily, deleteFamily, getCollaborators, getFamilies, getFamilyGraph, getMembers, importFamily, importFamilyPreset, inviteCollaborator, removeCollaborator, updateCollaboratorRole, updateFamily } from '../services/api';
-import { Family, FamilyCollaborator, Member } from '../types';
+import ConfirmDialog from '../../components/ConfirmDialog';
+import { createFamily, deleteFamily, getCollaborators, getFamilies, getFamilyGraph, getMembers, importFamily, importFamilyPreset, inviteCollaborator, removeCollaborator, updateCollaboratorRole, updateFamily } from '../../services/api';
+import { Family, FamilyCollaborator, Member } from '../../types';
+import FamilyCard from './FamilyCard';
 
 interface FamilyWithMembers extends Family {
   members: Member[];

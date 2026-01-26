@@ -23,12 +23,12 @@ import ReactFlow, {
     Viewport
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { createParentChildRelationship, createSpouseRelationship, getFamilyGraph, updateMember } from '../services/api';
-import { RecursiveFamilyLayoutStrategy } from '../strategies/layout/RecursiveFamilyLayoutStrategy';
-import { GraphEdge, Member } from '../types';
-import { RuleEngine } from '../validation/RuleEngine';
-import { ChildBirthPosthumousRule, MaxParentsRule, ParentAgeRule } from '../validation/rules/parentChildRules';
-import { LifespanOverlapRule, OppositeGenderRule } from '../validation/rules/spouseRules';
+import { createParentChildRelationship, createSpouseRelationship, getFamilyGraph, updateMember } from '../../services/api';
+import { RecursiveFamilyLayoutStrategy } from '../../strategies/layout/RecursiveFamilyLayoutStrategy';
+import { GraphEdge, Member } from '../../types';
+import { RuleEngine } from '../../validation/RuleEngine';
+import { ChildBirthPosthumousRule, MaxParentsRule, ParentAgeRule } from '../../validation/rules/parentChildRules';
+import { LifespanOverlapRule, OppositeGenderRule } from '../../validation/rules/spouseRules';
 import { CustomEdge } from './CustomEdge';
 import MemberNode from './MemberNode';
 

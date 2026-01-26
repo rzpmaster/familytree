@@ -1,12 +1,12 @@
-import Layout from "@/components/Layout";
 import { AuthProvider } from "@/context/AuthContext";
 import { SettingsProvider } from "@/context/SettingsContext";
 import { useAuth } from "@/hooks/useAuth";
 import Admin from "@/pages/Admin";
 import Home from "@/pages/Home";
+import Layout from "@/pages/Layout";
 import Login from "@/pages/Login";
 import Manage from "@/pages/Manage";
-import Settings from "@/pages/Settings";
+import Settings from "@/pages/Setting";
 import { Toaster } from "react-hot-toast";
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 

@@ -2,8 +2,8 @@ import { ArrowRight, Download, Edit2, Share2, Trash2, UserPlus, Users } from 'lu
 import React, { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { createAccessRequest } from '../services/api';
-import { Family, Member } from '../types';
+import { createAccessRequest } from '../../services/api';
+import { Family, Member } from '../../types';
 
 interface FamilyCardProps {
   family: Family;
