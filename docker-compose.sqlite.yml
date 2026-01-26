@@ -25,7 +25,7 @@ services:
     container_name: family_tree_frontend
     restart: always
     ports:
-      - "80:80"
+      - "${FRONTEND_POR0T:-80}:80"
     depends_on:
       - backend
     environment:
