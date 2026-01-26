@@ -12,7 +12,7 @@ __pycache__/
 *$py.class
 backend/venv/
 backend/.venv/
-backend/app/data/family_tree.db
+backend/app/data/*.db
 
 # Environment variables
 .env
