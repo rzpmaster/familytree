@@ -57,7 +57,6 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
 
   const handleRequestAccess = useCallback(
     async () => {
-      console.log('123', currentUserId)
       if (!currentUserId) return;
       try {
         setRequestLoading(true);

@@ -1,10 +1,13 @@
 import ConfirmDialog from "@/components/ConfirmDialog";
 import MemberDetail from "@/components/MemberDetail";
 import PropertyPanel from "@/components/PropertyPanel";
+import { RootState } from "@/store";
+import { setLastSelectedFamilyId } from "@/store/familySlice";
 import { Loader2, Plus } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../hooks/useAuth";
 import {
     deleteMember,
@@ -38,21 +41,25 @@ const Home: React.FC = () => {
   const role = family?.current_user_role || "viewer";
   const isReadOnly = role === "viewer";
 
-  // Save selected family ID to local storage
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const familyId = family?.id;
     if (familyId) {
-      localStorage.setItem("lastSelectedFamilyId", familyId);
+      dispatch(setLastSelectedFamilyId(familyId));
     }
-  }, [family?.id]);
+  }, [dispatch, family?.id]);
+
+  const lastSelectedFamilyId = useSelector(
+    (root: RootState) => root.family.lastSelectedFamilyId,
+  );
 
   const fetchFamilies = useCallback(async () => {
     try {
       const data = await getFamilies(user?.id);
       setFamilies(data);
 
-      // Always try to respect localStorage first on initial load or if current family is invalid
-      const savedFamilyId = localStorage.getItem("lastSelectedFamilyId");
+      const savedFamilyId = lastSelectedFamilyId;
 
       if (data.length > 0) {
         // 1. If we have a currently selected family, check if it's still valid
@@ -66,7 +73,7 @@ const Home: React.FC = () => {
           }
         }
 
-        // 2. If no current family (or invalid), try localStorage
+        // 2. If no current family (or invalid)
         if (savedFamilyId) {
           const target = data.find((f) => f.id === savedFamilyId);
           if (target) {
@@ -84,7 +91,7 @@ const Home: React.FC = () => {
       console.error("Fetch families failed", e);
       toast.error("Failed to load family data");
     }
-  }, [family, user]);
+  }, [family, lastSelectedFamilyId, user?.id]);
 
   // Re-fetch when navigating back to home (optional, but good for sync)
   useEffect(() => {
@@ -159,7 +166,7 @@ const Home: React.FC = () => {
         toast.success("Member deleted successfully");
       } catch (e) {
         console.error("Failed to delete member", e);
-        toast.error(t("member.add_failed").replace("add", "delete"));
+        toast.error(t("member.delete_failed"));
       }
     } else if (confirmState.edgeId && confirmState.edgeType) {
       try {
@@ -197,32 +204,6 @@ const Home: React.FC = () => {
 
   const handleAddMember = async () => {
     if (!family) return;
-
-    // Create a temporary member object for the UI to display in the sidebar.
-    // We won't save it to backend yet.
-    // But MemberDetail expects a Member object with an ID.
-    // We can generate a temporary ID.
-    // Or we can create a "new" mode in MemberDetail.
-    // For simplicity with existing types, let's create a fake Member object.
-    // And we need to tell MemberDetail that this is a NEW member, so handleSave calls createMember instead of updateMember.
-    // But MemberDetail currently only takes `member` and `onUpdate`.
-
-    // Actually, sticking to the current flow (create empty -> edit) is much easier for the codebase structure.
-    // If user wants "click add -> fill info -> save to create", we can:
-    // 1. Open sidebar with empty form.
-    // 2. On save, call createMember.
-
-    // Let's modify Home to support "isNewMember" state.
-    // But `selectedMember` is just a Member.
-
-    // Alternative:
-    // When "Add Member" is clicked:
-    // 1. Do NOT call createMember.
-    // 2. Create a dummy member object locally.
-    // 3. Set selectedMember to this dummy.
-    // 4. Pass a flag or check if ID is "new" in MemberDetail?
-    //    Or better, pass a `isNew` prop to MemberDetail?
-    //    But MemberDetail is rendered based on selectedMember.
 
     // Let's make a dummy member with ID 'new_member'.
     const dummyMember: Member = {
