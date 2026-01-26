@@ -102,7 +102,7 @@
 ### 数据库配置
 在 `backend/.env` 中设置 `DATABASE_URL`：
 
-- **SQLite (默认)**: `sqlite:///./family_tree_v2.db`
+- **SQLite (默认)**: `sqlite:///./app/data/family_tree.db`
 - **PostgreSQL**: `postgresql://user:password@localhost/dbname`
 - **MySQL**: `mysql+pymysql://user:password@localhost/dbname`
 
