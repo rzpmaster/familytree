@@ -20,6 +20,119 @@ export class CompactFamilyLayoutStrategy implements LayoutStrategy {
     this.nodeHeight = getCompactNodeHeight();
   }
 
+  // =========================
+  // Group-based sorting helpers
+  // =========================
+
+  // 保存原始 node.data（用于 birth_date / created_at）
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private __rawDataMap: Map<string, any> = new Map();
+
+  private hasBirthDate(n: GraphNode): boolean {
+    const d = this.__rawDataMap.get(n.id) ?? {};
+    return (
+      typeof d.birth_date === "string" &&
+      !!d.birth_date &&
+      !Number.isNaN(Date.parse(d.birth_date))
+    );
+  }
+
+  private birthDateValue(n: GraphNode): number {
+    const d = this.__rawDataMap.get(n.id) ?? {};
+    const t = Date.parse(d.birth_date);
+    return Number.isNaN(t) ? Number.POSITIVE_INFINITY : t;
+  }
+
+  private hasSortOrder(n: GraphNode): boolean {
+    return typeof n.sort_order === "number";
+  }
+
+  private sortOrderValue(n: GraphNode): number {
+    return typeof n.sort_order === "number"
+      ? n.sort_order
+      : Number.POSITIVE_INFINITY;
+  }
+
+  private hasCreatedAt(n: GraphNode): boolean {
+    const d = this.__rawDataMap.get(n.id) ?? {};
+    return (
+      typeof d.created_at === "string" &&
+      !!d.created_at &&
+      !Number.isNaN(Date.parse(d.created_at))
+    );
+  }
+
+  private createdAtValue(n: GraphNode): number {
+    const d = this.__rawDataMap.get(n.id) ?? {};
+    const t = Date.parse(d.created_at);
+    return Number.isNaN(t) ? Number.POSITIVE_INFINITY : t;
+  }
+
+  /**
+   * 排序规则（针对“同一组兄弟 / roots / familyMembers”）：
+   * 1. 全都有 birth_date → 按 birth_date
+   * 2. 否则全都有 sort_order → 按 sort_order
+   * 3. 否则：
+   *    - 有 birth_date 的排前（内部按 birth_date）
+   *    - 再是有 sort_order 的（内部按 sort_order）
+   *    - 最后都没有的按 created_at
+   * 4. 最终兜底 id
+   */
+  private compareByGroupRule(
+    group: GraphNode[],
+    a: GraphNode,
+    b: GraphNode,
+  ): number {
+    const allHaveBirth =
+      group.length > 0 && group.every((n) => this.hasBirthDate(n));
+    const allHaveSort =
+      group.length > 0 && group.every((n) => this.hasSortOrder(n));
+
+    // Rule 1: 全都有 birth_date
+    if (allHaveBirth) {
+      const da = this.birthDateValue(a);
+      const db = this.birthDateValue(b);
+      if (da !== db) return da - db;
+      return a.id.localeCompare(b.id);
+    }
+
+    // Rule 2: 全都有 sort_order
+    if (allHaveSort) {
+      const sa = this.sortOrderValue(a);
+      const sb = this.sortOrderValue(b);
+      if (sa !== sb) return sa - sb;
+      return a.id.localeCompare(b.id);
+    }
+
+    // Rule 3: 混合
+    const aHasBirth = this.hasBirthDate(a);
+    const bHasBirth = this.hasBirthDate(b);
+    if (aHasBirth !== bHasBirth) return aHasBirth ? -1 : 1;
+    if (aHasBirth && bHasBirth) {
+      const da = this.birthDateValue(a);
+      const db = this.birthDateValue(b);
+      if (da !== db) return da - db;
+      return a.id.localeCompare(b.id);
+    }
+
+    const aHasSort = this.hasSortOrder(a);
+    const bHasSort = this.hasSortOrder(b);
+    if (aHasSort !== bHasSort) return aHasSort ? -1 : 1;
+    if (aHasSort && bHasSort) {
+      const sa = this.sortOrderValue(a);
+      const sb = this.sortOrderValue(b);
+      if (sa !== sb) return sa - sb;
+      return a.id.localeCompare(b.id);
+    }
+
+    // 都没有 → created_at
+    const ca = this.createdAtValue(a);
+    const cb = this.createdAtValue(b);
+    if (ca !== cb) return ca - cb;
+
+    return a.id.localeCompare(b.id);
+  }
+
   layout(nodes: Node[], edges: Edge[]): { nodes: Node[]; edges: Edge[] } {
     this.nodesMap.clear();
     this.primaryParent.clear();
@@ -38,6 +151,7 @@ export class CompactFamilyLayoutStrategy implements LayoutStrategy {
         children: [],
         parents: [],
         gender: n.data.gender,
+        sort_order: n.data.sort_order,
         ageKey: this.getAgeKey(n),
         visited: false,
         treeX: 0,

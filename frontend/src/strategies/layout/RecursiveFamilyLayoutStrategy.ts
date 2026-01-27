@@ -16,6 +16,7 @@ export interface GraphNode {
   parents: string[];
 
   gender?: "male" | "famale" | string;
+  sort_order?: number;
 
   // Sorting / layout helpers
   ageKey: number; // smaller => older (used for left-to-right order)
@@ -61,6 +62,7 @@ export class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
         children: [],
         parents: [],
         gender: n.data.gender,
+        sort_order: n.data.sort_order,
         ageKey: this.getAgeKey(n),
         visited: false,
         treeX: 0,
