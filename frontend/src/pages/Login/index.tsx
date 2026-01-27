@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { cn } from '../../lib/utils';
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
@@ -40,7 +41,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+      <div className={cn("bg-white p-8 rounded-lg shadow-md w-full max-w-md")}>
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">FamilyTree</h1>
           <p className="text-gray-500">
@@ -59,7 +60,7 @@ const Login: React.FC = () => {
                 placeholder={t('member.name', { defaultValue: 'Name' })}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                className={cn("input pl-10")}
                 required={!isLogin}
               />
             </div>
@@ -72,7 +73,7 @@ const Login: React.FC = () => {
               placeholder={t('auth.email', { defaultValue: 'Email' })}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className={cn("input pl-10")}
               required
             />
           </div>
@@ -84,7 +85,7 @@ const Login: React.FC = () => {
               placeholder={t('auth.password', { defaultValue: 'Password' })}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              className={cn("input pl-10")}
               required
             />
           </div>
@@ -92,7 +93,7 @@ const Login: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+            className={cn("btn btn-primary w-full gap-2")}
           >
             {loading ? (
               <span>{t('common.processing', { defaultValue: 'Processing...' })}</span>

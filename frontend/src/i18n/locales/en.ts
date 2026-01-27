@@ -117,7 +117,16 @@ export default {
       death_date: "Death Date",
       birth_place: "Birth Place",
       photo_url: "Photo URL",
-      confirm_delete: "Are you sure you want to delete this member?"
+      confirm_delete: "Are you sure you want to delete this member?",
+      age: "Age",
+      age_unit: "",
+      remark: "Remark",
+      remark_placeholder: "Add remarks...",
+      is_deceased: "Deceased",
+      deceased_abbr: "Dec",
+      is_fuzzy: "Fuzzy Node",
+      surname_auto_hint: "Auto-filled from first character if empty",
+      remark_label: "Remark"
     },
     relation: {
       instructions: "Connect handles to create relationships:<br/>Left/Right = Spouse<br/>Top/Bottom = Parent/Child",
@@ -149,6 +158,26 @@ export default {
     },
     settings: {
       language: "Language",
+      display: "Display Settings",
+      privacy_mode: "Privacy Mode",
+      privacy_mode_desc: "Only show surname on nodes",
+      
+      show_living: "Show Living",
+      show_living_desc: "Display members who are currently alive",
+      
+      show_not_living: "Show Not Living",
+      show_not_living_desc: "Includes deceased and unborn members",
+      
+      show_deceased: "Show Deceased",
+      dim_deceased: "Dim Deceased",
+      
+      show_unborn: "Show Unborn",
+      dim_unborn: "Dim Unborn",
+
+      timeline: "Timeline Mode",
+      timeline_desc: "Enable timeline slider to view history",
+      compact_mode: "Compact Mode",
+      compact_mode_desc: "Vertical layout for members",
       focus_mode: "Focus Mode",
       enable_focus_mode: "Enable Focus Mode",
       focus_mode_desc: "Highlight related members when selecting a person",

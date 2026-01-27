@@ -23,7 +23,7 @@ const authPersistConfig = {
 const familyPersistConfig = {
   key: "family",
   storage,
-  whitelist: ["lastSelectedFamilyId"],
+  whitelist: ["lastSelectedFamilyId", "selectedNodeIds"],
 };
 
 const settingsPersistConfig = {

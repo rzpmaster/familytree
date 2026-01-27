@@ -2,6 +2,7 @@ import { Save, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { cn, getSurname } from '../lib/utils';
 import { createMember, updateMember } from '../services/api';
 import { Member } from '../types';
 
@@ -20,17 +21,36 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ member, onClose, onUpdate, 
   useEffect(() => {
       setFormData({
         name: member.name,
+        surname: member.surname,
         gender: member.gender,
         birth_date: member.birth_date,
         death_date: member.death_date,
+        is_deceased: member.is_deceased,
+        is_fuzzy: member.is_fuzzy,
+        remark: member.remark,
         birth_place: member.birth_place,
       });
   }, [member]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     if (readOnly) return;
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+        const checked = (e.target as HTMLInputElement).checked;
+        setFormData(prev => ({ ...prev, [name]: checked }));
+        return;
+    }
+
+    setFormData(prev => {
+        const newData = { ...prev, [name]: value };
+        
+        // Auto-identify surname if name changes and surname is empty (or new member)
+        if (name === 'name' && (!prev.surname || isNewMember)) {
+            newData.surname = getSurname(value);
+        }
+        return newData;
+    });
   };
 
   const handleSave = async () => {
@@ -39,9 +59,13 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ member, onClose, onUpdate, 
             // Create new member
             await createMember({
                 name: formData.name || '',
+                surname: formData.surname,
                 gender: formData.gender || 'male',
                 birth_date: formData.birth_date,
                 death_date: formData.death_date,
+                is_deceased: formData.is_deceased,
+                is_fuzzy: formData.is_fuzzy,
+                remark: formData.remark,
                 birth_place: formData.birth_place,
                 photo_url: formData.photo_url,
                 family_id: member.family_id,
@@ -81,8 +105,25 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ member, onClose, onUpdate, 
             value={formData.name || ''}
             onChange={handleChange}
             readOnly={readOnly}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            className={cn("input mt-1", readOnly && "bg-gray-100 cursor-not-allowed")}
+            placeholder={t('member.name')}
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">{t('member.surname', {defaultValue: 'Surname'})}</label>
+          <input
+            type="text"
+            name="surname"
+            value={formData.surname || ''}
+            onChange={handleChange}
+            readOnly={readOnly}
+            className={cn("input mt-1", readOnly && "bg-gray-100 cursor-not-allowed")}
+            placeholder={t('member.surname', {defaultValue: 'Surname'})}
+          />
+          <p className="text-xs text-gray-400 mt-1">
+             {t('member.surname_auto_hint', {defaultValue: 'Auto-filled from first character if empty'})}
+          </p>
         </div>
 
         <div>
@@ -92,11 +133,42 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ member, onClose, onUpdate, 
             value={formData.gender || 'male'}
             onChange={handleChange}
             disabled={readOnly}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            className={cn("input mt-1", readOnly && "bg-gray-100 cursor-not-allowed")}
           >
             <option value="male">{t('member.male')}</option>
             <option value="female">{t('member.female')}</option>
           </select>
+        </div>
+
+        {/* Status Flags */}
+        <div className="flex flex-col gap-2 p-3 bg-gray-50 rounded-md border">
+            <label className="flex items-center gap-2 cursor-pointer">
+                <input 
+                    type="checkbox"
+                    name="is_fuzzy"
+                    checked={formData.is_fuzzy || false}
+                    onChange={handleChange}
+                    disabled={readOnly}
+                    className="rounded text-blue-600"
+                />
+                <span className="text-sm text-gray-700">
+                    {t('member.is_fuzzy', {defaultValue: 'Fuzzy Node (Dashed)'})}
+                </span>
+            </label>
+            
+            <label className="flex items-center gap-2 cursor-pointer">
+                <input 
+                    type="checkbox"
+                    name="is_deceased"
+                    checked={formData.is_deceased || false}
+                    onChange={handleChange}
+                    disabled={readOnly}
+                    className="rounded text-blue-600"
+                />
+                <span className="text-sm text-gray-700">
+                    {t('member.is_deceased', {defaultValue: 'Deceased (Unknown Date)'})}
+                </span>
+            </label>
         </div>
 
         <div>
@@ -107,7 +179,7 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ member, onClose, onUpdate, 
             value={formData.birth_date || ''}
             onChange={handleChange}
             readOnly={readOnly}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            className={cn("input mt-1", readOnly && "bg-gray-100 cursor-not-allowed")}
           />
         </div>
 
@@ -119,7 +191,7 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ member, onClose, onUpdate, 
             value={formData.death_date || ''}
             onChange={handleChange}
             readOnly={readOnly}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            className={cn("input mt-1", readOnly && "bg-gray-100 cursor-not-allowed")}
           />
         </div>
 
@@ -131,16 +203,30 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ member, onClose, onUpdate, 
             value={formData.birth_place || ''}
             onChange={handleChange}
             readOnly={readOnly}
-            className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            className={cn("input mt-1", readOnly && "bg-gray-100 cursor-not-allowed")}
           />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">{t('member.remark', {defaultValue: 'Remark'})}</label>
+          <textarea
+            name="remark"
+            value={formData.remark || ''}
+            onChange={handleChange}
+            readOnly={readOnly}
+            rows={3}
+            className={cn("input mt-1", readOnly && "bg-gray-100 cursor-not-allowed")}
+            placeholder={t('member.remark_placeholder', {defaultValue: 'Add remarks...'})}
+          />
+        </div>
+
       </div>
 
       {!readOnly && (
         <div className="p-4 border-t bg-gray-50 flex gap-2">
             <button
             onClick={handleSave}
-            className="flex-1 flex justify-center items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className={cn("btn btn-primary flex-1 gap-2")}
             >
             <Save size={16} /> {t('common.save')}
             </button>

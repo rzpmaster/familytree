@@ -40,9 +40,13 @@ export interface Member {
   id: string;
   family_id: string;
   name: string;
+  surname?: string; // 姓
   gender: 'male' | 'female';
   birth_date?: string;
   death_date?: string;
+  is_deceased?: boolean; // 是否已逝世 (无具体日期时使用)
+  is_fuzzy?: boolean; // 是否为模糊节点
+  remark?: string; // 备注
   birth_place?: string;
   photo_url?: string;
   position_x: number;

@@ -3,20 +3,20 @@ import MemberDetail from "@/components/MemberDetail";
 import PropertyPanel from "@/components/PropertyPanel";
 import { RootState } from "@/store";
 import { setLastSelectedFamilyId } from "@/store/familySlice";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
+import FamilyManager from "../../components/FamilyManager";
 import { useAuth } from "../../hooks/useAuth";
 import {
-    deleteMember,
-    deleteParentChildRelationship,
-    deleteSpouseRelationship,
-    getFamilies,
+  deleteMember,
+  deleteParentChildRelationship,
+  deleteSpouseRelationship,
+  getFamilies,
 } from "../../services/api";
 import { Family, GraphEdge, Member } from "../../types";
-import FamilyManager from "./FamilyManager";
 import FamilyTreeCanvas from "./FamilyTreeCanvas";
 
 const Home: React.FC = () => {
@@ -230,26 +230,6 @@ const Home: React.FC = () => {
 
   return (
     <div className="h-full w-full flex flex-col overflow-hidden isolate">
-      {/* Header */}
-      <div className="h-14 bg-white border-b flex items-center px-4 justify-between shrink-0 z-10 shadow-sm relative pointer-events-auto">
-        <FamilyManager
-          families={families}
-          currentFamily={family}
-          onSelectFamily={setFamily}
-          onFamilyCreated={handleFamilyCreated}
-        />
-        <div className="flex gap-2">
-          {family && !isReadOnly && (
-            <button
-              onClick={handleAddMember}
-              className="flex items-center gap-2 bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 transition-colors"
-            >
-              <Plus size={18} /> {t("member.add")}
-            </button>
-          )}
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden relative z-0">
         <div className="flex-1 relative flex flex-col">
@@ -267,7 +247,12 @@ const Home: React.FC = () => {
                   setSelectedEdge(edge);
                   setSelectedMember(null);
                 }}
+                onAddMember={handleAddMember}
                 readOnly={isReadOnly}
+                families={families}
+                currentFamily={family}
+                onSelectFamily={setFamily}
+                onFamilyCreated={handleFamilyCreated}
               />
               <div
                 className="absolute top-4 left-4 bg-white/80 p-2 rounded text-xs text-gray-500 pointer-events-none"
@@ -276,7 +261,15 @@ const Home: React.FC = () => {
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center text-gray-400">
-              {t("family.not_found")}
+              <div className="flex flex-col items-center gap-4">
+                <p>{t("family.not_found")}</p>
+                <FamilyManager
+                  families={families}
+                  currentFamily={family}
+                  onSelectFamily={setFamily}
+                  onFamilyCreated={handleFamilyCreated}
+                />
+              </div>
             </div>
           )}
         </div>

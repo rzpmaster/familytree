@@ -110,6 +110,7 @@ export default {
       add_failed: "添加成员失败",
       details: "成员详情",
       name: "姓名",
+      surname: "姓氏",
       gender: "性别",
       male: "男",
       female: "女",
@@ -117,7 +118,16 @@ export default {
       death_date: "逝世日期",
       birth_place: "出生地",
       photo_url: "照片 URL",
-      confirm_delete: "确定要删除该成员吗？"
+      confirm_delete: "确定要删除该成员吗？",
+      age: "年龄",
+      age_unit: "岁",
+      remark: "备注",
+      remark_placeholder: "添加备注...",
+      is_deceased: "已逝世",
+      deceased_abbr: "逝",
+      is_fuzzy: "模糊节点",
+      surname_auto_hint: "如果为空，将自动截取名字的第一个字符",
+      remark_label: "备注"
     },
     relation: {
       instructions: "连接手柄以建立关系：<br/>左右连接 = 配偶<br/>上下连接 = 父母/子女",
@@ -149,6 +159,26 @@ export default {
     },
     settings: {
       language: "语言",
+      display: "显示设置",
+      privacy_mode: "隐私模式",
+      privacy_mode_desc: "节点上只显示姓氏",
+      
+      show_living: "显示在世成员",
+      show_living_desc: "显示当前在世的成员",
+      
+      show_not_living: "显示不在世成员",
+      show_not_living_desc: "包含已逝世和未出生的成员",
+      
+      show_deceased: "显示已逝世",
+      dim_deceased: "淡显已逝世",
+      
+      show_unborn: "显示未出生",
+      dim_unborn: "淡显未出生",
+
+      timeline: "时间线模式",
+      timeline_desc: "启用时间轴滑块查看历史状态",
+      compact_mode: "紧凑模式",
+      compact_mode_desc: "成员节点使用竖排布局",
       focus_mode: "聚焦模式",
       enable_focus_mode: "开启聚焦模式",
       focus_mode_desc: "选中人物时高亮显示相关成员",

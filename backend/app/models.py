@@ -67,9 +67,13 @@ class Member(Base):
     id = Column(String, primary_key=True, default=generate_uuid)
     family_id = Column(String, ForeignKey("families.id"), nullable=False)
     name = Column(String, nullable=False, index=True)
+    surname = Column(String, nullable=True)
     gender = Column(String, nullable=False) # 'male', 'female'
     birth_date = Column(String, nullable=True)
     death_date = Column(String, nullable=True)
+    is_deceased = Column(Boolean, default=False)
+    is_fuzzy = Column(Boolean, default=False)
+    remark = Column(String, nullable=True)
     birth_place = Column(String, nullable=True)
     photo_url = Column(String, nullable=True)
     position_x = Column(Integer, default=0)

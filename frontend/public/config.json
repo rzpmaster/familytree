@@ -1,5 +1,3 @@
 {
-    "apiBaseUrl": "/api",
-    "nodeWidth": 256,
-    "nodeHeight": 128
+    "apiBaseUrl": "/api"
 }

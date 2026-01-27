@@ -110,9 +110,13 @@ class MemberCreate(MemberBase):
 
 class MemberUpdate(BaseModel):
     name: Optional[str] = None
+    surname: Optional[str] = None
     gender: Optional[str] = None
     birth_date: Optional[str] = None
     death_date: Optional[str] = None
+    is_deceased: Optional[bool] = None
+    is_fuzzy: Optional[bool] = None
+    remark: Optional[str] = None
     birth_place: Optional[str] = None
     photo_url: Optional[str] = None
     position_x: Optional[int] = None

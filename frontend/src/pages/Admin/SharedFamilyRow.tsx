@@ -3,6 +3,7 @@ import { FamilyCollaborator } from "@/types";
 import { X } from "lucide-react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 interface SharedFamilyRowProps {
   collaborator: FamilyCollaborator;
@@ -109,7 +110,7 @@ const SharedFamilyRow: React.FC<SharedFamilyRowProps> = ({
           {/* Remove Button */}
           <button
             onClick={handleRemoveClick}
-            className="text-gray-400 hover:text-red-500 transition-colors p-1 hover:bg-red-50 rounded"
+            className={cn("btn-ghost p-1 text-gray-400 hover:text-red-500 hover:bg-red-50")}
             title={t("common.remove", { defaultValue: "Remove" })}
           >
             <X size={14} />

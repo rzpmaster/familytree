@@ -22,6 +22,7 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import SharedFamilyRow from "./SharedFamilyRow";
+import { cn } from "../../lib/utils";
 
 const Admin: React.FC = () => {
   const { t } = useTranslation();
@@ -220,7 +221,7 @@ const Admin: React.FC = () => {
           </div>
           <input
             type="text"
-            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-300 focus:ring focus:ring-blue-200 sm:text-sm transition duration-150 ease-in-out"
+            className={cn("input pl-10")}
             placeholder={t("admin.search_placeholder", {
               defaultValue: "Search by name or email...",
             })}
@@ -230,26 +231,26 @@ const Admin: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden border">
+      <div className="table-container">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="table-header">
                 {t("member.name", { defaultValue: "Name" })}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="table-header">
                 {t("auth.email", { defaultValue: "Email" })}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="table-header">
                 {t("family.management", { defaultValue: "Families" })}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="table-header">
                 {t("admin.role", { defaultValue: "Role" })}
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="table-header">
                 {t("common.created_at", { defaultValue: "Created At" })}
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="table-header text-right">
                 {t("admin.actions", { defaultValue: "Actions" })}
               </th>
             </tr>
@@ -269,7 +270,7 @@ const Admin: React.FC = () => {
             ) : (
               currentUsers.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="table-cell">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
                         <UserIcon size={16} />
@@ -286,7 +287,7 @@ const Admin: React.FC = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="table-cell">
                     <div className="text-sm text-gray-500">{user.email}</div>
                   </td>
                   <td className="px-6 py-4">
@@ -300,7 +301,7 @@ const Admin: React.FC = () => {
                             {user.families.map((f) => (
                               <span
                                 key={f.id}
-                                className="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100 truncate max-w-[150px]"
+                                className="badge badge-primary truncate max-w-[150px]"
                                 title={f.family_name}
                               >
                                 {f.family_name}
@@ -338,32 +339,33 @@ const Admin: React.FC = () => {
                         )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="table-cell">
                     {user.is_superuser ? (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                      <span className="badge badge-purple">
                         SuperAdmin
                       </span>
                     ) : (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      <span className="badge badge-success">
                         User
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="table-cell text-gray-500">
                     {user.created_at
                       ? new Date(user.created_at).toLocaleDateString()
                       : "-"}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="table-cell text-right font-medium">
                     {user.id !== currentUser?.id && (
                       <div className="flex items-center justify-end gap-3">
                         <button
                           onClick={() => handleToggleAdmin(user)}
-                          className={`text-sm hover:underline ${
+                          className={cn(
+                            "text-sm hover:underline",
                             user.is_superuser
                               ? "text-orange-600 hover:text-orange-900"
                               : "text-purple-600 hover:text-purple-900"
-                          }`}
+                          )}
                           title={
                             user.is_superuser
                               ? "Remove SuperAdmin"
@@ -399,7 +401,7 @@ const Admin: React.FC = () => {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                className="btn btn-secondary"
               >
                 {t("common.previous", { defaultValue: "Previous" })}
               </button>
@@ -408,7 +410,7 @@ const Admin: React.FC = () => {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                className="btn btn-secondary ml-3"
               >
                 {t("common.next", { defaultValue: "Next" })}
               </button>
@@ -450,12 +452,12 @@ const Admin: React.FC = () => {
                         key={page}
                         onClick={() => setCurrentPage(page)}
                         aria-current={currentPage === page ? "page" : undefined}
-                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium
-                                                ${
-                                                  currentPage === page
-                                                    ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                                                    : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                                                }`}
+                        className={cn(
+                          "relative inline-flex items-center px-4 py-2 border text-sm font-medium",
+                          currentPage === page
+                            ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                            : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                        )}
                       >
                         {page}
                       </button>

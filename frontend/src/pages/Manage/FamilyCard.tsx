@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { createAccessRequest } from '../../services/api';
 import { Family, Member } from '../../types';
+import { cn } from '../../lib/utils';
 
 interface FamilyCardProps {
   family: Family;
@@ -79,12 +80,13 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-bold text-gray-800">{family.family_name}</h3>
             {/* Role Badge */}
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium border
-                ${isOwner ? 'bg-purple-100 text-purple-700 border-purple-200' :
-                isAdmin ? 'bg-indigo-100 text-indigo-700 border-indigo-200' :
-                  canEdit ? 'bg-blue-100 text-blue-700 border-blue-200' :
-                    'bg-gray-100 text-gray-600 border-gray-200'}`}
-            >
+            <span className={cn(
+                "badge",
+                isOwner ? 'badge-purple' :
+                isAdmin ? 'badge-indigo' :
+                canEdit ? 'badge-primary' :
+                'badge-gray'
+            )}>
               {isOwner ? t('family.owner', { defaultValue: 'Owner' }) :
                 isAdmin ? t('family.role_admin', { defaultValue: 'Admin' }) :
                   canEdit ? t('family.role_editor', { defaultValue: 'Editor' }) :
@@ -114,7 +116,7 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
           {canManage && (
             <button
               onClick={() => onShare(family)}
-              className="p-2 text-purple-600 hover:bg-purple-50 rounded-full tooltip"
+              className="btn-icon text-purple-600 hover:bg-purple-50 tooltip"
               title={t('family.share', { defaultValue: 'Share' })}
             >
               <Share2 size={18} />
@@ -122,7 +124,7 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
           )}
           <button
             onClick={() => onExport(family)}
-            className="p-2 text-gray-600 hover:bg-gray-100 rounded-full tooltip"
+            className="btn-icon tooltip"
             title={t('family.export_json', { defaultValue: 'Export JSON' })}
           >
             <Download size={18} />
@@ -130,7 +132,7 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
           {canEdit && (
             <button
               onClick={() => onEdit(family)}
-              className="p-2 text-blue-600 hover:bg-blue-50 rounded-full tooltip"
+              className="btn-icon text-blue-600 hover:bg-blue-50 tooltip"
               title={t('family.edit', { defaultValue: 'Edit' })}
             >
               <Edit2 size={18} />
@@ -138,7 +140,7 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
           )}
           <button
             onClick={() => onEnter(family)}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-full tooltip"
+            className="btn-icon text-blue-600 hover:bg-blue-50 tooltip"
             title={t('family.enter', { defaultValue: 'Enter' })}
           >
             <ArrowRight size={20} />
@@ -146,7 +148,7 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
           {isOwner && (
             <button
               onClick={() => onDelete(family.id)}
-              className="p-2 text-red-600 hover:bg-red-50 rounded-full"
+              className="btn-icon text-red-600 hover:bg-red-50"
               title={t('family.delete', { defaultValue: 'Delete' })}
             >
               <Trash2 size={20} />

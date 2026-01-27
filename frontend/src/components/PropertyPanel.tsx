@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { Calendar, Save, X } from 'lucide-react';
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -42,7 +43,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ edge, onClose, onUpdate, 
         <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
            {t('relation.properties', { defaultValue: 'Relationship Details' })}
         </h2>
-        <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-1 rounded hover:bg-gray-200 transition-colors">
+        <button onClick={onClose} className="btn-ghost p-1 rounded">
           <X size={20} />
         </button>
       </div>
@@ -60,7 +61,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ edge, onClose, onUpdate, 
 
         {/* Marriage Date */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+          <label className="form-label flex items-center gap-2">
             <Calendar size={14} />
             {t('relation.marriage_date', { defaultValue: 'Marriage Date' })}
           </label>
@@ -69,7 +70,10 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ edge, onClose, onUpdate, 
             value={marriageDate}
             onChange={(e) => setMarriageDate(e.target.value)}
             readOnly={readOnly}
-            className={`w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            className={cn(
+              "input transition-all",
+              readOnly && "bg-gray-100 cursor-not-allowed"
+            )}
           />
           {!readOnly && (
             <p className="mt-1 text-xs text-gray-400">
@@ -84,7 +88,7 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({ edge, onClose, onUpdate, 
             <button
             onClick={handleSave}
             disabled={loading}
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all flex items-center justify-center gap-2 shadow-sm"
+            className="btn btn-primary flex-1 gap-2 shadow-sm"
             >
             <Save size={16} />
             {loading ? t('common.saving', { defaultValue: 'Saving...' }) : t('common.save', { defaultValue: 'Save' })}
