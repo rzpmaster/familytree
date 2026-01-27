@@ -263,6 +263,7 @@ const Manage: React.FC = () => {
       const members = graph.nodes.map((n) => ({
         ...n.data,
         original_id: n.id,
+        sort_order: n.data?.sort_order,
       }));
 
       const spouse_relationships = graph.edges

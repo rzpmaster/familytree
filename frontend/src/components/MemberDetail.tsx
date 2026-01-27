@@ -34,6 +34,7 @@ const MemberDetail: React.FC<MemberDetailProps> = ({
       is_fuzzy: member.is_fuzzy,
       remark: member.remark,
       birth_place: member.birth_place,
+      sort_order: member.sort_order,
     });
   }, [member]);
 
