@@ -321,13 +321,18 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
         member_create = schemas.MemberCreate(
             family_id=db_family.id,
             name=m.name,
+            surname=m.surname,
             gender=m.gender,
             birth_date=m.birth_date,
             death_date=m.death_date,
+            is_deceased=m.is_deceased,
+            is_fuzzy=m.is_fuzzy,
+            remark=m.remark,
             birth_place=m.birth_place,
             photo_url=m.photo_url,
             position_x=m.position_x,
-            position_y=m.position_y
+            position_y=m.position_y,
+            sort_order=m.sort_order
         )
         db_member = create_member(db, member_create)
         id_map[m.original_id] = db_member.id
