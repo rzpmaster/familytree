@@ -29,7 +29,7 @@ const CompactMemberNode = memo((props: MemberNodeViewProps) => {
         "relative group overflow-hidden rounded-xl border-2 bg-white shadow-md transition-all",
         selected ? "border-blue-500 shadow-xl" : "border-gray-200",
         isMale ? "hover:border-blue-300" : "hover:border-pink-300",
-        data.is_fuzzy ? "border-dashed border-4 bg-slate-50" : "border-solid",
+        data.is_fuzzy ? "border-dashed border-4 border-slate-400 bg-slate-50" : "border-solid",
         opacityClass,
       )}
     >

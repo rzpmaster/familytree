@@ -97,9 +97,13 @@ class FamilyWithRole(Family):
 # Member Schemas
 class MemberBase(BaseModel):
     name: str
+    surname: Optional[str] = None
     gender: str
     birth_date: Optional[str] = None
     death_date: Optional[str] = None
+    is_deceased: Optional[bool] = False
+    is_fuzzy: Optional[bool] = False
+    remark: Optional[str] = None
     birth_place: Optional[str] = None
     photo_url: Optional[str] = None
     position_x: Optional[int] = 0
