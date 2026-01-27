@@ -126,6 +126,10 @@ export class CompactFamilyLayoutStrategy implements LayoutStrategy {
       if (!Number.isNaN(t)) return t;
     }
 
+    if (typeof d.sort_order === "number") {
+      return d.sort_order;
+    }
+
     if (typeof d.created_at === "string" && d.created_at) {
       const t = Date.parse(d.created_at);
       if (!Number.isNaN(t)) return t;

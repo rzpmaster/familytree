@@ -51,6 +51,7 @@ export interface Member {
   photo_url?: string;
   position_x: number;
   position_y: number;
+  sort_order?: number;
   created_at: string;
   updated_at: string;
 }

@@ -78,6 +78,7 @@ class Member(Base):
     photo_url = Column(String, nullable=True)
     position_x = Column(Integer, default=0)
     position_y = Column(Integer, default=0)
+    sort_order = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())
 

@@ -108,6 +108,7 @@ class MemberBase(BaseModel):
     photo_url: Optional[str] = None
     position_x: Optional[int] = 0
     position_y: Optional[int] = 0
+    sort_order: Optional[int] = 0
 
 class MemberCreate(MemberBase):
     family_id: str
@@ -125,6 +126,7 @@ class MemberUpdate(BaseModel):
     photo_url: Optional[str] = None
     position_x: Optional[int] = None
     position_y: Optional[int] = None
+    sort_order: Optional[int] = None
 
 class Member(MemberBase):
     id: str
