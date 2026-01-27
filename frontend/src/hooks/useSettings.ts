@@ -1,19 +1,19 @@
 import type { AppDispatch, RootState } from "@/store";
 import type { FocusRelations } from "@/store/settingsSlice";
 import {
-    resetSettings,
-    setCompactMode,
-    setDimDeceased,
-    setDimUnborn,
-    setFocusMode,
-    setLanguage,
-    setPrivacyMode,
-    setShowDeceased,
-    setShowLiving,
-    setShowNotLiving,
-    setShowUnborn,
-    setTimelineEnabled,
-    toggleFocusRelation,
+  resetSettings,
+  setCompactMode,
+  setFocusMode,
+  setLanguage,
+  setPrivacyMode,
+  setShowLiving,
+  setShowNotLiving,
+  setShowDeceased,
+  setDimDeceased,
+  setShowUnborn,
+  setDimUnborn,
+  setTimelineEnabled,
+  toggleFocusRelation,
 } from "@/store/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 
