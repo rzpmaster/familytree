@@ -160,12 +160,6 @@ export class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
       if (!Number.isNaN(t)) return t;
     }
 
-    // NEW: If no birth_date, use sort_order if available (smaller => left)
-    // Note: sort_order (e.g. 1) is much smaller than timestamp, so these will appear on the left (older).
-    if (typeof d.sort_order === "number") {
-      return d.sort_order;
-    }
-
     // Fallback: created_at (earlier created => more left)
     if (typeof d.created_at === "string" && d.created_at) {
       const t = Date.parse(d.created_at);
