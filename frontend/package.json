@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run backend\" \"wait-on tcp:8000 && vite\"",
-    "backend": "cd ../backend && uvicorn app.main:app --reload --port 8000",
+    "backend": "cd ../backend && call start.bat",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
