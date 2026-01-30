@@ -345,17 +345,17 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   }, []);
 
   const reactFlowWrapperRef = useRef<HTMLDivElement>(null);
+
   const handleAddMemberClick = useCallback(() => {
     if (!onAddMember) return;
-    if (!reactFlowInstance || !reactFlowWrapperRef.current) return;
-
-    // const rect = reactFlowWrapperRef.current.getBoundingClientRect();
-    // const clientX = rect.left + rect.width / 2;
-    // const clientY = rect.top + rect.height / 2;
-    const center = reactFlowInstance.current.project({
-      x: 0,
-      y: 0,
+    if (!reactFlowInstance) return;
+    if (!reactFlowWrapperRef) return;
+    const rect = reactFlowWrapperRef.current.getBoundingClientRect();
+    const center = reactFlowInstance.current.screenToFlowPosition({
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
     });
+    console.log("center", center, reactFlowInstance.current.getViewport());
     onAddMember(center);
   }, [onAddMember]);
 

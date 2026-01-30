@@ -202,7 +202,7 @@ const Home: React.FC = () => {
     });
   };
 
-  const handleAddMember = async () => {
+  const handleAddMember = async (position: { x: number; y: number }) => {
     if (!family) return;
 
     // Let's make a dummy member with ID 'new_member'.
@@ -211,8 +211,8 @@ const Home: React.FC = () => {
       family_id: family.id,
       name: "",
       gender: "male",
-      position_x: Math.round(100 + Math.random() * 200),
-      position_y: Math.round(100 + Math.random() * 200),
+      position_x: position.x,
+      position_y: position.y,
       created_at: "",
       updated_at: "",
     };
