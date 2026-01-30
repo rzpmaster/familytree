@@ -41,13 +41,12 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
 
     // --- Find connected components (families) ---
     const components = this.splitFamilyComponents(nodesMap);
-    console.log("Family Components:", components);
 
     // --- Layout each family and offset to avoid overlap ---
     for (const familyIds of components) {
       // Layout family
-      const { levels, roots } = this.computeLevelForFamily(familyIds, nodesMap);
-      console.log("Family Levels:", levels, roots);
+      // Find root and levels
+      const { roots } = this.computeLevelForFamily(familyIds, nodesMap);
 
       // level（y）我们先用 depth 递归确定：root=0，child=1...
       const depthMap = new Map<string, number>();
