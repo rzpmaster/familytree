@@ -572,20 +572,92 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     [onNodesChangeBase, readOnly, setNodes],
   );
 
+  const multiDragStartRef = useRef<{
+    draggingId: string;
+    startPos: Record<string, { x: number; y: number }>;
+  } | null>(null);
+
+  const onNodeDrag = useCallback(
+    (_event: React.MouseEvent, draggingNode: Node) => {
+      if (readOnly) return;
+
+      // 只在“多选”时启用
+      if (
+        !selectedNodeIds.includes(draggingNode.id) ||
+        selectedNodeIds.length <= 1
+      )
+        return;
+
+      // 第一次进入拖动：记录所有选中节点的起始位置
+      if (!multiDragStartRef.current) {
+        const startPos: Record<string, { x: number; y: number }> = {};
+        for (const id of selectedNodeIds) {
+          const n = nodesRef.current.find((x) => x.id === id);
+          if (n) startPos[id] = { x: n.position.x, y: n.position.y };
+        }
+        multiDragStartRef.current = { draggingId: draggingNode.id, startPos };
+      }
+
+      const ctx = multiDragStartRef.current;
+      if (!ctx) return;
+
+      const base = ctx.startPos[draggingNode.id];
+      if (!base) return;
+
+      // delta = 当前拖动节点位置 - 起始位置
+      const dx = draggingNode.position.x - base.x;
+      const dy = draggingNode.position.y - base.y;
+
+      setNodes((nds) =>
+        nds.map((n) => {
+          if (!selectedNodeIds.includes(n.id)) return n;
+          const start = ctx.startPos[n.id];
+          if (!start) return n;
+          return {
+            ...n,
+            position: { x: start.x + dx, y: start.y + dy },
+            data: {
+              ...(n.data as Member),
+              position_x: start.x + dx,
+              position_y: start.y + dy,
+            },
+          };
+        }),
+      );
+    },
+    [readOnly, selectedNodeIds, setNodes],
+  );
+
   const onNodeDragStop = useCallback(
     async (_event: React.MouseEvent, node: Node) => {
       if (readOnly) return;
+
+      const idsToSave =
+        selectedNodeIds.includes(node.id) && selectedNodeIds.length > 1
+          ? selectedNodeIds
+          : [node.id];
+
+      // 拖动结束，清掉起始快照
+      multiDragStartRef.current = null;
+
       try {
-        await updateMember(node.id, {
-          position_x: Math.round(node.position.x),
-          position_y: Math.round(node.position.y),
+        const latestNodes = nodesRef.current;
+        const promises = idsToSave.map((id) => {
+          const n = latestNodes.find((x) => x.id === id);
+          if (!n) return Promise.resolve();
+          return updateMember(id, {
+            position_x: Math.round(n.position.x),
+            position_y: Math.round(n.position.y),
+          });
         });
+
+        await Promise.all(promises);
       } catch (err) {
-        console.error("Failed to update position", err);
+        console.error("Failed to update positions", err);
         toast.error("Failed to save position");
       }
     },
-    [readOnly],
+    [readOnly, selectedNodeIds],
   );
 
   const onConnectStart = useCallback(
@@ -766,7 +838,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
       onNodeSelect(node.data as Member);
-      console.log("selected", node.data.position_x, node.data.position_y);
+
       const isMultiSelect = event.ctrlKey || event.metaKey;
       if (isMultiSelect) {
         dispatch(toggleNodeSelection(node.id));
@@ -848,6 +920,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
         onConnectEnd={onConnectEnd}
         onConnect={readOnly ? undefined : onConnect}
         connectionMode={ConnectionMode.Loose}
+        onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragStop}
         onNodeClick={onNodeClick}
         onEdgeClick={onEdgeClick}
