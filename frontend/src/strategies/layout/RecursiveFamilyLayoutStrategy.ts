@@ -42,11 +42,23 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
     // --- Find connected components (families) ---
     const components = this.splitFamilyComponents(nodesMap);
 
-    // --- Layout each family and offset to avoid overlap ---
+    const familyRootCache: { roots: string[]; familyIds: string[] }[] = [];
     for (const familyIds of components) {
+      const { roots } = this.computeLevelForFamily(familyIds, nodesMap);
+      familyRootCache.push({ roots, familyIds });
+    }
+    familyRootCache.sort((a, b) =>
+      this.compareSiblingMember(
+        nodesMap.get(a.roots.at(0)).member,
+        nodesMap.get(b.roots.at(0)).member,
+      ),
+    );
+
+    // --- Layout each family and offset to avoid overlap ---
+    for (const { roots, familyIds } of familyRootCache) {
       // Layout family
       // Find root and levels
-      const { roots } = this.computeLevelForFamily(familyIds, nodesMap);
+      // const { roots } = this.computeLevelForFamily(familyIds, nodesMap);
 
       // level（y）我们先用 depth 递归确定：root=0，child=1...
       const depthMap = new Map<string, number>();
@@ -389,6 +401,60 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
       }
     } // end for family components
 
+    // adjust distance between families
+    let globalOffsetX = 0;
+    const shiftComponent = (familyIds: string[], dx: number) => {
+      if (dx === 0) return;
+      for (const id of familyIds) {
+        const n = nodesMap.get(id)?.member;
+        if (!n) continue;
+
+        const nx = (n.position_x ?? 0) + dx;
+        n.position_x = nx;
+      }
+    };
+
+    const getComponentBounds = (familyIds: string[]) => {
+      let minX = Number.POSITIVE_INFINITY;
+      let maxX = Number.NEGATIVE_INFINITY;
+      let minY = Number.POSITIVE_INFINITY;
+      let maxY = Number.NEGATIVE_INFINITY;
+
+      for (const id of familyIds) {
+        const n = nodesMap.get(id)?.member;
+        if (!n) continue;
+        const x = n.position_x ?? 0;
+        const y = n.position_y ?? 0;
+        minX = Math.min(minX, x);
+        maxX = Math.max(maxX, x + this.nodeWidth);
+        minY = Math.min(minY, y);
+        maxY = Math.max(maxY, y + this.nodeHeight);
+      }
+
+      if (!Number.isFinite(minX)) minX = 0;
+      if (!Number.isFinite(maxX)) maxX = 0;
+      if (!Number.isFinite(minY)) minY = 0;
+      if (!Number.isFinite(maxY)) maxY = 0;
+
+      return {
+        minX,
+        maxX,
+        minY,
+        maxY,
+        width: maxX - minX,
+        height: maxY - minY,
+      };
+    };
+
+    for (const familyIds of components) {
+      const bounds = getComponentBounds(familyIds);
+
+      const dx = globalOffsetX - bounds.minX;
+      shiftComponent(familyIds, dx);
+
+      globalOffsetX += bounds.width + this.xGap * 4;
+    }
+
     // update nodes
     for (let i = 0; i < nodes.length; i++) {
       const n = nodesMap.get(nodes[i].id);
@@ -520,7 +586,6 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
       }
       components.push(comp);
     }
-    components.sort((a, b) => a.length - b.length);
     return components;
   }
 

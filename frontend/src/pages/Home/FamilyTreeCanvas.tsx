@@ -344,14 +344,17 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     reactFlowInstance.current?.fitView({ duration: 800 });
   }, []);
 
+  const reactFlowWrapperRef = useRef<HTMLDivElement>(null);
   const handleAddMemberClick = useCallback(() => {
-    if (!onAddMember || !reactFlowInstance.current) return;
+    if (!onAddMember) return;
+    if (!reactFlowInstance || !reactFlowWrapperRef.current) return;
 
-    // Get center of view
-    // const { x, y, zoom } = reactFlowInstance.current.getViewport();
+    // const rect = reactFlowWrapperRef.current.getBoundingClientRect();
+    // const clientX = rect.left + rect.width / 2;
+    // const clientY = rect.top + rect.height / 2;
     const center = reactFlowInstance.current.project({
-      x: window.innerWidth / 2 - 80,
-      y: 140,
+      x: 0,
+      y: 0,
     });
     onAddMember(center);
   }, [onAddMember]);
@@ -763,7 +766,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
       onNodeSelect(node.data as Member);
-
+      console.log("selected", node.data.position_x, node.data.position_y);
       const isMultiSelect = event.ctrlKey || event.metaKey;
       if (isMultiSelect) {
         dispatch(toggleNodeSelection(node.id));
@@ -827,7 +830,10 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   }, [setNodes]);
 
   return (
-    <div className="w-full h-full bg-slate-50 relative">
+    <div
+      className="w-full h-full bg-slate-50 relative"
+      ref={reactFlowWrapperRef}
+    >
       <ReactFlow
         nodes={nodes.map((n) => ({
           ...n,
