@@ -1,10 +1,11 @@
 import { cn } from "@/lib/utils";
 import { Mars, Trash2, Venus } from "lucide-react";
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { Handle, Position } from "reactflow";
-import type { MemberNodeViewProps } from "./MemberNode";
+import { MemberNodeProps } from "./MemberNode";
 
-const CompactMemberNode = memo((props: MemberNodeViewProps) => {
+const CompactMemberNode = memo((props: MemberNodeProps) => {
   const {
     data,
     selected,
@@ -17,10 +18,11 @@ const CompactMemberNode = memo((props: MemberNodeViewProps) => {
     isMale,
     canDelete,
     onDelete,
-    t,
   } = props;
 
   const GenderIcon = isMale ? Mars : Venus;
+
+  const { t } = useTranslation();
 
   return (
     <div
@@ -29,7 +31,10 @@ const CompactMemberNode = memo((props: MemberNodeViewProps) => {
         "relative group overflow-hidden rounded-xl border-2 bg-white shadow-md transition-all",
         selected ? "border-blue-500 shadow-xl" : "border-gray-200",
         isMale ? "hover:border-blue-300" : "hover:border-pink-300",
-        data.is_fuzzy ? "border-dashed border-4 border-slate-400 bg-slate-50" : "border-solid",
+        data.is_fuzzy
+          ? "border-dashed border-2 border-slate-500 bg-slate-100"
+          : "border-solid",
+        !data.is_deceased ? "bg-white" : "bg-slate-50",
         opacityClass,
       )}
     >
@@ -37,7 +42,13 @@ const CompactMemberNode = memo((props: MemberNodeViewProps) => {
       <div
         className={cn(
           "absolute inset-0 pointer-events-none",
-          isMale ? "bg-blue-50/50" : "bg-pink-50/50",
+          !data.is_deceased
+            ? isMale
+              ? "bg-blue-100/60"
+              : "bg-pink-100/60"
+            : isMale
+              ? "bg-blue-50/40"
+              : "bg-pink-50/40",
         )}
       />
 
@@ -70,14 +81,14 @@ const CompactMemberNode = memo((props: MemberNodeViewProps) => {
         <div className="h-full w-full overflow-hidden flex items-center justify-center">
           <div
             className="
-              font-normal text-gray-800
-              text-[20px]
-              [writing-mode:vertical-rl]
-              [text-orientation:mixed]
-              leading-none
-              text-center
-              select-none
-            "
+            font-normal text-gray-800
+            text-[28px]
+            [writing-mode:vertical-rl]
+            [text-orientation:mixed]
+            leading-none
+            text-center
+            select-none
+          "
             title={rawName}
           >
             {displayName}
@@ -98,15 +109,43 @@ const CompactMemberNode = memo((props: MemberNodeViewProps) => {
         </div>
       )}
 
-      {/* Handles */}
-      <Handle type="target" position={Position.Top} />
-      <Handle type="source" position={Position.Bottom} />
+      {/* Handles (hover only, bigger, above dashed border) */}
+      <Handle
+        type="target"
+        position={Position.Top}
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+      />
 
-      <Handle type="source" position={Position.Right} id="right-source" />
-      <Handle type="target" position={Position.Right} id="right-target" />
+      <Handle
+        type="source"
+        position={Position.Right}
+        id="right-source"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+      />
+      <Handle
+        type="target"
+        position={Position.Right}
+        id="right-target"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+      />
 
-      <Handle type="source" position={Position.Left} id="left-source" />
-      <Handle type="target" position={Position.Left} id="left-target" />
+      <Handle
+        type="source"
+        position={Position.Left}
+        id="left-source"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="left-target"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+      />
     </div>
   );
 });

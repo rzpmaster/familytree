@@ -1,64 +1,66 @@
+import FamilyManager from "@/components/FamilyManager";
 import { useSettings } from "@/hooks/useSettings";
 import { parseDate } from "@/lib/utils";
+import {
+  createParentChildRelationship,
+  createSpouseRelationship,
+  getFamilyGraph,
+  updateMember,
+} from "@/services/api";
 import { RootState } from "@/store";
 import {
-    clearNodeSelection,
-    setSelectedNodeIds,
-    toggleNodeSelection,
+  clearNodeSelection,
+  setSelectedNodeIds,
+  toggleNodeSelection,
 } from "@/store/familySlice";
 import { setTimelineYear, SettingsState } from "@/store/settingsSlice";
-import { TFunction } from "i18next";
+import {
+  CompactLayoutStrategy,
+  NormalLayoutStrategy,
+} from "@/strategies/layout/RecursiveFamilyLayoutStrategy";
+import { Family, GraphEdge, GraphNode, Member } from "@/types";
+import { RuleEngine } from "@/validation/RuleEngine";
+import {
+  ChildBirthPosthumousRule,
+  MaxParentsRule,
+  ParentAgeRule,
+} from "@/validation/rules/parentChildRules";
+import {
+  LifespanOverlapRule,
+  OppositeGenderRule,
+} from "@/validation/rules/spouseRules";
 import { Focus, Layout, Plus } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import ReactFlow, {
-    applyEdgeChanges,
-    applyNodeChanges,
-    Background,
-    Connection,
-    ConnectionMode,
-    Controls,
-    Edge,
-    EdgeChange,
-    EdgeTypes,
-    Node,
-    NodeChange,
-    NodeTypes,
-    OnConnectStartParams,
-    Panel,
-    ReactFlowInstance,
-    useEdgesState,
-    useNodesState,
-    Viewport,
+  applyEdgeChanges,
+  applyNodeChanges,
+  Background,
+  Connection,
+  ConnectionMode,
+  Controls,
+  Edge,
+  EdgeChange,
+  EdgeTypes,
+  Node,
+  NodeChange,
+  NodeTypes,
+  OnConnectStartParams,
+  Panel,
+  ReactFlowInstance,
+  useEdgesState,
+  useNodesState,
+  Viewport,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import FamilyManager from "../../components/FamilyManager";
-import {
-    createParentChildRelationship,
-    createSpouseRelationship,
-    getFamilyGraph,
-    updateMember,
-} from "../../services/api";
-import { CompactFamilyLayoutStrategy } from "../../strategies/layout/CompactFamilyLayoutStrategy";
-import { RecursiveFamilyLayoutStrategy } from "../../strategies/layout/RecursiveFamilyLayoutStrategy";
-import { Family, GraphEdge, GraphNode, Member } from "../../types";
-import { RuleEngine } from "../../validation/RuleEngine";
-import {
-    ChildBirthPosthumousRule,
-    MaxParentsRule,
-    ParentAgeRule,
-} from "../../validation/rules/parentChildRules";
-import {
-    LifespanOverlapRule,
-    OppositeGenderRule,
-} from "../../validation/rules/spouseRules";
 import { CustomEdge } from "./CustomEdge";
 import MemberNode from "./MemberNode";
 
 const nodeTypes: NodeTypes = {
-  member: MemberNode,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  member: MemberNode as any,
 };
 
 const edgeTypes: EdgeTypes = {
@@ -217,108 +219,6 @@ function applyHighlightPure(
   return { nodes: newNodes, edges: newEdges };
 }
 
-/** Build ReactFlow edges with spouse-handle routing offsets */
-function buildFlowEdges(
-  graphNodes: GraphNode[],
-  graphEdges: GraphEdge[],
-  t: TFunction<"translation", undefined>,
-) {
-  const flowEdges: Edge[] = [];
-  const nodeHandleEdges: Record<string, string[]> = {};
-  const edgeHandles: Record<
-    string,
-    { sourceHandle: string; targetHandle: string }
-  > = {};
-
-  // first pass, decide spouse handles
-  graphEdges.forEach((edge) => {
-    if (edge.type !== "spouse") return;
-
-    const sourceNode = graphNodes.find((n) => n.id === edge.source);
-    const targetNode = graphNodes.find((n) => n.id === edge.target);
-
-    let sourceHandle = "right-source";
-    let targetHandle = "left-target";
-
-    if (sourceNode && targetNode) {
-      if (sourceNode.x > targetNode.x) {
-        sourceHandle = "left-source";
-        targetHandle = "right-target";
-      } else {
-        sourceHandle = "right-source";
-        targetHandle = "left-target";
-      }
-    }
-
-    edgeHandles[edge.id] = { sourceHandle, targetHandle };
-
-    const sourceKey = `${edge.source}-${sourceHandle}`;
-    const targetKey = `${edge.target}-${targetHandle}`;
-
-    nodeHandleEdges[sourceKey] = nodeHandleEdges[sourceKey] || [];
-    nodeHandleEdges[sourceKey].push(edge.id);
-
-    nodeHandleEdges[targetKey] = nodeHandleEdges[targetKey] || [];
-    nodeHandleEdges[targetKey].push(edge.id);
-  });
-
-  // second pass, create edges with offsets
-  graphEdges.forEach((edge) => {
-    let sourceOffsetIndex = 0;
-    let targetOffsetIndex = 0;
-    let sourceHandle: string | undefined = undefined;
-    let targetHandle: string | undefined = undefined;
-
-    if (edge.type === "spouse") {
-      const handles = edgeHandles[edge.id];
-      if (handles) {
-        sourceHandle = handles.sourceHandle;
-        targetHandle = handles.targetHandle;
-
-        const sourceKey = `${edge.source}-${sourceHandle}`;
-        const targetKey = `${edge.target}-${targetHandle}`;
-
-        const sourceList = nodeHandleEdges[sourceKey] || [];
-        const targetList = nodeHandleEdges[targetKey] || [];
-
-        const sourceIdx = sourceList.indexOf(edge.id);
-        const targetIdx = targetList.indexOf(edge.id);
-
-        if (sourceIdx !== -1)
-          sourceOffsetIndex = sourceIdx - (sourceList.length - 1) / 2;
-        if (targetIdx !== -1)
-          targetOffsetIndex = targetIdx - (targetList.length - 1) / 2;
-      }
-    }
-
-    flowEdges.push({
-      id: edge.id,
-      source: edge.source,
-      target: edge.target,
-      sourceHandle,
-      targetHandle,
-      label: edge.label
-        ? t(edge.label)
-        : edge.type === "spouse"
-          ? t("relation.spouse")
-          : "",
-      type: "custom",
-      animated: false,
-      style: {
-        stroke: edge.type === "spouse" ? "#ff0072" : "#000",
-        strokeWidth: 2,
-      },
-      data: {
-        type: edge.type,
-        sourceOffsetIndex,
-        targetOffsetIndex,
-      },
-    });
-  });
-
-  return flowEdges;
-}
-
 /* =========================
    Component
    ========================= */
@@ -414,8 +314,8 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
 
   const handleAutoLayout = useCallback(async () => {
     const layoutStrategy = state.compactMode
-      ? new CompactFamilyLayoutStrategy()
-      : new RecursiveFamilyLayoutStrategy();
+      ? new CompactLayoutStrategy()
+      : new NormalLayoutStrategy();
 
     const { nodes: layoutedNodes, edges: layoutedEdges } =
       layoutStrategy.layout([...nodesRef.current], [...edgesRef.current]);
@@ -449,20 +349,113 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
 
     // Get center of view
     // const { x, y, zoom } = reactFlowInstance.current.getViewport();
-
-    // Let's assume the container is roughly the window size minus header/sidebar.
-    const container = document.querySelector(".react-flow");
-    if (container) {
-      const { width, height } = container.getBoundingClientRect();
-      const center = reactFlowInstance.current.project({
-        x: width / 2,
-        y: height / 2,
-      });
-      onAddMember(center);
-    } else {
-      onAddMember({ x: 0, y: 0 });
-    }
+    const center = reactFlowInstance.current.project({
+      x: window.innerWidth / 2 - 80,
+      y: 140,
+    });
+    onAddMember(center);
   }, [onAddMember]);
+
+  /** Build ReactFlow edges with spouse-handle routing offsets */
+  const buildFlowEdges = useCallback(
+    (graphNodes: GraphNode[], graphEdges: GraphEdge[]) => {
+      const flowEdges: Edge[] = [];
+      const nodeHandleEdges: Record<string, string[]> = {};
+      const edgeHandles: Record<
+        string,
+        { sourceHandle: string; targetHandle: string }
+      > = {};
+
+      // first pass, decide spouse handles
+      graphEdges.forEach((edge) => {
+        if (edge.type !== "spouse") return;
+
+        const sourceNode = graphNodes.find((n) => n.id === edge.source);
+        const targetNode = graphNodes.find((n) => n.id === edge.target);
+
+        let sourceHandle = "right-source";
+        let targetHandle = "left-target";
+
+        if (sourceNode && targetNode) {
+          if (sourceNode.x > targetNode.x) {
+            sourceHandle = "left-source";
+            targetHandle = "right-target";
+          } else {
+            sourceHandle = "right-source";
+            targetHandle = "left-target";
+          }
+        }
+
+        edgeHandles[edge.id] = { sourceHandle, targetHandle };
+
+        const sourceKey = `${edge.source}-${sourceHandle}`;
+        const targetKey = `${edge.target}-${targetHandle}`;
+
+        nodeHandleEdges[sourceKey] = nodeHandleEdges[sourceKey] || [];
+        nodeHandleEdges[sourceKey].push(edge.id);
+
+        nodeHandleEdges[targetKey] = nodeHandleEdges[targetKey] || [];
+        nodeHandleEdges[targetKey].push(edge.id);
+      });
+
+      // second pass, create edges with offsets
+      graphEdges.forEach((edge) => {
+        let sourceOffsetIndex = 0;
+        let targetOffsetIndex = 0;
+        let sourceHandle: string | undefined = undefined;
+        let targetHandle: string | undefined = undefined;
+
+        if (edge.type === "spouse") {
+          const handles = edgeHandles[edge.id];
+          if (handles) {
+            sourceHandle = handles.sourceHandle;
+            targetHandle = handles.targetHandle;
+
+            const sourceKey = `${edge.source}-${sourceHandle}`;
+            const targetKey = `${edge.target}-${targetHandle}`;
+
+            const sourceList = nodeHandleEdges[sourceKey] || [];
+            const targetList = nodeHandleEdges[targetKey] || [];
+
+            const sourceIdx = sourceList.indexOf(edge.id);
+            const targetIdx = targetList.indexOf(edge.id);
+
+            if (sourceIdx !== -1)
+              sourceOffsetIndex = sourceIdx - (sourceList.length - 1) / 2;
+            if (targetIdx !== -1)
+              targetOffsetIndex = targetIdx - (targetList.length - 1) / 2;
+          }
+        }
+
+        flowEdges.push({
+          id: edge.id,
+          source: edge.source,
+          target: edge.target,
+          sourceHandle,
+          targetHandle,
+          label: edge.label
+            ? t(edge.label)
+            : edge.type === "spouse"
+              ? t("relation.spouse")
+              : "",
+          type: "custom",
+          animated: false,
+          style: {
+            stroke: edge.type === "spouse" ? "#ff0072" : "#000",
+            strokeWidth: 2,
+          },
+          data: {
+            type: edge.type,
+            sourceOffsetIndex,
+            targetOffsetIndex,
+          },
+        });
+      });
+
+      return flowEdges;
+    },
+    [t],
+  );
 
   const fetchData = useCallback(async () => {
     try {
@@ -501,7 +494,6 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       const flowEdges: Edge[] = buildFlowEdges(
         graphData.nodes,
         graphData.edges,
-        t,
       );
 
       const { validSelectedNodeIds, validSelectedEdgeId } = normalizeSelection(
@@ -552,7 +544,14 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       console.error("Failed to fetch graph data", error);
       toast.error("Failed to load family tree");
     }
-  }, [familyId, setNodes, setEdges, selectedNodeIds, selectedEdgeId, t]);
+  }, [
+    familyId,
+    setNodes,
+    setEdges,
+    selectedNodeIds,
+    selectedEdgeId,
+    buildFlowEdges,
+  ]);
 
   useEffect(() => {
     if (familyId) fetchData();

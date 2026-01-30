@@ -9,14 +9,12 @@ import { getAge, getMemberStatus, getSurname } from "@/lib/utils";
 import { getFamily } from "@/services/api";
 import { RootState } from "@/store";
 import { Family, Member } from "@/types";
-import { TFunction } from "i18next";
 import React, { memo, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import CompactMemberNode from "./CompactMemberNode";
 import NormalMemberNode from "./NormalMemberNode";
 
-export interface MemberNodeViewProps {
+export interface MemberNodeProps {
   data: Member;
   selected: boolean;
   width: number;
@@ -29,16 +27,9 @@ export interface MemberNodeViewProps {
   isMale: boolean;
   canDelete: boolean;
   onDelete: (e: React.MouseEvent) => void;
-  t: TFunction<"translation", undefined>;
-}
-
-interface MemberNodeProps {
-  data: Member;
-  selected: boolean;
 }
 
 const MemberNode = memo(({ data, selected }: MemberNodeProps) => {
-  const { t } = useTranslation();
   const { user } = useAuth();
 
   const {
@@ -117,7 +108,7 @@ const MemberNode = memo(({ data, selected }: MemberNodeProps) => {
 
   const isMale = data.gender === "male";
 
-  const viewProps: MemberNodeViewProps = {
+  const viewProps: MemberNodeProps = {
     data,
     selected,
     width,
@@ -130,7 +121,6 @@ const MemberNode = memo(({ data, selected }: MemberNodeProps) => {
     isMale,
     canDelete,
     onDelete,
-    t,
   };
 
   return compactMode ? (

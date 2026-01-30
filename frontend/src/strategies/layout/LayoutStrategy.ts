@@ -1,5 +1,5 @@
-import { Edge, Node } from 'reactflow';
+import { Edge, Node } from "reactflow";
 
 export interface LayoutStrategy {
-    layout(nodes: Node[], edges: Edge[]): { nodes: Node[], edges: Edge[] };
+  layout(nodes: Node[], edges: Edge[]): { nodes: Node[]; edges: Edge[] };
 }
