@@ -30,7 +30,7 @@ const NormalMemberNode = memo((props: MemberNodeProps) => {
         selected ? "border-blue-500 shadow-xl" : "border-gray-200",
         isMale ? "hover:border-blue-300" : "hover:border-pink-300",
         data.is_fuzzy
-          ? "border-dashed border-4 border-slate-400 bg-slate-50"
+          ? "border-dashed border-2 border-slate-500 bg-slate-100"
           : "border-solid",
         opacityClass,
       )}

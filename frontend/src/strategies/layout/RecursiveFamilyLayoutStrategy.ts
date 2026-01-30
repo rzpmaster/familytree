@@ -30,7 +30,7 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
     this.nodeHeight = nodeHeight;
 
     this.xGap = 50;
-    this.spouseGap = 50;
+    this.spouseGap = 30;
     this.spouseStep = 100;
     this.yGap = 200;
   }
@@ -94,7 +94,8 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
           ),
         );
 
-        const useSpouseOverlap = spouseOrder.length > 2 && this.nodeWidth > 250;
+        const useSpouseOverlap =
+          spouseOrder.length >= 2 && this.nodeWidth > 250;
 
         const normalStep = this.nodeWidth + this.spouseGap;
         const step = useSpouseOverlap ? this.spouseStep : normalStep;
@@ -339,6 +340,27 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
               shiftSubtree(c, dx);
 
               // 更新这个子树 span（整体平移）
+              span.set(c, { left: s.left + dx, right: s.right + dx });
+            }
+
+            const s2 = span.get(c)!;
+            prevRight = s2.right;
+          }
+
+          // --- (A2) 兄弟子树左压缩：把“空白”拉回去（不会破坏排序） ---
+          prevRight = Number.NEGATIVE_INFINITY;
+          for (const c of orderedKids) {
+            const s = span.get(c) ?? clusterLeftRight(c);
+
+            const targetLeft =
+              prevRight === Number.NEGATIVE_INFINITY
+                ? s.left
+                : prevRight + this.xGap;
+
+            // 如果当前子树 left 比目标更靠右，说明中间有空白 -> 往左拉（dx 为负数）
+            if (s.left > targetLeft) {
+              const dx = targetLeft - s.left; // negative
+              shiftSubtree(c, dx);
               span.set(c, { left: s.left + dx, right: s.right + dx });
             }
 
@@ -625,9 +647,9 @@ export class NormalLayoutStrategy extends RecursiveFamilyLayoutStrategy {
     const nodeHeight = getNodeHeight();
     super(nodeWidth, nodeHeight);
     this.xGap = 50;
-    this.spouseGap = 50;
+    this.spouseGap = 30;
     this.spouseStep = 100;
-    this.yGap = 200;
+    this.yGap = 50;
   }
 }
 
@@ -640,7 +662,7 @@ export class CompactLayoutStrategy extends RecursiveFamilyLayoutStrategy {
     const nodeHeight = getCompactNodeHeight();
     super(nodeWidth, nodeHeight);
     this.xGap = 40;
-    this.spouseGap = 40;
+    this.spouseGap = 20;
     this.spouseStep = 40;
     this.yGap = 50;
   }
