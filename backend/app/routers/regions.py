@@ -35,7 +35,7 @@ def create_region(region: schemas.RegionCreate, db: Session = Depends(get_db)):
         )
         for member in members:
             if member.family_id == region.family_id:
-                member.region_id = db_region.id
+                member.regions.append(db_region)
         db.commit()
         db.refresh(db_region)
 

@@ -348,7 +348,10 @@ def delete_members(db: Session, member_ids: list[str]):
         return []
 
     # Collect affected regions
-    affected_region_ids = {m.region_id for m in members if m.region_id}
+    affected_regions = set()
+    for m in members:
+        for r in m.regions:
+            affected_regions.add(r)
     
     # Delete members
     for member in members:
@@ -357,12 +360,10 @@ def delete_members(db: Session, member_ids: list[str]):
     db.flush() # Apply deletions in transaction
     
     # Check affected regions
-    for region_id in affected_region_ids:
-        count = db.query(models.Member).filter(models.Member.region_id == region_id).count()
+    for region in affected_regions:
+        count = db.query(models.member_regions).filter(models.member_regions.c.region_id == region.id).count()
         if count == 0:
-             db_region = db.query(models.Region).filter(models.Region.id == region_id).first()
-             if db_region:
-                 db.delete(db_region)
+             db.delete(region)
 
     db.commit()
     return members
