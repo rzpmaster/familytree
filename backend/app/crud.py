@@ -235,68 +235,107 @@ def delete_family(db: Session, family_id: str):
 
 # Member
 def create_member(db: Session, member: schemas.MemberCreate):
-    db_member = models.Member(**member.model_dump())
+    # Extract region_ids from the Pydantic model
+    member_data = member.model_dump()
+    region_ids = member_data.pop("region_ids", [])
+    
+    db_member = models.Member(**member_data)
+    
+    if region_ids:
+        regions = db.query(models.Region).filter(models.Region.id.in_(region_ids)).all()
+        db_member.regions = regions
+        
     db.add(db_member)
     db.commit()
     db.refresh(db_member)
+    
+    # Manually populate region_ids for response schema if not using relationship loading option
+    # However, Pydantic's from_attributes usually handles relationships if mapped.
+    # But here Member schema has `region_ids: List[str]`.
+    # We need to ensure the response model can extract `region_ids` from `db_member.regions`.
+    # This might require a custom validator or property in the Pydantic model, OR we adjust the response manually.
+    # Or better, we add a property to the ORM model (not persistent) or just let Pydantic handle it if we modify the schema to use `regions` list of objects.
+    # Given the schema change `region_ids: Optional[List[str]]`, we need to make sure `db_member` has `region_ids` attribute.
+    db_member.region_ids = [r.id for r in db_member.regions]
+    
     return db_member
 
 
 def get_members(db: Session, family_id: str, skip: int = 0, limit: int = 100):
-    return (
+    members = (
         db.query(models.Member)
         .filter(models.Member.family_id == family_id)
         .offset(skip)
         .limit(limit)
         .all()
     )
+    # Populate region_ids for each member
+    for m in members:
+        m.region_ids = [r.id for r in m.regions]
+    return members
 
 
 def get_member(db: Session, member_id: str):
-    return db.query(models.Member).filter(models.Member.id == member_id).first()
+    member = db.query(models.Member).filter(models.Member.id == member_id).first()
+    if member:
+        member.region_ids = [r.id for r in member.regions]
+    return member
 
 
 def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
-    db_member = get_member(db, member_id)
+    db_member = db.query(models.Member).filter(models.Member.id == member_id).first() # Avoid calling get_member to prevent recursion or attribute issues
     if db_member:
         update_data = member.model_dump(exclude_unset=True)
+        
+        # Handle regions update
+        if "region_ids" in update_data:
+            region_ids = update_data.pop("region_ids")
+            if region_ids is not None:
+                regions = db.query(models.Region).filter(models.Region.id.in_(region_ids)).all()
+                db_member.regions = regions
+        
         for key, value in update_data.items():
             setattr(db_member, key, value)
+            
         db.commit()
         db.refresh(db_member)
+        db_member.region_ids = [r.id for r in db_member.regions]
+        
     return db_member
 
 
 def delete_region(db: Session, region_id: str):
     db_region = db.query(models.Region).filter(models.Region.id == region_id).first()
     if db_region:
-        # Set region_id to None for all members in this region
-        db.query(models.Member).filter(models.Member.region_id == region_id).update(
-            {models.Member.region_id: None}, synchronize_session=False
-        )
+        # Many-to-many relationship handles deletion from association table automatically usually,
+        # but let's be safe. The association table rows are deleted, but members remain.
+        # We don't need to manually update members because the link is in the association table.
         db.delete(db_region)
         db.commit()
     return db_region
 
 
 def delete_member(db: Session, member_id: str):
-    db_member = get_member(db, member_id)
+    db_member = db.query(models.Member).filter(models.Member.id == member_id).first()
     if db_member:
-        region_id = db_member.region_id
-        db.delete(db_member)
+        # Check affected regions before deletion? 
+        # With many-to-many, we might want to delete a region if it becomes empty?
+        # Logic: Find regions this member belongs to.
+        affected_regions = list(db_member.regions)
         
-        # Check if region is empty after deletion
-        # We flush first to ensure the member is considered deleted in the current transaction
+        db.delete(db_member)
         db.flush()
         
-        if region_id:
-            count = db.query(models.Member).filter(models.Member.region_id == region_id).count()
+        # Check if any affected region is now empty
+        for region in affected_regions:
+            # We need to count members in this region.
+            # Since we are in a transaction and flushed, the count should reflect deletion.
+            # But we need to query via association table.
+            # count = len(region.members) # This might use cached relationship
+            # Better to use query
+            count = db.query(models.member_regions).filter(models.member_regions.c.region_id == region.id).count()
             if count == 0:
-                # Region is empty, delete it
-                # We do this in the same transaction
-                db_region = db.query(models.Region).filter(models.Region.id == region_id).first()
-                if db_region:
-                    db.delete(db_region)
+                db.delete(region)
         
         db.commit()
     return db_member
@@ -541,10 +580,18 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
             # 3. Create Members & Map IDs
             id_map: dict[str, str] = {}  # original_id -> new_db_id
             for m in import_data.members:
-                new_region_id = None
-                m_rid = m.region_id.strip() if m.region_id else None
-                if m_rid and m_rid in region_id_map:
-                    new_region_id = region_id_map[m_rid]
+                new_region_ids = []
+                # Handle multiple region IDs if present, fallback to singular region_id for backward compatibility
+                m_rids = []
+                if hasattr(m, "region_ids") and m.region_ids:
+                    m_rids = m.region_ids
+                elif hasattr(m, "region_id") and m.region_id:
+                    m_rids = [m.region_id]
+                
+                for rid in m_rids:
+                    rid_strip = rid.strip() if rid else None
+                    if rid_strip and rid_strip in region_id_map:
+                        new_region_ids.append(region_id_map[rid_strip])
 
                 member_data = schemas.MemberCreate(
                     family_id=db_family.id,
@@ -561,10 +608,17 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                     position_x=m.position_x,
                     position_y=m.position_y,
                     sort_order=m.sort_order,
-                    region_id=new_region_id,
+                    region_ids=new_region_ids,
                 ).model_dump()
 
+                # Extract region_ids for many-to-many assignment
+                r_ids = member_data.pop("region_ids", [])
                 db_member = models.Member(**member_data)
+                
+                if r_ids:
+                    regions = db.query(models.Region).filter(models.Region.id.in_(r_ids)).all()
+                    db_member.regions = regions
+                    
                 db.add(db_member)
                 db.flush()
                 id_map[m.original_id] = db_member.id

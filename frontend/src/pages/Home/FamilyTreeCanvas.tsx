@@ -12,7 +12,7 @@ import {
   deleteMembers,
   deleteRegion,
   updateMember,
-  updateRegion
+  updateRegion,
 } from "@/services/api";
 import { RootState } from "@/store";
 import {
@@ -177,7 +177,8 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   const [createRegionDialogOpen, setCreateRegionDialogOpen] = useState(false);
   const [editRegionDialogOpen, setEditRegionDialogOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [deleteMembersConfirmOpen, setDeleteMembersConfirmOpen] = useState(false);
+  const [deleteMembersConfirmOpen, setDeleteMembersConfirmOpen] =
+    useState(false);
   const [editingRegion, setEditingRegion] = useState<Region | null>(null);
 
   // Filter selected members (exclude regions)
@@ -224,7 +225,8 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
         const currentMemberIds = nodes
           .filter(
             (n) =>
-              n.type === "member" && (n.data as Member).region_id === regionId,
+              n.type === "member" &&
+              (n.data as Member).region_ids.includes(regionId),
           )
           .map((n) => n.id);
 
@@ -569,7 +571,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       .filter(
         (n) =>
           n.type === "member" &&
-          (n.data as Member).region_id === editingRegion.id,
+          (n.data as Member).region_ids?.includes(editingRegion.id),
       )
       .map((n) => n.id);
   }, [nodes, editingRegion]);

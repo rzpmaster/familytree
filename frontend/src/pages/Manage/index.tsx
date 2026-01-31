@@ -327,6 +327,7 @@ const Manage: React.FC = () => {
       const members = graph.nodes.map((n) => ({
         ...n.data,
         original_id: n.id,
+        region_ids: n.data?.region_ids || [],
         is_deceased: n.data?.is_deceased,
         is_fuzzy: n.data?.is_fuzzy,
         sort_order: n.data?.sort_order,

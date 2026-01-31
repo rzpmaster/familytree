@@ -126,7 +126,7 @@ const EditRegionDialog: React.FC<EditRegionDialogProps> = ({
                 />
                 <label htmlFor={`member-${member.id}`} className="text-sm cursor-pointer flex-1">
                   {member.name} {member.surname}
-                  {member.region_id && !selectedIds.has(member.id) && (
+                  {member.region_ids && member.region_ids.length > 0 && !selectedIds.has(member.id) && (
                      <span className="text-xs text-gray-400 ml-2">({t('region.in_another', { defaultValue: 'In another region' })})</span>
                   )}
                 </label>

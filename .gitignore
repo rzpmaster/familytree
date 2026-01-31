@@ -10,6 +10,7 @@ backend/node_modules/
 __pycache__/
 *.py[cod]
 *$py.class
+.ruff_cache
 backend/venv/
 backend/.venv/
 backend/app/data/*.db

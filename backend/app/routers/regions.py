@@ -66,22 +66,15 @@ def update_region(
         db_region.color = region.color
 
     if region.member_ids is not None:
-        current_member_ids = {m.id for m in db_region.members}
-        new_member_ids = set(region.member_ids)
-
-        to_remove = current_member_ids - new_member_ids
-        to_add = new_member_ids - current_member_ids
-
-        if to_remove:
-            db.query(models.Member).filter(models.Member.id.in_(to_remove)).update(
-                {models.Member.region_id: None}, synchronize_session=False
-            )
-
-        if to_add:
-            db.query(models.Member).filter(
-                models.Member.id.in_(to_add),
-                models.Member.family_id == db_region.family_id,
-            ).update({models.Member.region_id: region_id}, synchronize_session=False)
+        # Update members via relationship
+        members = (
+            db.query(models.Member)
+            .filter(models.Member.id.in_(region.member_ids))
+            .all()
+        )
+        # Ensure members belong to same family
+        valid_members = [m for m in members if m.family_id == db_region.family_id]
+        db_region.members = valid_members
 
     db.commit()
     db.refresh(db_region)
@@ -94,11 +87,10 @@ def delete_region(region_id: str, db: Session = Depends(get_db)):
     if db_region is None:
         raise HTTPException(status_code=404, detail="Region not found")
 
-    # Set region_id to None for all members in this region
-    db.query(models.Member).filter(models.Member.region_id == region_id).update(
-        {models.Member.region_id: None}, synchronize_session=False
-    )
-
+    # With many-to-many, we just delete the region. 
+    # The association table entries will be removed (cascade delete if configured, or manually if not)
+    # SQLAlchemy default behavior for secondary table is to delete associations.
+    
     db.delete(db_region)
     db.commit()
     return None

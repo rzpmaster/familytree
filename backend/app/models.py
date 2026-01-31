@@ -8,6 +8,7 @@ from sqlalchemy import (
     Text,
     Boolean,
     UniqueConstraint,
+    Table,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -16,6 +17,15 @@ from .database import Base
 
 def generate_uuid():
     return str(uuid.uuid4())
+
+
+# Association table for Member <-> Region
+member_regions = Table(
+    "member_regions",
+    Base.metadata,
+    Column("member_id", String, ForeignKey("members.id"), primary_key=True),
+    Column("region_id", String, ForeignKey("regions.id"), primary_key=True),
+)
 
 
 class User(Base):
@@ -105,7 +115,9 @@ class Region(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     family = relationship("Family", back_populates="regions")
-    members = relationship("Member", back_populates="region")
+    members = relationship(
+        "Member", secondary=member_regions, back_populates="regions"
+    )
 
 
 class Member(Base):
@@ -113,7 +125,7 @@ class Member(Base):
 
     id = Column(String, primary_key=True, default=generate_uuid)
     family_id = Column(String, ForeignKey("families.id"), nullable=False)
-    region_id = Column(String, ForeignKey("regions.id"), nullable=True)
+    # region_id removed in favor of many-to-many
     name = Column(String, nullable=False, index=True)
     surname = Column(String, nullable=True)
     gender = Column(String, nullable=False)  # 'male', 'female'
@@ -133,7 +145,9 @@ class Member(Base):
     )
 
     family = relationship("Family", back_populates="members")
-    region = relationship("Region", back_populates="members")
+    regions = relationship(
+        "Region", secondary=member_regions, back_populates="members"
+    )
 
     # Relationships where this member is member1 (spouse)
     spouse_relationships_1 = relationship(

@@ -203,7 +203,10 @@ export function useFamilyData({
         setRegions(graphData.regions);
 
         graphData.regions.forEach((region: Region) => {
-          const membersInRegion = flowNodes.filter(n => (n.data as Member).region_id === region.id);
+          const membersInRegion = flowNodes.filter(n => {
+             const m = n.data as Member;
+             return m.region_ids?.includes(region.id);
+          });
           if (membersInRegion.length > 0) {
             let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
 
