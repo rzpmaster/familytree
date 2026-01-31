@@ -15,7 +15,9 @@ services:
 
   # Backend Service (FastAPI)
   backend:
-    image: ghcr.io/rzpmaster/familytree/backend:latest
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: family_tree_backend
     restart: always
     depends_on:
@@ -31,7 +33,9 @@ services:
 
   # Frontend Service (React + Nginx)
   frontend:
-    image: ghcr.io/rzpmaster/familytree/frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: family_tree_frontend
     restart: always
     ports:
@@ -47,6 +51,9 @@ services:
       - ./nginx.conf.template:/etc/nginx/templates/default.conf.template
     networks:
       - family-tree-network
+
+volumes:
+  postgres_data:
 
 networks:
   family-tree-network:

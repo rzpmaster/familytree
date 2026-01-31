@@ -1,7 +1,7 @@
 services:
   # Backend Service (FastAPI)
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: family_tree_backend
@@ -12,8 +12,8 @@ services:
       - DATABASE_URL=sqlite:///./app/data/family_tree.db
       - SUPERUSER_IDS=${SUPERUSER_IDS}
     volumes:
-      # Mount a local directory to persist SQLite database
-      - ./backend_data:/app/data
+      # Optional: Mount app code for dev hot reload (if using dev command)
+      - ./data:/app/app/data
     networks:
       - family-tree-network
 
@@ -32,9 +32,9 @@ services:
       - BACKEND_URL=${BACKEND_URL:-http://backend:8000}
     volumes:
       # Mount config.json for runtime configuration
-      - ./frontend/public/config.json:/usr/share/nginx/html/config.json
+      # - ./config.json:/usr/share/nginx/html/config.json
       # Mount nginx config template
-      - ./frontend/nginx.conf.template:/etc/nginx/templates/default.conf.template
+      - ./nginx.conf.template:/etc/nginx/templates/default.conf.template
     networks:
       - family-tree-network
 
