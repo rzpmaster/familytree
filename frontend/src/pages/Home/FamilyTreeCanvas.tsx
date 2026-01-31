@@ -347,9 +347,9 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
         nodesDraggable={!readOnly}
         elementsSelectable={true}
         // Enable multi-selection features
-        selectionOnDrag={true}
+        selectionOnDrag={true} 
         selectionMode={SelectionMode.Partial}
-        panOnDrag={[1, 2]}
+        panOnDrag={true} 
         selectionKeyCode="Shift"
         multiSelectionKeyCode="Control"
       >
