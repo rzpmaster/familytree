@@ -1,31 +1,34 @@
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { useAuth } from "@/hooks/useAuth";
-import { setLastSelectedFamilyId } from "@/store/familySlice";
-import { BookOpen, Plus, Upload } from "lucide-react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import ConfirmDialog from "../../components/ConfirmDialog";
 import {
   createFamily,
   deleteFamily,
+  deleteRegion,
   getCollaborators,
   getFamilies,
   getFamilyGraph,
   getMembers,
+  getRegions,
   importFamily,
   importFamilyPreset,
   inviteCollaborator,
   removeCollaborator,
   updateCollaboratorRole,
   updateFamily,
-} from "../../services/api";
-import { Family, FamilyCollaborator, Member } from "../../types";
+} from "@/services/api";
+import { setLastSelectedFamilyId } from "@/store/familySlice";
+import { Family, FamilyCollaborator, Member, Region } from "@/types";
+import { BookOpen, Plus, Upload } from "lucide-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import FamilyCard from "./FamilyCard";
 
 interface FamilyWithMembers extends Family {
   members: Member[];
+  regions: Region[];
 }
 
 const Manage: React.FC = () => {
@@ -39,6 +42,11 @@ const Manage: React.FC = () => {
   const [newFamilyDescription, setNewFamilyDescription] = useState("");
   const [showHistoricalMenu, setShowHistoricalMenu] = useState(false);
   const [familyToDelete, setFamilyToDelete] = useState<string | null>(null);
+
+  // Region Management State
+  const [managingRegionsFamily, setManagingRegionsFamily] =
+    useState<FamilyWithMembers | null>(null);
+  const [regionToDelete, setRegionToDelete] = useState<Region | null>(null);
 
   // Edit State
   const [editingFamily, setEditingFamily] = useState<Family | null>(null);
@@ -70,10 +78,13 @@ const Manage: React.FC = () => {
       const familiesWithMembers = await Promise.all(
         data.map(async (family) => {
           try {
-            const members = await getMembers(family.id);
-            return { ...family, members };
+            const [members, regions] = await Promise.all([
+              getMembers(family.id),
+              getRegions(family.id),
+            ]);
+            return { ...family, members, regions };
           } catch {
-            return { ...family, members: [] };
+            return { ...family, members: [], regions: [] };
           }
         }),
       );
@@ -254,6 +265,51 @@ const Manage: React.FC = () => {
     } catch (error) {
       console.error(error);
       toast.error(t("common.update_failed", { defaultValue: "Update failed" }));
+    }
+  };
+
+  const handleManageRegions = (family: Family) => {
+    // Find full family object with members and regions
+    const fullFamily = families.find((f) => f.id === family.id);
+    if (fullFamily) {
+      setManagingRegionsFamily(fullFamily);
+    }
+  };
+
+  const handleDeleteRegionClick = (region: Region) => {
+    setRegionToDelete(region);
+  };
+
+  const handleConfirmDeleteRegion = async () => {
+    if (!regionToDelete || !managingRegionsFamily) return;
+    try {
+      await deleteRegion(regionToDelete.id);
+      toast.success(t("region.deleted", { defaultValue: "Region deleted" }));
+
+      // Update local state
+      const updatedRegions = managingRegionsFamily.regions.filter(
+        (r) => r.id !== regionToDelete.id,
+      );
+      setManagingRegionsFamily({
+        ...managingRegionsFamily,
+        regions: updatedRegions,
+      });
+
+      // Update families list state
+      setFamilies((prev) =>
+        prev.map((f) =>
+          f.id === managingRegionsFamily.id
+            ? { ...f, regions: updatedRegions }
+            : f,
+        ),
+      );
+    } catch (error) {
+      console.error("Failed to delete region", error);
+      toast.error(
+        t("region.delete_failed", { defaultValue: "Failed to delete region" }),
+      );
+    } finally {
+      setRegionToDelete(null);
     }
   };
 
@@ -512,15 +568,103 @@ const Manage: React.FC = () => {
                 key={family.id}
                 family={family}
                 members={family.members}
+                regions={family.regions}
                 onEnter={handleEnter}
                 onDelete={handleDeleteClick}
                 onEdit={handleEditClick}
                 onExport={handleExport}
                 onShare={handleShareClick}
+                onManageRegions={handleManageRegions}
                 currentUserId={user.id}
               />
             ))
           )}
+        </div>
+      )}
+
+      {/* Region Management Dialog */}
+      {managingRegionsFamily && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <BookOpen className="text-green-600" size={20} />
+              {t("family.manage_regions", {
+                defaultValue: "Manage Regions",
+              })}
+              : {managingRegionsFamily.family_name}
+            </h3>
+
+            <div className="mb-6">
+              {managingRegionsFamily.regions.length === 0 ? (
+                <div className="text-center py-4 text-gray-500 text-sm italic bg-gray-50 rounded">
+                  {t("family.no_regions", {
+                    defaultValue: "No regions found.",
+                  })}
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {managingRegionsFamily.regions.map((region) => (
+                    <div
+                      key={region.id}
+                      className="flex justify-between items-center p-3 bg-gray-50 rounded border hover:bg-gray-100 transition-colors"
+                    >
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          {region.color && (
+                            <span
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: region.color }}
+                            />
+                          )}
+                          <span className="font-medium text-gray-800">
+                            {region.name}
+                          </span>
+                        </div>
+                        {region.description && (
+                          <span className="text-xs text-gray-500 mt-0.5">
+                            {region.description}
+                          </span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleDeleteRegionClick(region)}
+                        className="text-red-500 hover:text-red-700 p-1.5 hover:bg-red-50 rounded transition-colors"
+                        title={t("common.delete", { defaultValue: "Delete" })}
+                      >
+                        <span className="sr-only">
+                          {t("common.delete", { defaultValue: "Delete" })}
+                        </span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M3 6h18" />
+                          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => setManagingRegionsFamily(null)}
+                className="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
+              >
+                {t("common.close", { defaultValue: "Close" })}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -825,6 +969,17 @@ const Manage: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={!!regionToDelete}
+        title={t("region.delete", { defaultValue: "Delete Region" })}
+        message={t("region.confirm_delete", {
+          name: regionToDelete?.name,
+          defaultValue: `Are you sure you want to delete region "${regionToDelete?.name}"?`,
+        })}
+        onConfirm={handleConfirmDeleteRegion}
+        onCancel={() => setRegionToDelete(null)}
+      />
 
       <ConfirmDialog
         isOpen={!!familyToDelete}

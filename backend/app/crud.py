@@ -270,6 +270,10 @@ def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
 def delete_region(db: Session, region_id: str):
     db_region = db.query(models.Region).filter(models.Region.id == region_id).first()
     if db_region:
+        # Set region_id to None for all members in this region
+        db.query(models.Member).filter(models.Member.region_id == region_id).update(
+            {models.Member.region_id: None}, synchronize_session=False
+        )
         db.delete(db_region)
         db.commit()
     return db_region

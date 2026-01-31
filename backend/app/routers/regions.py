@@ -94,6 +94,11 @@ def delete_region(region_id: str, db: Session = Depends(get_db)):
     if db_region is None:
         raise HTTPException(status_code=404, detail="Region not found")
 
+    # Set region_id to None for all members in this region
+    db.query(models.Member).filter(models.Member.region_id == region_id).update(
+        {models.Member.region_id: None}, synchronize_session=False
+    )
+
     db.delete(db_region)
     db.commit()
     return None
@@ -101,5 +106,4 @@ def delete_region(region_id: str, db: Session = Depends(get_db)):
 
 @router.get("/family/{family_id}", response_model=List[schemas.Region])
 def read_regions_by_family(family_id: str, db: Session = Depends(get_db)):
-    return db.query(models.Region).filter(models.Region.family_id == family_id).all()
     return db.query(models.Region).filter(models.Region.family_id == family_id).all()
