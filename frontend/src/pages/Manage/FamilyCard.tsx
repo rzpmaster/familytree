@@ -99,6 +99,11 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
           <p className="text-xs text-gray-400 mt-1">
             {t('common.created_at')}: {new Date(family.created_at).toLocaleDateString()}
           </p>
+          {family.description && (
+            <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+              {family.description}
+            </p>
+          )}
         </div>
         <div className="flex gap-2 items-center">
           {/* Request Access Button for Viewers */}

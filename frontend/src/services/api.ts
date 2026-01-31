@@ -173,17 +173,27 @@ export const removeCollaborator = async (familyId: string, userId: string) => {
   return response.data;
 };
 
-export const createFamily = async (name: string, userId: string) => {
+export const createFamily = async (
+  name: string,
+  userId: string,
+  description?: string,
+) => {
   const response = await api.post<Family>("/families/", {
     family_name: name,
     user_id: userId,
+    description,
   });
   return response.data;
 };
 
-export const updateFamily = async (id: string, name: string) => {
+export const updateFamily = async (
+  id: string,
+  name: string,
+  description?: string,
+) => {
   const response = await api.put<Family>(`/families/${id}`, {
     family_name: name,
+    description,
   });
   return response.data;
 };
