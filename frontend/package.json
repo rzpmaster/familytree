@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "start": "npm run dev",
-    "dev": "concurrently \"npm run backend\" \"wait-on tcp:8000 && vite\"",
-    "backend": "cd ../backend && call start.bat",
+    "dev": "concurrently -n BACKEND,FRONTEND -c green,blue \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "vite",
+    "dev:frontend:wait": "wait-on tcp:8000 && vite",
+    "dev:backend": "cd ../backend && uv run uvicorn app.main:app --reload",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

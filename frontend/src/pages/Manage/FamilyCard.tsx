@@ -1,23 +1,25 @@
-import { ArrowRight, Download, Edit2, Share2, Trash2, UserPlus, Users } from 'lucide-react';
+import { ArrowRight, Download, Edit2, Map, Share2, Trash2, UserPlus, Users } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { createAccessRequest } from '../../services/api';
-import { Family, Member } from '../../types';
 import { cn } from '../../lib/utils';
+import { createAccessRequest } from '../../services/api';
+import { Family, Member, Region } from '../../types';
 
 interface FamilyCardProps {
   family: Family;
   members: Member[];
+  regions?: Region[];
   onEnter: (family: Family) => void;
   onDelete: (id: string) => void;
   onEdit: (family: Family) => void;
   onExport: (family: Family) => void;
   onShare: (family: Family) => void;
+  onManageRegions: (family: Family) => void;
   currentUserId?: string;
 }
 
-const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDelete, onEdit, onExport, onShare, currentUserId }) => {
+const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, regions = [], onEnter, onDelete, onEdit, onExport, onShare, onManageRegions, currentUserId }) => {
   const { t } = useTranslation();
   const [requestLoading, setRequestLoading] = useState(false);
 
@@ -99,6 +101,11 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
           <p className="text-xs text-gray-400 mt-1">
             {t('common.created_at')}: {new Date(family.created_at).toLocaleDateString()}
           </p>
+          {family.description && (
+            <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+              {family.description}
+            </p>
+          )}
         </div>
         <div className="flex gap-2 items-center">
           {/* Request Access Button for Viewers */}
@@ -114,13 +121,22 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
           )}
 
           {canManage && (
-            <button
-              onClick={() => onShare(family)}
-              className="btn-icon text-purple-600 hover:bg-purple-50 tooltip"
-              title={t('family.share', { defaultValue: 'Share' })}
-            >
-              <Share2 size={18} />
-            </button>
+            <>
+              <button
+                onClick={() => onShare(family)}
+                className="btn-icon text-purple-600 hover:bg-purple-50 tooltip"
+                title={t('family.share', { defaultValue: 'Share' })}
+              >
+                <Share2 size={18} />
+              </button>
+              <button
+                onClick={() => onManageRegions(family)}
+                className="btn-icon text-green-600 hover:bg-green-50 tooltip"
+                title={t('family.manage_regions', { defaultValue: 'Manage Regions' })}
+              >
+                <Map size={18} />
+              </button>
+            </>
           )}
           <button
             onClick={() => onExport(family)}
@@ -157,7 +173,7 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 bg-gray-50 p-3 rounded-md">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4 bg-gray-50 p-3 rounded-md">
         {/* Total */}
         <div className="flex flex-col">
           <span className="text-xs text-gray-500 uppercase tracking-wider">{t('family.members_count', { defaultValue: 'Members' })}</span>
@@ -174,6 +190,15 @@ const FamilyCard: React.FC<FamilyCardProps> = ({ family, members, onEnter, onDel
             <span className="text-blue-600">{t('member.male')}: {males}</span>
             <span className="text-pink-600">{t('member.female')}: {females}</span>
           </div>
+        </div>
+
+        {/* Regions */}
+        <div className="flex flex-col">
+          <span className="text-xs text-gray-500 uppercase tracking-wider">{t('family.regions', { defaultValue: 'Regions' })}</span>
+          <span className="text-lg font-semibold flex items-center gap-1" title={regions.map(r => r.name).join(', ')}>
+            <Map size={16} className="text-green-600" />
+            {regions.length}
+          </span>
         </div>
 
         {/* Oldest */}

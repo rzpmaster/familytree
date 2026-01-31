@@ -1,14 +1,17 @@
 from typing import List, Optional
-from datetime import date, datetime
-from pydantic import BaseModel, UUID4, Field
+from datetime import datetime
+from pydantic import BaseModel
+
 
 # User Schemas
 class UserBase(BaseModel):
     email: str
     name: str
 
+
 class UserCreate(UserBase):
     password: str
+
 
 class User(UserBase):
     id: str
@@ -19,55 +22,66 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
+
 # Family Schemas
 class FamilyBase(BaseModel):
     family_name: str
     description: Optional[str] = None
 
+
 class FamilyCreate(FamilyBase):
     user_id: str  # For simplicity in this demo
+
 
 class FamilyUpdate(BaseModel):
     family_name: Optional[str] = None
     description: Optional[str] = None
 
+
 class FamilyCollaboratorBase(BaseModel):
     user_id: str
-    role: str # 'viewer', 'editor'
+    role: str  # 'viewer', 'editor'
+
 
 class FamilyCollaboratorCreate(FamilyCollaboratorBase):
     pass
 
+
 class FamilyCollaborator(FamilyCollaboratorBase):
     family_id: str
     created_at: datetime
-    
+
     # Optional user details for display
     user: Optional[UserBase] = None
 
     class Config:
         from_attributes = True
 
+
 class FamilyInvite(BaseModel):
     email: str
     role: str = "viewer"
+
 
 class AccessRequestBase(BaseModel):
     family_id: str
     user_id: str
 
+
 class AccessRequestCreate(AccessRequestBase):
     pass
 
+
 class AccessRequestUpdate(BaseModel):
-    status: str # 'approved', 'rejected'
+    status: str  # 'approved', 'rejected'
+
 
 class AccessRequest(AccessRequestBase):
     id: str
     status: str
     created_at: datetime
     updated_at: datetime
-    
+
     # Optional include details
     user: Optional[UserBase] = None
     family: Optional[FamilyBase] = None
@@ -75,24 +89,56 @@ class AccessRequest(AccessRequestBase):
     class Config:
         from_attributes = True
 
+
 class FamilyCollaboratorUpdate(BaseModel):
     role: str
+
 
 class Family(FamilyBase):
     id: str
     user_id: str
     created_at: datetime
-    
+
     # Include collaborators in response? Maybe separate endpoint or optional include
     # But for "My Families", we might want to know my role.
     # Let's add a computed field or separate structure if needed.
     # For now, standard response.
-    
+
     class Config:
         from_attributes = True
 
+
 class FamilyWithRole(Family):
-    current_user_role: str # 'owner', 'editor', 'viewer'
+    current_user_role: str  # 'owner', 'editor', 'viewer'
+
+
+# Region Schemas
+class RegionBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+    color: Optional[str] = "#EBF8FF"
+
+
+class RegionCreate(RegionBase):
+    family_id: str
+    member_ids: Optional[List[str]] = []
+
+
+class RegionUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    color: Optional[str] = None
+    member_ids: Optional[List[str]] = None
+
+
+class Region(RegionBase):
+    id: str
+    family_id: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
 
 # Member Schemas
 class MemberBase(BaseModel):
@@ -109,9 +155,12 @@ class MemberBase(BaseModel):
     position_x: Optional[int] = 0
     position_y: Optional[int] = 0
     sort_order: Optional[int] = 0
+    region_ids: Optional[List[str]] = []
+
 
 class MemberCreate(MemberBase):
     family_id: str
+
 
 class MemberUpdate(BaseModel):
     name: Optional[str] = None
@@ -127,15 +176,23 @@ class MemberUpdate(BaseModel):
     position_x: Optional[int] = None
     position_y: Optional[int] = None
     sort_order: Optional[int] = None
+    region_ids: Optional[List[str]] = None
+
+
+class MemberBatchDelete(BaseModel):
+    member_ids: List[str]
+
 
 class Member(MemberBase):
     id: str
     family_id: str
     created_at: datetime
     updated_at: datetime
-
+    # Return region_ids explicitly if needed, or rely on MemberBase
+    
     class Config:
         from_attributes = True
+
 
 # Relationship Schemas
 class SpouseRelationshipBase(BaseModel):
@@ -143,11 +200,14 @@ class SpouseRelationshipBase(BaseModel):
     member2_id: str
     marriage_date: Optional[str] = None
 
+
 class SpouseRelationshipCreate(SpouseRelationshipBase):
     pass
 
+
 class SpouseRelationshipUpdate(BaseModel):
     marriage_date: Optional[str] = None
+
 
 class SpouseRelationship(SpouseRelationshipBase):
     id: str
@@ -156,13 +216,16 @@ class SpouseRelationship(SpouseRelationshipBase):
     class Config:
         from_attributes = True
 
+
 class ParentChildRelationshipBase(BaseModel):
     parent_id: str
     child_id: str
-    relationship_type: str # 'father', 'mother'
+    relationship_type: str  # 'father', 'mother'
+
 
 class ParentChildRelationshipCreate(ParentChildRelationshipBase):
     pass
+
 
 class ParentChildRelationship(ParentChildRelationshipBase):
     id: str
@@ -171,6 +234,7 @@ class ParentChildRelationship(ParentChildRelationshipBase):
     class Config:
         from_attributes = True
 
+
 # Graph Response
 class GraphNode(BaseModel):
     id: str
@@ -178,32 +242,43 @@ class GraphNode(BaseModel):
     gender: str
     x: int
     y: int
-    data: Optional[Member] = None # Include full member data
+    data: Optional[Member] = None  # Include full member data
+
 
 class GraphEdge(BaseModel):
     id: str
     source: str
     target: str
-    type: str # 'spouse', 'parent-child'
+    type: str  # 'spouse', 'parent-child'
     label: Optional[str] = None
     data: Optional[dict] = None
+
 
 class GraphData(BaseModel):
     nodes: List[GraphNode]
     edges: List[GraphEdge]
+    regions: Optional[List[Region]] = []  # Include regions in graph data
+
 
 # Import Schemas
 class ImportMember(MemberBase):
     original_id: str
 
+
 class ImportSpouse(BaseModel):
     member1_original_id: str
     member2_original_id: str
+
 
 class ImportParentChild(BaseModel):
     parent_original_id: str
     child_original_id: str
     relationship_type: str
+
+
+class ImportRegion(RegionBase):
+    original_id: str
+
 
 class FamilyImport(BaseModel):
     family_name: str
@@ -211,3 +286,4 @@ class FamilyImport(BaseModel):
     members: List[ImportMember]
     spouse_relationships: List[ImportSpouse]
     parent_child_relationships: List[ImportParentChild]
+    regions: Optional[List[ImportRegion]] = []

@@ -4,26 +4,26 @@ export interface Family {
   family_name: string;
   description?: string;
   created_at: string;
-  current_user_role?: 'owner' | 'editor' | 'viewer' | 'admin';
+  current_user_role?: "owner" | "editor" | "viewer" | "admin";
 }
 
 export interface FamilyCollaborator {
-    family_id: string;
-    user_id: string;
-    role: 'viewer' | 'editor' | 'admin';
-    created_at: string;
-    user?: User;
-    family?: Family;
+  family_id: string;
+  user_id: string;
+  role: "viewer" | "editor" | "admin";
+  created_at: string;
+  user?: User;
+  family?: Family;
 }
 
 export interface AccessRequest {
-    id: string;
-    family_id: string;
-    user_id: string;
-    status: 'pending' | 'approved' | 'rejected';
-    created_at: string;
-    user?: User;
-    family?: Family;
+  id: string;
+  family_id: string;
+  user_id: string;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
+  user?: User;
+  family?: Family;
 }
 
 export interface User {
@@ -36,12 +36,22 @@ export interface User {
   shared_families?: FamilyCollaborator[];
 }
 
-export interface Member {
+export interface Region {
   id: string;
   family_id: string;
   name: string;
+  description?: string;
+  color?: string;
+  created_at: string;
+}
+
+export interface Member {
+  id: string;
+  family_id: string;
+  region_ids?: string[]; // Changed from region_id
+  name: string;
   surname?: string; // 姓
-  gender: 'male' | 'female';
+  gender: "male" | "female";
   birth_date?: string;
   death_date?: string;
   is_deceased?: boolean; // 是否已逝世 (无具体日期时使用)
@@ -68,7 +78,7 @@ export interface ParentChildRelationship {
   id: string;
   parent_id: string;
   child_id: string;
-  relationship_type: 'father' | 'mother';
+  relationship_type: "father" | "mother";
   created_at: string;
 }
 
@@ -93,4 +103,13 @@ export interface GraphEdge {
 export interface GraphData {
   nodes: GraphNode[];
   edges: GraphEdge[];
+  regions?: Region[];
+}
+
+export interface RegionState {
+  selectedCount: number;
+  regions: Region[];
+  onDeleteAll: () => void;
+  onCreateRegion: () => void;
+  onAddToRegion: (regionId: string) => void;
 }

@@ -16,8 +16,12 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir uv
+
+# copy dependency descriptors first for layer caching
+COPY pyproject.toml uv.lock ./
+# create venv + sync deps (no dev deps in production)
+RUN uv sync --frozen --no-dev
 
 # Copy project files
 COPY . .

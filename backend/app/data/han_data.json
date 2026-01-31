@@ -1,306 +1,708 @@
 {
-    "user": {
-        "email": "gaozu@han.dynasty",
-        "name": "Emperor Gaozu"
+  "family_name": "大汉皇族 (Han Dynasty) (Export) (Export)",
+  "user_id": "396ab305-d764-4287-a8de-8e831881e36f",
+  "members": [
+    {
+      "name": "刘邦 (Gaozu)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0256-01-01",
+      "death_date": "-0195-06-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 540,
+      "position_y": 0,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "dc81274d-e350-4154-a3e4-2ea3c5dba784",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "dc81274d-e350-4154-a3e4-2ea3c5dba784"
     },
-    "family": {
-        "name": "大汉皇族 (Han Dynasty)"
+    {
+      "name": "吕后 (Empress Lu)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "-0241-01-01",
+      "death_date": "-0180-08-18",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 660,
+      "position_y": 0,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "c47ebff1-2f1f-45c0-ac88-603e7daeee31",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "c47ebff1-2f1f-45c0-ac88-603e7daeee31"
     },
-    "members": [
-        {
-            "id": "liu_bang",
-            "name": "刘邦 (Gaozu)",
-            "gender": "male",
-            "birth": "-0256-01-01",
-            "death": "-0195-06-01"
-        },
-        {
-            "id": "empress_lu",
-            "name": "吕后 (Empress Lu)",
-            "gender": "female",
-            "birth": "-0241-01-01",
-            "death": "-0180-08-18"
-        },
-        {
-            "id": "liu_ying",
-            "name": "刘盈 (Huidi)",
-            "gender": "male",
-            "birth": "-0210-01-01",
-            "death": "-0188-09-26"
-        },
-        {
-            "id": "liu_fei",
-            "name": "刘肥 (Prince of Qi)",
-            "gender": "male",
-            "birth": "-0221-01-01",
-            "death": "-0189-01-01"
-        },
-        {
-            "id": "liu_heng",
-            "name": "刘恒 (Wendi)",
-            "gender": "male",
-            "birth": "-0202-01-01",
-            "death": "-0157-07-06"
-        },
-        {
-            "id": "liu_ruyi",
-            "name": "刘如意 (Prince of Zhao)",
-            "gender": "male",
-            "birth": "-0208-01-01",
-            "death": "-0194-01-01"
-        },
-        {
-            "id": "empress_zhang_yan",
-            "name": "张嫣 (Empress Zhang)",
-            "gender": "female",
-            "death": "-0163-01-01"
-        },
-        {
-            "id": "empress_dou",
-            "name": "窦皇后 (Empress Dou)",
-            "gender": "female",
-            "death": "-0135-01-01"
-        },
-        {
-            "id": "liu_qi",
-            "name": "刘启 (Jingdi)",
-            "gender": "male",
-            "birth": "-0188-01-01",
-            "death": "-0141-03-09"
-        },
-        {
-            "id": "liu_wu",
-            "name": "刘武 (Prince of Liang)",
-            "gender": "male",
-            "birth": "-0184-01-01",
-            "death": "-0144-01-01"
-        },
-        {
-            "id": "empress_wang",
-            "name": "王娡 (Empress Wang)",
-            "gender": "female",
-            "death": "-0126-01-01"
-        },
-        {
-            "id": "liu_che",
-            "name": "刘彻 (Wudi)",
-            "gender": "male",
-            "birth": "-0157-07-30",
-            "death": "-0087-03-29"
-        },
-        {
-            "id": "empress_chen_jiao",
-            "name": "陈阿娇 (Empress Chen)",
-            "gender": "female"
-        },
-        {
-            "id": "empress_wei_zifu",
-            "name": "卫子夫 (Empress Wei)",
-            "gender": "female",
-            "death": "-0091-09-08"
-        },
-        {
-            "id": "liu_ju",
-            "name": "刘据 (Crown Prince)",
-            "gender": "male",
-            "birth": "-0128-01-01",
-            "death": "-0091-01-01"
-        },
-        {
-            "id": "liu_bo",
-            "name": "刘髆 (Prince of Changyi)",
-            "gender": "male",
-            "death": "-0086-01-01"
-        },
-        {
-            "id": "liu_fuling",
-            "name": "刘弗陵 (Zhaodi)",
-            "gender": "male",
-            "birth": "-0094-01-01",
-            "death": "-0074-06-05"
-        },
-        {
-            "id": "liu_jin",
-            "name": "刘进 (Shihuangsun)",
-            "gender": "male",
-            "birth": "-0113-01-01",
-            "death": "-0091-01-01"
-        },
-        {
-            "id": "liu_xun",
-            "name": "刘询 (Xuandi)",
-            "gender": "male",
-            "birth": "-0091-01-01",
-            "death": "-0049-01-10"
-        },
-        {
-            "id": "empress_xu_pingjun",
-            "name": "许平君 (Empress Xu)",
-            "gender": "female",
-            "birth": "-0089-01-01",
-            "death": "-0071-01-01"
-        },
-        {
-            "id": "empress_huo",
-            "name": "霍成君 (Empress Huo)",
-            "gender": "female",
-            "death": "-0054-01-01"
-        },
-        {
-            "id": "liu_shi",
-            "name": "刘奭 (Yuandi)",
-            "gender": "male",
-            "birth": "-0075-01-01",
-            "death": "-0033-07-08"
-        },
-        {
-            "id": "empress_wang_zhengjun",
-            "name": "王政君 (Empress Wang)",
-            "gender": "female",
-            "birth": "-0071-01-01",
-            "death": "0013-02-03"
-        },
-        {
-            "id": "liu_ao",
-            "name": "刘骜 (Chengdi)",
-            "gender": "male",
-            "birth": "-0051-01-01",
-            "death": "-0007-04-17"
-        },
-        {
-            "id": "liu_kang",
-            "name": "刘康 (Prince of Dingtao)",
-            "gender": "male",
-            "death": "-0023-01-01"
-        },
-        {
-            "id": "liu_xin",
-            "name": "刘欣 (Aidi)",
-            "gender": "male",
-            "birth": "-0027-01-01",
-            "death": "-0001-08-15"
-        }
-    ],
-    "spouses": [
-        [
-            "liu_bang",
-            "empress_lu"
-        ],
-        [
-            "liu_ying",
-            "empress_zhang_yan"
-        ],
-        [
-            "liu_heng",
-            "empress_dou"
-        ],
-        [
-            "liu_qi",
-            "empress_wang"
-        ],
-        [
-            "liu_che",
-            "empress_chen_jiao"
-        ],
-        [
-            "liu_che",
-            "empress_wei_zifu"
-        ],
-        [
-            "liu_xun",
-            "empress_xu_pingjun"
-        ],
-        [
-            "liu_xun",
-            "empress_huo"
-        ],
-        [
-            "liu_shi",
-            "empress_wang_zhengjun"
-        ]
-    ],
-    "parents": [
-        {
-            "father": "liu_bang",
-            "mother": "empress_lu",
-            "children": [
-                "liu_ying"
-            ]
-        },
-        {
-            "father": "liu_bang",
-            "children": [
-                "liu_fei",
-                "liu_heng",
-                "liu_ruyi"
-            ]
-        },
-        {
-            "father": "liu_heng",
-            "mother": "empress_dou",
-            "children": [
-                "liu_qi",
-                "liu_wu"
-            ]
-        },
-        {
-            "father": "liu_qi",
-            "mother": "empress_wang",
-            "children": [
-                "liu_che"
-            ]
-        },
-        {
-            "father": "liu_che",
-            "mother": "empress_wei_zifu",
-            "children": [
-                "liu_ju"
-            ]
-        },
-        {
-            "father": "liu_che",
-            "children": [
-                "liu_bo",
-                "liu_fuling"
-            ]
-        },
-        {
-            "father": "liu_ju",
-            "children": [
-                "liu_jin"
-            ]
-        },
-        {
-            "father": "liu_jin",
-            "children": [
-                "liu_xun"
-            ]
-        },
-        {
-            "father": "liu_xun",
-            "mother": "empress_xu_pingjun",
-            "children": [
-                "liu_shi"
-            ]
-        },
-        {
-            "father": "liu_shi",
-            "mother": "empress_wang_zhengjun",
-            "children": [
-                "liu_ao"
-            ]
-        },
-        {
-            "father": "liu_shi",
-            "children": [
-                "liu_kang"
-            ]
-        },
-        {
-            "father": "liu_kang",
-            "children": [
-                "liu_xin"
-            ]
-        }
-    ]
+    {
+      "name": "刘盈 (Huidi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0210-01-01",
+      "death_date": "-0188-09-26",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 0,
+      "position_y": 350,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "3f849f28-ba28-419d-aba4-faf729e099d6",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "3f849f28-ba28-419d-aba4-faf729e099d6"
+    },
+    {
+      "name": "刘肥 (Prince of Qi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0221-01-01",
+      "death_date": "-0189-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 1200,
+      "position_y": 350,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "08cf0594-5ab1-4e74-ba1a-ab1d20e6165d",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "08cf0594-5ab1-4e74-ba1a-ab1d20e6165d"
+    },
+    {
+      "name": "刘恒 (Wendi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0202-01-01",
+      "death_date": "-0157-07-06",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 530,
+      "position_y": 350,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "c3146643-5cf4-48b0-8a58-591fe299244b",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "c3146643-5cf4-48b0-8a58-591fe299244b"
+    },
+    {
+      "name": "刘如意 (Prince of Zhao)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0208-01-01",
+      "death_date": "-0194-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 1060,
+      "position_y": 350,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "6e0a4712-2ab7-4b0a-b0da-dc45ba390076",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "6e0a4712-2ab7-4b0a-b0da-dc45ba390076"
+    },
+    {
+      "name": "张嫣 (Empress Zhang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "-0163-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 120,
+      "position_y": 350,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "d6536890-0208-4b17-ba22-a9550503b221",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "d6536890-0208-4b17-ba22-a9550503b221"
+    },
+    {
+      "name": "窦皇后 (Empress Dou)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "-0135-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 650,
+      "position_y": 350,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "af907d8b-43d0-4a96-9ae3-44dcd1b50082",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "af907d8b-43d0-4a96-9ae3-44dcd1b50082"
+    },
+    {
+      "name": "刘启 (Jingdi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0188-01-01",
+      "death_date": "-0141-03-09",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 600,
+      "position_y": 700,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "52df1db3-828e-4d81-aca9-a27f71d30a8e",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "52df1db3-828e-4d81-aca9-a27f71d30a8e"
+    },
+    {
+      "name": "刘武 (Prince of Liang)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0184-01-01",
+      "death_date": "-0144-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 260,
+      "position_y": 700,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "8b06c150-888e-47b6-82d5-58da9c42a3e7",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "8b06c150-888e-47b6-82d5-58da9c42a3e7"
+    },
+    {
+      "name": "王娡 (Empress Wang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "-0126-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 720,
+      "position_y": 700,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "c9943171-3f45-4d0f-b394-504da357e7dc",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "c9943171-3f45-4d0f-b394-504da357e7dc"
+    },
+    {
+      "name": "刘彻 (Wudi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0157-07-30",
+      "death_date": "-0087-03-29",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 540,
+      "position_y": 1050,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "db9079d3-7b2f-47c9-aaed-25f82d6b0be1",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "db9079d3-7b2f-47c9-aaed-25f82d6b0be1"
+    },
+    {
+      "name": "陈阿娇 (Empress Chen)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": null,
+      "is_deceased": true,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 660,
+      "position_y": 1050,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "772f3aa4-fa15-4e71-ae26-882d9e94d31d",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "772f3aa4-fa15-4e71-ae26-882d9e94d31d"
+    },
+    {
+      "name": "卫子夫 (Empress Wei)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "-0091-09-08",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 780,
+      "position_y": 1050,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "f4eac111-12f4-4b48-9b16-132221e86778",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "f4eac111-12f4-4b48-9b16-132221e86778"
+    },
+    {
+      "name": "刘据 (Crown Prince)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0128-01-01",
+      "death_date": "-0091-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 520,
+      "position_y": 1400,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "43231f04-677a-49ea-bcda-2a2b3e325e78",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "43231f04-677a-49ea-bcda-2a2b3e325e78"
+    },
+    {
+      "name": "刘髆 (Prince of Changyi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": null,
+      "death_date": "-0086-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 780,
+      "position_y": 1400,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "a81371fb-0259-4501-96d5-e3867f6d4077",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "a81371fb-0259-4501-96d5-e3867f6d4077"
+    },
+    {
+      "name": "刘弗陵 (Zhaodi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0094-01-01",
+      "death_date": "-0074-06-05",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 920,
+      "position_y": 1400,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "b20cc5c8-4605-47e6-94de-1dc47d9601d3",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "b20cc5c8-4605-47e6-94de-1dc47d9601d3"
+    },
+    {
+      "name": "刘进 (Shihuangsun)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0113-01-01",
+      "death_date": "-0091-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 520,
+      "position_y": 1750,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "e6f46ac3-a238-47f0-b030-578ff08d2f49",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "e6f46ac3-a238-47f0-b030-578ff08d2f49"
+    },
+    {
+      "name": "刘询 (Xuandi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0091-01-01",
+      "death_date": "-0049-01-10",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 400,
+      "position_y": 2100,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "b9d8832b-89dd-458e-9fd3-39ad912bb083",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "b9d8832b-89dd-458e-9fd3-39ad912bb083"
+    },
+    {
+      "name": "许平君 (Empress Xu)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "-0089-01-01",
+      "death_date": "-0071-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 520,
+      "position_y": 2100,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "37399575-4859-4781-bf1e-ceed853a7176",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "37399575-4859-4781-bf1e-ceed853a7176"
+    },
+    {
+      "name": "霍成君 (Empress Huo)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "-0054-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 640,
+      "position_y": 2100,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "56f1ee60-b79f-4a96-95cd-1a30d345c32e",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "56f1ee60-b79f-4a96-95cd-1a30d345c32e"
+    },
+    {
+      "name": "刘奭 (Yuandi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0075-01-01",
+      "death_date": "-0033-07-08",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 460,
+      "position_y": 2450,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "4b5f56fd-4de4-489f-93da-26cf1e8e0e69",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "4b5f56fd-4de4-489f-93da-26cf1e8e0e69"
+    },
+    {
+      "name": "王政君 (Empress Wang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "-0071-01-01",
+      "death_date": "0013-02-03",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 580,
+      "position_y": 2450,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "f8e6eca1-f937-445b-88e2-cacb6d3f0841",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "f8e6eca1-f937-445b-88e2-cacb6d3f0841"
+    },
+    {
+      "name": "刘骜 (Chengdi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0051-01-01",
+      "death_date": "-0007-04-17",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 450,
+      "position_y": 2800,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "484609a4-9f81-45e4-bd33-d1ceb9800e74",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "484609a4-9f81-45e4-bd33-d1ceb9800e74"
+    },
+    {
+      "name": "刘康 (Prince of Dingtao)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": null,
+      "death_date": "-0023-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 590,
+      "position_y": 2800,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "8dfedaa1-7693-43e3-81c6-76938c45ef7f",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "8dfedaa1-7693-43e3-81c6-76938c45ef7f"
+    },
+    {
+      "name": "刘欣 (Aidi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "-0027-01-01",
+      "death_date": "-0001-08-15",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 590,
+      "position_y": 3150,
+      "sort_order": 0,
+      "region_ids": [],
+      "id": "3e2c1f54-9fa9-4ca1-917a-23f83d593fb0",
+      "family_id": "667027a4-ae37-4efc-b225-d148ca623caf",
+      "created_at": "2026-01-31T16:58:54",
+      "updated_at": "2026-01-31T16:58:54",
+      "original_id": "3e2c1f54-9fa9-4ca1-917a-23f83d593fb0"
+    }
+  ],
+  "spouse_relationships": [
+    {
+      "member1_original_id": "dc81274d-e350-4154-a3e4-2ea3c5dba784",
+      "member2_original_id": "c47ebff1-2f1f-45c0-ac88-603e7daeee31"
+    },
+    {
+      "member1_original_id": "3f849f28-ba28-419d-aba4-faf729e099d6",
+      "member2_original_id": "d6536890-0208-4b17-ba22-a9550503b221"
+    },
+    {
+      "member1_original_id": "c3146643-5cf4-48b0-8a58-591fe299244b",
+      "member2_original_id": "af907d8b-43d0-4a96-9ae3-44dcd1b50082"
+    },
+    {
+      "member1_original_id": "52df1db3-828e-4d81-aca9-a27f71d30a8e",
+      "member2_original_id": "c9943171-3f45-4d0f-b394-504da357e7dc"
+    },
+    {
+      "member1_original_id": "db9079d3-7b2f-47c9-aaed-25f82d6b0be1",
+      "member2_original_id": "772f3aa4-fa15-4e71-ae26-882d9e94d31d"
+    },
+    {
+      "member1_original_id": "db9079d3-7b2f-47c9-aaed-25f82d6b0be1",
+      "member2_original_id": "f4eac111-12f4-4b48-9b16-132221e86778"
+    },
+    {
+      "member1_original_id": "b9d8832b-89dd-458e-9fd3-39ad912bb083",
+      "member2_original_id": "37399575-4859-4781-bf1e-ceed853a7176"
+    },
+    {
+      "member1_original_id": "b9d8832b-89dd-458e-9fd3-39ad912bb083",
+      "member2_original_id": "56f1ee60-b79f-4a96-95cd-1a30d345c32e"
+    },
+    {
+      "member1_original_id": "4b5f56fd-4de4-489f-93da-26cf1e8e0e69",
+      "member2_original_id": "f8e6eca1-f937-445b-88e2-cacb6d3f0841"
+    }
+  ],
+  "parent_child_relationships": [
+    {
+      "parent_original_id": "dc81274d-e350-4154-a3e4-2ea3c5dba784",
+      "child_original_id": "3f849f28-ba28-419d-aba4-faf729e099d6",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "c47ebff1-2f1f-45c0-ac88-603e7daeee31",
+      "child_original_id": "3f849f28-ba28-419d-aba4-faf729e099d6",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "dc81274d-e350-4154-a3e4-2ea3c5dba784",
+      "child_original_id": "08cf0594-5ab1-4e74-ba1a-ab1d20e6165d",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "dc81274d-e350-4154-a3e4-2ea3c5dba784",
+      "child_original_id": "c3146643-5cf4-48b0-8a58-591fe299244b",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "dc81274d-e350-4154-a3e4-2ea3c5dba784",
+      "child_original_id": "6e0a4712-2ab7-4b0a-b0da-dc45ba390076",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "c3146643-5cf4-48b0-8a58-591fe299244b",
+      "child_original_id": "52df1db3-828e-4d81-aca9-a27f71d30a8e",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "af907d8b-43d0-4a96-9ae3-44dcd1b50082",
+      "child_original_id": "52df1db3-828e-4d81-aca9-a27f71d30a8e",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "c3146643-5cf4-48b0-8a58-591fe299244b",
+      "child_original_id": "8b06c150-888e-47b6-82d5-58da9c42a3e7",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "af907d8b-43d0-4a96-9ae3-44dcd1b50082",
+      "child_original_id": "8b06c150-888e-47b6-82d5-58da9c42a3e7",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "52df1db3-828e-4d81-aca9-a27f71d30a8e",
+      "child_original_id": "db9079d3-7b2f-47c9-aaed-25f82d6b0be1",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "c9943171-3f45-4d0f-b394-504da357e7dc",
+      "child_original_id": "db9079d3-7b2f-47c9-aaed-25f82d6b0be1",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "db9079d3-7b2f-47c9-aaed-25f82d6b0be1",
+      "child_original_id": "43231f04-677a-49ea-bcda-2a2b3e325e78",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "f4eac111-12f4-4b48-9b16-132221e86778",
+      "child_original_id": "43231f04-677a-49ea-bcda-2a2b3e325e78",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "db9079d3-7b2f-47c9-aaed-25f82d6b0be1",
+      "child_original_id": "a81371fb-0259-4501-96d5-e3867f6d4077",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "db9079d3-7b2f-47c9-aaed-25f82d6b0be1",
+      "child_original_id": "b20cc5c8-4605-47e6-94de-1dc47d9601d3",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "43231f04-677a-49ea-bcda-2a2b3e325e78",
+      "child_original_id": "e6f46ac3-a238-47f0-b030-578ff08d2f49",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "e6f46ac3-a238-47f0-b030-578ff08d2f49",
+      "child_original_id": "b9d8832b-89dd-458e-9fd3-39ad912bb083",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "b9d8832b-89dd-458e-9fd3-39ad912bb083",
+      "child_original_id": "4b5f56fd-4de4-489f-93da-26cf1e8e0e69",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "37399575-4859-4781-bf1e-ceed853a7176",
+      "child_original_id": "4b5f56fd-4de4-489f-93da-26cf1e8e0e69",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "4b5f56fd-4de4-489f-93da-26cf1e8e0e69",
+      "child_original_id": "484609a4-9f81-45e4-bd33-d1ceb9800e74",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "f8e6eca1-f937-445b-88e2-cacb6d3f0841",
+      "child_original_id": "484609a4-9f81-45e4-bd33-d1ceb9800e74",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "4b5f56fd-4de4-489f-93da-26cf1e8e0e69",
+      "child_original_id": "8dfedaa1-7693-43e3-81c6-76938c45ef7f",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "8dfedaa1-7693-43e3-81c6-76938c45ef7f",
+      "child_original_id": "3e2c1f54-9fa9-4ca1-917a-23f83d593fb0",
+      "relationship_type": "father"
+    }
+  ],
+  "regions": []
 }
