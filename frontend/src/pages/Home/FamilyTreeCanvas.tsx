@@ -3,12 +3,18 @@ import FamilyManager from "@/components/FamilyManager";
 import CreateRegionDialog from "@/components/Region/CreateRegionDialog";
 import EditRegionDialog from "@/components/Region/EditRegionDialog";
 import RegionNode from "@/components/Region/RegionNode";
-import RegionPanel from "@/components/Region/RegionPanel";
+import RegionPanel from "@/components/SidePanel/RegionPanel";
 import { useFamilyData } from "@/hooks/familyTree/useFamilyData";
 import { useGraphInteraction } from "@/hooks/familyTree/useGraphInteraction";
 import { useHighlighting } from "@/hooks/familyTree/useHighlighting";
 import { useSettings } from "@/hooks/useSettings";
-import { createRegion, deleteMember, deleteRegion, updateMember, updateRegion } from "@/services/api";
+import {
+  createRegion,
+  deleteMember,
+  deleteRegion,
+  updateMember,
+  updateRegion,
+} from "@/services/api";
 import { RootState } from "@/store";
 import {
   clearNodeSelection,
@@ -22,7 +28,13 @@ import {
 } from "@/strategies/layout/RecursiveFamilyLayoutStrategy";
 import { Family, GraphEdge, Member, Region } from "@/types";
 import { Focus, Layout, Plus } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,7 +50,7 @@ import ReactFlow, {
   SelectionMode,
   Viewport,
   useEdgesState,
-  useNodesState
+  useNodesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { CustomEdge } from "./CustomEdge";
@@ -74,7 +86,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   const dispatch = useDispatch();
 
   const selectedNodeIds = useSelector(
-    (s: RootState) => s.family?.selectedNodeIds || []
+    (s: RootState) => s.family?.selectedNodeIds || [],
   );
 
   const [nodes, setNodes, onNodesChangeBase] = useNodesState([]);
@@ -137,7 +149,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       currentNodes,
       currentEdges,
       selectedNodeIds,
-      selectedEdgeId
+      selectedEdgeId,
     );
 
     setNodes(styledNodes);
@@ -157,9 +169,8 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     settingsState.showDeceased,
     settingsState.timelineEnabled,
     settingsState.timelineYear,
-    settingsState.compactMode
+    settingsState.compactMode,
   ]);
-
 
   // --- Region Logic ---
   const [createRegionDialogOpen, setCreateRegionDialogOpen] = useState(false);
@@ -168,47 +179,66 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   const [editingRegion, setEditingRegion] = useState<Region | null>(null);
 
   // Filter selected members (exclude regions)
-  const selectedMembers = useMemo(() =>
-    nodes.filter(n => selectedNodeIds.includes(n.id) && n.type === 'member'),
-    [nodes, selectedNodeIds]);
+  const selectedMembers = useMemo(
+    () =>
+      nodes.filter(
+        (n) => selectedNodeIds.includes(n.id) && n.type === "member",
+      ),
+    [nodes, selectedNodeIds],
+  );
 
   const handleDeleteAll = useCallback(async () => {
-    if (window.confirm(t('common.confirm_delete_all', { defaultValue: 'Are you sure you want to delete these members?' }))) {
+    if (
+      window.confirm(
+        t("common.confirm_delete_all", {
+          defaultValue: "Are you sure you want to delete these members?",
+        }),
+      )
+    ) {
       try {
-        const promises = selectedMembers.map(node => deleteMember(node.id));
+        const promises = selectedMembers.map((node) => deleteMember(node.id));
         await Promise.all(promises);
-        toast.success(t('common.deleted_success', { defaultValue: 'Deleted successfully' }));
+        toast.success(
+          t("common.deleted_success", { defaultValue: "Deleted successfully" }),
+        );
         dispatch(clearNodeSelection());
         fetchData();
       } catch (e) {
         console.error("Failed to delete members", e);
-        toast.error(t('common.error', { defaultValue: 'Error occurred' }));
+        toast.error(t("common.error", { defaultValue: "Error occurred" }));
       }
     }
   }, [selectedMembers, t, dispatch, fetchData]);
 
   const handleAddToRegion = async (regionId: string) => {
     try {
-      const region = regions.find(r => r.id === regionId);
+      const region = regions.find((r) => r.id === regionId);
       if (!region) return;
 
       // Current members in this region (from graph data)
       const currentMemberIds = nodes
-        .filter(n => n.type === 'member' && (n.data as Member).region_id === regionId)
-        .map(n => n.id);
-      
-      const newMemberIds = selectedMembers.map(n => n.id);
-      
+        .filter(
+          (n) =>
+            n.type === "member" && (n.data as Member).region_id === regionId,
+        )
+        .map((n) => n.id);
+
+      const newMemberIds = selectedMembers.map((n) => n.id);
+
       // Combine and remove duplicates
-      const allMemberIds = Array.from(new Set([...currentMemberIds, ...newMemberIds]));
-      
+      const allMemberIds = Array.from(
+        new Set([...currentMemberIds, ...newMemberIds]),
+      );
+
       await updateRegion(regionId, { member_ids: allMemberIds });
-      toast.success(t('region.added_to', { defaultValue: 'Added to region' }));
+      toast.success(t("region.added_to", { defaultValue: "Added to region" }));
       dispatch(clearNodeSelection());
       fetchData();
     } catch (e) {
       console.error("Failed to add to region", e);
-      toast.error(t('region.add_failed', { defaultValue: 'Failed to add to region' }));
+      toast.error(
+        t("region.add_failed", { defaultValue: "Failed to add to region" }),
+      );
     }
   };
 
@@ -216,31 +246,48 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     setCreateRegionDialogOpen(true);
   };
 
-  const handleConfirmCreateRegion = async (name: string, description: string) => {
+  const handleConfirmCreateRegion = async (
+    name: string,
+    description: string,
+  ) => {
     try {
-      const memberIds = selectedMembers.map(n => n.id);
+      const memberIds = selectedMembers.map((n) => n.id);
       await createRegion(familyId, name, description, memberIds);
-      toast.success(t('region.created', { defaultValue: 'Region created' }));
+      toast.success(t("region.created", { defaultValue: "Region created" }));
       setCreateRegionDialogOpen(false);
       dispatch(clearNodeSelection());
       fetchData();
     } catch (e) {
       console.error("Failed to create region", e);
-      toast.error(t('region.create_failed', { defaultValue: 'Failed to create region' }));
+      toast.error(
+        t("region.create_failed", { defaultValue: "Failed to create region" }),
+      );
     }
   };
 
-  const handleConfirmEditRegion = async (name: string, description: string, color: string, memberIds: string[]) => {
+  const handleConfirmEditRegion = async (
+    name: string,
+    description: string,
+    color: string,
+    memberIds: string[],
+  ) => {
     if (!editingRegion) return;
     try {
-      await updateRegion(editingRegion.id, { name, description, member_ids: memberIds, color });
-      toast.success(t('region.updated', { defaultValue: 'Region updated' }));
+      await updateRegion(editingRegion.id, {
+        name,
+        description,
+        member_ids: memberIds,
+        color,
+      });
+      toast.success(t("region.updated", { defaultValue: "Region updated" }));
       setEditRegionDialogOpen(false);
       setEditingRegion(null);
       fetchData();
     } catch (e) {
       console.error("Failed to update region", e);
-      toast.error(t('region.update_failed', { defaultValue: 'Failed to update region' }));
+      toast.error(
+        t("region.update_failed", { defaultValue: "Failed to update region" }),
+      );
     }
   };
 
@@ -255,16 +302,17 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     if (!editingRegion) return;
     try {
       await deleteRegion(editingRegion.id);
-      toast.success(t('region.deleted', { defaultValue: 'Region deleted' }));
+      toast.success(t("region.deleted", { defaultValue: "Region deleted" }));
       setDeleteConfirmOpen(false);
       setEditingRegion(null);
       fetchData();
     } catch (e) {
       console.error("Failed to delete region", e);
-      toast.error(t('region.delete_failed', { defaultValue: 'Failed to delete region' }));
+      toast.error(
+        t("region.delete_failed", { defaultValue: "Failed to delete region" }),
+      );
     }
   };
-
 
   // --- Event Handlers ---
 
@@ -277,8 +325,8 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     // DagreLayoutStrategy usually expects connected nodes. Regions are not connected.
     // It might move them to (0,0).
     // So we should only layout members.
-    const memberNodes = nodesRef.current.filter(n => n.type === 'member');
-    const regionNodes = nodesRef.current.filter(n => n.type === 'region');
+    const memberNodes = nodesRef.current.filter((n) => n.type === "member");
+    const regionNodes = nodesRef.current.filter((n) => n.type === "region");
 
     // Edges only connect members usually
     const { nodes: layoutedMemberNodes, edges: layoutedEdges } =
@@ -302,11 +350,11 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
         updateMember(node.id, {
           position_x: Math.round(node.position.x),
           position_y: Math.round(node.position.y),
-        })
+        }),
       );
       await Promise.all(promises);
       toast.success(
-        t("family.layout_updated", { defaultValue: "Layout updated" })
+        t("family.layout_updated", { defaultValue: "Layout updated" }),
       );
       // Refresh to update regions
       fetchData();
@@ -314,7 +362,15 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       console.error("Failed to save layout", e);
       toast.error("Failed to save layout");
     }
-  }, [settingsState.compactMode, nodesRef, edgesRef, setNodes, setEdges, t, fetchData]);
+  }, [
+    settingsState.compactMode,
+    nodesRef,
+    edgesRef,
+    setNodes,
+    setEdges,
+    t,
+    fetchData,
+  ]);
 
   const handleCenterView = useCallback(() => {
     reactFlowInstance.current?.fitView({ duration: 800 });
@@ -336,9 +392,9 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
 
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
-      if (node.type === 'member') {
+      if (node.type === "member") {
         onNodeSelect(node.data as Member);
-      } else if (node.type === 'region') {
+      } else if (node.type === "region") {
         // Handle region click - Open Edit Dialog
         setEditingRegion(node.data.originalRegion);
         setEditRegionDialogOpen(true);
@@ -359,7 +415,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
         dispatch(setSelectedNodeIds([node.id]));
       }
     },
-    [dispatch, onNodeSelect, onEdgeSelect]
+    [dispatch, onNodeSelect, onEdgeSelect],
   );
 
   const onEdgeClick = useCallback(
@@ -379,7 +435,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       }
       setSelectedEdgeId(edge.id);
     },
-    [onEdgeSelect]
+    [onEdgeSelect],
   );
 
   const onPaneClick = useCallback(() => {
@@ -397,33 +453,34 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   const onSelectionChange = useCallback(
     ({ nodes: selectedNodes }: OnSelectionChangeParams) => {
       // Only sync MEMBER selection to Redux?
-      // If we allow selecting regions (e.g. via box select), we should filter them out 
+      // If we allow selecting regions (e.g. via box select), we should filter them out
       // OR handle them.
       // Current RegionNode has selectable: true.
 
       const memberIds = selectedNodes
-        .filter(n => n.type === 'member')
-        .map(n => n.id);
+        .filter((n) => n.type === "member")
+        .map((n) => n.id);
 
       const currentIds = selectedNodeIdsRef.current;
 
       const sortedSelected = [...memberIds].sort();
       const sortedCurrent = [...currentIds].sort();
 
-      const isSame = sortedSelected.length === sortedCurrent.length &&
+      const isSame =
+        sortedSelected.length === sortedCurrent.length &&
         sortedSelected.every((id, index) => id === sortedCurrent[index]);
 
       if (!isSame) {
         dispatch(setSelectedNodeIds(memberIds));
-        
+
         // If multiple nodes are selected via box selection, clear property panel
         if (memberIds.length > 1) {
-           onNodeSelect(null);
-           onEdgeSelect?.(null);
+          onNodeSelect(null);
+          onEdgeSelect?.(null);
         }
       }
     },
-    [dispatch, onNodeSelect, onEdgeSelect]
+    [dispatch, onNodeSelect, onEdgeSelect],
   );
 
   const onMoveEnd = useCallback(
@@ -431,39 +488,47 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       if (familyId)
         localStorage.setItem(`viewport-${familyId}`, JSON.stringify(viewport));
     },
-    [familyId]
+    [familyId],
   );
 
   const onNodeMouseEnter = useCallback(
     (_event: React.MouseEvent, node: Node) => {
       // Only for members
-      if (node.type !== 'member') return;
+      if (node.type !== "member") return;
 
       setNodes((nds) =>
         nds.map((n) =>
-          n.id === node.id ? { ...n, zIndex: 1000 } : { ...n, zIndex: 0 }
-        )
+          n.id === node.id ? { ...n, zIndex: 1000 } : { ...n, zIndex: 0 },
+        ),
       );
     },
-    [setNodes]
+    [setNodes],
   );
 
   const onNodeMouseLeave = useCallback(() => {
     // Reset zIndex for members (regions have -1)
-    setNodes((nds) => nds.map((n) => {
-      if (n.type === 'region') return n;
-      return { ...n, zIndex: undefined };
-    }));
+    setNodes((nds) =>
+      nds.map((n) => {
+        if (n.type === "region") return n;
+        return { ...n, zIndex: undefined };
+      }),
+    );
   }, [setNodes]);
 
-  const nodeTypes = useMemo(() => ({
-    member: MemberNode,
-    region: RegionNode,
-  }), []);
+  const nodeTypes = useMemo(
+    () => ({
+      member: MemberNode,
+      region: RegionNode,
+    }),
+    [],
+  );
 
-  const edgeTypes = useMemo(() => ({
-    custom: CustomEdge,
-  }), []);
+  const edgeTypes = useMemo(
+    () => ({
+      custom: CustomEdge,
+    }),
+    [],
+  );
 
   // Prepare data for Edit Dialog
   const currentRegionMemberIds = useMemo(() => {
@@ -472,13 +537,18 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     // But we need ALL members, not just those in graph (though graph has all usually).
     // Graph has all members of family.
     return nodes
-      .filter(n => n.type === 'member' && (n.data as Member).region_id === editingRegion.id)
-      .map(n => n.id);
+      .filter(
+        (n) =>
+          n.type === "member" &&
+          (n.data as Member).region_id === editingRegion.id,
+      )
+      .map((n) => n.id);
   }, [nodes, editingRegion]);
 
-  const allMembers = useMemo(() =>
-    nodes.filter(n => n.type === 'member').map(n => n.data as Member),
-    [nodes]);
+  const allMembers = useMemo(
+    () => nodes.filter((n) => n.type === "member").map((n) => n.data as Member),
+    [nodes],
+  );
 
   return (
     <div
@@ -488,9 +558,9 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       <ReactFlow
         nodes={nodes.map((n) => ({
           ...n,
-          draggable: !readOnly && n.type === 'member', // Only members draggable
-          connectable: !readOnly && n.type === 'member',
-          selected: selectedNodeIds.includes(n.id)
+          draggable: !readOnly && n.type === "member", // Only members draggable
+          connectable: !readOnly && n.type === "member",
+          selected: selectedNodeIds.includes(n.id),
         }))}
         edges={edges.map((e) => ({ ...e, deletable: !readOnly }))}
         onInit={(instance) => (reactFlowInstance.current = instance)}
@@ -545,24 +615,26 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
           onClose={() => setEditRegionDialogOpen(false)}
           onConfirm={handleConfirmEditRegion}
           onDelete={handleDeleteRegion}
-          initialColor={editingRegion?.color || '#EBF8FF'}
-          initialName={editingRegion?.name || ''}
-          initialDescription={editingRegion?.description || ''}
+          initialColor={editingRegion?.color || "#EBF8FF"}
+          initialName={editingRegion?.name || ""}
+          initialDescription={editingRegion?.description || ""}
           currentMemberIds={currentRegionMemberIds}
           allMembers={allMembers}
         />
 
         <ConfirmDialog
           isOpen={deleteConfirmOpen}
-          title={t('region.delete_title', { defaultValue: 'Delete Region' })}
-          message={t('region.confirm_delete', { defaultValue: 'Are you sure you want to delete this region?' })}
+          title={t("region.delete_title", { defaultValue: "Delete Region" })}
+          message={t("region.confirm_delete", {
+            defaultValue: "Are you sure you want to delete this region?",
+          })}
           onConfirm={executeDeleteRegion}
           onCancel={() => {
-             setDeleteConfirmOpen(false);
-             setEditRegionDialogOpen(true); // Re-open edit dialog if canceled
+            setDeleteConfirmOpen(false);
+            setEditRegionDialogOpen(true); // Re-open edit dialog if canceled
           }}
-          confirmText={t('common.delete', { defaultValue: 'Delete' })}
-          cancelText={t('common.cancel', { defaultValue: 'Cancel' })}
+          confirmText={t("common.delete", { defaultValue: "Delete" })}
+          cancelText={t("common.cancel", { defaultValue: "Cancel" })}
         />
 
         <Panel position="top-center">

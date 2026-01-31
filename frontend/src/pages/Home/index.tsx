@@ -1,6 +1,6 @@
 import ConfirmDialog from "@/components/ConfirmDialog";
-import MemberDetail from "@/components/MemberDetail";
-import PropertyPanel from "@/components/PropertyPanel";
+import MemberDetailPanel from "@/components/SidePanel/MemberDetailPanel";
+import PropertyPanel from "@/components/SidePanel/PropertyPanel";
 import { RootState } from "@/store";
 import { setLastSelectedFamilyId } from "@/store/familySlice";
 import { Loader2 } from "lucide-react";
@@ -279,7 +279,7 @@ const Home: React.FC = () => {
           className={`transition-all duration-300 ease-in-out ${selectedMember || selectedEdge ? "w-80" : "w-0"} overflow-hidden border-l`}
         >
           {selectedMember && (
-            <MemberDetail
+            <MemberDetailPanel
               member={selectedMember}
               onClose={() => setSelectedMember(null)}
               onUpdate={handleRefresh}

@@ -2,9 +2,9 @@ import { Save, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { cn, getSurname } from "../lib/utils";
-import { createMember, updateMember } from "../services/api";
-import { Member } from "../types";
+import { cn, getSurname } from "../../lib/utils";
+import { createMember, updateMember } from "../../services/api";
+import { Member } from "../../types";
 
 interface MemberDetailProps {
   member: Member;
@@ -13,7 +13,7 @@ interface MemberDetailProps {
   readOnly?: boolean;
 }
 
-const MemberDetail: React.FC<MemberDetailProps> = ({
+const MemberDetailPanel: React.FC<MemberDetailProps> = ({
   member,
   onClose,
   onUpdate,
@@ -318,4 +318,4 @@ const MemberDetail: React.FC<MemberDetailProps> = ({
   );
 };
 
-export default MemberDetail;
+export default MemberDetailPanel;
