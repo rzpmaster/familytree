@@ -36,9 +36,19 @@ export interface User {
   shared_families?: FamilyCollaborator[];
 }
 
+export interface Region {
+  id: string;
+  family_id: string;
+  name: string;
+  description?: string;
+  color?: string;
+  created_at: string;
+}
+
 export interface Member {
   id: string;
   family_id: string;
+  region_id?: string;
   name: string;
   surname?: string; // 姓
   gender: 'male' | 'female';
@@ -93,4 +103,5 @@ export interface GraphEdge {
 export interface GraphData {
   nodes: GraphNode[];
   edges: GraphEdge[];
+  regions?: Region[];
 }

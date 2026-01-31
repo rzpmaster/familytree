@@ -7,6 +7,7 @@ import {
   ParentChildRelationship,
   SpouseRelationship,
   User,
+  Region,
 } from "../types";
 
 const api = axios.create({
@@ -335,6 +336,42 @@ export const rejectAccessRequest = async (requestId: string) => {
   const response = await api.put(
     `/families/access-requests/${requestId}/reject`,
   );
+  return response.data;
+};
+
+// Regions
+export const createRegion = async (
+  familyId: string,
+  name: string,
+  description?: string,
+  memberIds?: string[],
+  color?: string
+) => {
+  const response = await api.post<Region>("/regions/", {
+    family_id: familyId,
+    name,
+    description,
+    member_ids: memberIds,
+    color,
+  });
+  return response.data;
+};
+
+export const updateRegion = async (
+  id: string,
+  data: { name?: string; description?: string; member_ids?: string[]; color?: string }
+) => {
+  const response = await api.put<Region>(`/regions/${id}`, data);
+  return response.data;
+};
+
+export const deleteRegion = async (id: string) => {
+  const response = await api.delete(`/regions/${id}`);
+  return response.data;
+};
+
+export const getRegions = async (familyId: string) => {
+  const response = await api.get<Region[]>(`/regions/family/${familyId}`);
   return response.data;
 };
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base
-from .routers import members, relationships, families, users
+from .routers import members, relationships, families, users, regions
 from .db_init import init_db
 
 # Initialize database (create DB if not exists, create tables)
@@ -27,6 +27,7 @@ app.include_router(members.router)
 app.include_router(relationships.router)
 app.include_router(families.router)
 app.include_router(users.router)
+app.include_router(regions.router)
 
 @app.get("/")
 def read_root():

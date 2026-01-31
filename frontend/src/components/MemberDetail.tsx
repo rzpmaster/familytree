@@ -85,8 +85,8 @@ const MemberDetail: React.FC<MemberDetailProps> = ({
           birth_place: formData.birth_place,
           photo_url: formData.photo_url,
           family_id: member.family_id,
-          position_x: member.position_x,
-          position_y: member.position_y,
+          position_x: Math.round(member.position_x),
+          position_y: Math.round(member.position_y),
           sort_order: formData.sort_order,
         });
         toast.success("Member added successfully");

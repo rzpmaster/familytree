@@ -59,13 +59,27 @@ class Family(Base):
     collaborators = relationship("FamilyCollaborator", back_populates="family", cascade="all, delete-orphan")
     members = relationship("Member", back_populates="family", cascade="all, delete-orphan")
     access_requests = relationship("AccessRequest", back_populates="family", cascade="all, delete-orphan")
+    regions = relationship("Region", back_populates="family", cascade="all, delete-orphan")
 
+class Region(Base):
+    __tablename__ = "regions"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    family_id = Column(String, ForeignKey("families.id"), nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    color = Column(String, default="#EBF8FF") # Default light blue
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    family = relationship("Family", back_populates="regions")
+    members = relationship("Member", back_populates="region")
 
 class Member(Base):
     __tablename__ = "members"
 
     id = Column(String, primary_key=True, default=generate_uuid)
     family_id = Column(String, ForeignKey("families.id"), nullable=False)
+    region_id = Column(String, ForeignKey("regions.id"), nullable=True)
     name = Column(String, nullable=False, index=True)
     surname = Column(String, nullable=True)
     gender = Column(String, nullable=False) # 'male', 'female'
@@ -83,6 +97,7 @@ class Member(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())
 
     family = relationship("Family", back_populates="members")
+    region = relationship("Region", back_populates="members")
     
     # Relationships where this member is member1 (spouse)
     spouse_relationships_1 = relationship("SpouseRelationship", foreign_keys="[SpouseRelationship.member1_id]", back_populates="member1", cascade="all, delete-orphan")

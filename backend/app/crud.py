@@ -304,7 +304,10 @@ def get_family_graph(db: Session, family_id: str):
                 label=pc.relationship_type
             ))
             
-    return schemas.GraphData(nodes=nodes, edges=edges)
+    # Regions
+    regions = db.query(models.Region).filter(models.Region.family_id == family_id).all()
+            
+    return schemas.GraphData(nodes=nodes, edges=edges, regions=regions)
 
 def import_family(db: Session, import_data: schemas.FamilyImport):
     # 1. Create Family

@@ -94,6 +94,30 @@ class Family(FamilyBase):
 class FamilyWithRole(Family):
     current_user_role: str # 'owner', 'editor', 'viewer'
 
+# Region Schemas
+class RegionBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+    color: Optional[str] = "#EBF8FF"
+
+class RegionCreate(RegionBase):
+    family_id: str
+    member_ids: Optional[List[str]] = []
+
+class RegionUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    color: Optional[str] = None
+    member_ids: Optional[List[str]] = None
+
+class Region(RegionBase):
+    id: str
+    family_id: str
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
 # Member Schemas
 class MemberBase(BaseModel):
     name: str
@@ -109,6 +133,7 @@ class MemberBase(BaseModel):
     position_x: Optional[int] = 0
     position_y: Optional[int] = 0
     sort_order: Optional[int] = 0
+    region_id: Optional[str] = None
 
 class MemberCreate(MemberBase):
     family_id: str
@@ -127,6 +152,7 @@ class MemberUpdate(BaseModel):
     position_x: Optional[int] = None
     position_y: Optional[int] = None
     sort_order: Optional[int] = None
+    region_id: Optional[str] = None
 
 class Member(MemberBase):
     id: str
@@ -191,6 +217,7 @@ class GraphEdge(BaseModel):
 class GraphData(BaseModel):
     nodes: List[GraphNode]
     edges: List[GraphEdge]
+    regions: Optional[List[Region]] = [] # Include regions in graph data
 
 # Import Schemas
 class ImportMember(MemberBase):
