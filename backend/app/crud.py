@@ -481,14 +481,16 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                     )
                     db.add(db_region)
                     db.flush()  # 拿到 db_region.id，不 commit
-                    region_id_map[r.original_id] = db_region.id
+                    if r.original_id:
+                        region_id_map[r.original_id.strip()] = db_region.id
 
             # 3. Create Members & Map IDs
             id_map: dict[str, str] = {}  # original_id -> new_db_id
             for m in import_data.members:
                 new_region_id = None
-                if m.region_id and m.region_id in region_id_map:
-                    new_region_id = region_id_map[m.region_id]
+                m_rid = m.region_id.strip() if m.region_id else None
+                if m_rid and m_rid in region_id_map:
+                    new_region_id = region_id_map[m_rid]
 
                 member_data = schemas.MemberCreate(
                     family_id=db_family.id,
