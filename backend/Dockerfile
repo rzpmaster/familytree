@@ -26,8 +26,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 # Copy project files
 COPY . .
 
-# Create data directory for SQLite
-RUN mkdir -p /app/data
+RUN ls -al /app/app/data
 
 # Expose port
 EXPOSE 8000
