@@ -3,7 +3,6 @@ import FamilyManager from "@/components/FamilyManager";
 import CreateRegionDialog from "@/components/Region/CreateRegionDialog";
 import EditRegionDialog from "@/components/Region/EditRegionDialog";
 import RegionNode from "@/components/Region/RegionNode";
-import RegionPanel from "@/components/SidePanel/RegionPanel";
 import { useFamilyData } from "@/hooks/familyTree/useFamilyData";
 import { useGraphInteraction } from "@/hooks/familyTree/useGraphInteraction";
 import { useHighlighting } from "@/hooks/familyTree/useHighlighting";
@@ -26,7 +25,7 @@ import {
   CompactLayoutStrategy,
   NormalLayoutStrategy,
 } from "@/strategies/layout/RecursiveFamilyLayoutStrategy";
-import { Family, GraphEdge, Member, Region } from "@/types";
+import { Family, GraphEdge, Member, Region, RegionState } from "@/types";
 import { Focus, Layout, Plus } from "lucide-react";
 import React, {
   useCallback,
@@ -67,6 +66,7 @@ interface FamilyTreeCanvasProps {
   currentFamily: Family | null;
   onSelectFamily: (family: Family) => void;
   onFamilyCreated: () => void;
+  onRegionStateChange?: (state: RegionState) => void;
 }
 
 const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
@@ -80,6 +80,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   currentFamily,
   onSelectFamily,
   onFamilyCreated,
+  onRegionStateChange,
 }) => {
   const { t } = useTranslation();
   const { state: settingsState } = useSettings();
@@ -210,41 +211,66 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     }
   }, [selectedMembers, t, dispatch, fetchData]);
 
-  const handleAddToRegion = async (regionId: string) => {
-    try {
-      const region = regions.find((r) => r.id === regionId);
-      if (!region) return;
+  const handleAddToRegion = useCallback(
+    async (regionId: string) => {
+      try {
+        const region = regions.find((r) => r.id === regionId);
+        if (!region) return;
 
-      // Current members in this region (from graph data)
-      const currentMemberIds = nodes
-        .filter(
-          (n) =>
-            n.type === "member" && (n.data as Member).region_id === regionId,
-        )
-        .map((n) => n.id);
+        // Current members in this region (from graph data)
+        const currentMemberIds = nodes
+          .filter(
+            (n) =>
+              n.type === "member" && (n.data as Member).region_id === regionId,
+          )
+          .map((n) => n.id);
 
-      const newMemberIds = selectedMembers.map((n) => n.id);
+        const newMemberIds = selectedMembers.map((n) => n.id);
 
-      // Combine and remove duplicates
-      const allMemberIds = Array.from(
-        new Set([...currentMemberIds, ...newMemberIds]),
-      );
+        // Combine and remove duplicates
+        const allMemberIds = Array.from(
+          new Set([...currentMemberIds, ...newMemberIds]),
+        );
 
-      await updateRegion(regionId, { member_ids: allMemberIds });
-      toast.success(t("region.added_to", { defaultValue: "Added to region" }));
-      dispatch(clearNodeSelection());
-      fetchData();
-    } catch (e) {
-      console.error("Failed to add to region", e);
-      toast.error(
-        t("region.add_failed", { defaultValue: "Failed to add to region" }),
-      );
-    }
-  };
+        await updateRegion(regionId, { member_ids: allMemberIds });
+        toast.success(
+          t("region.added_to", { defaultValue: "Added to region" }),
+        );
+        dispatch(clearNodeSelection());
+        fetchData();
+      } catch (e) {
+        console.error("Failed to add to region", e);
+        toast.error(
+          t("region.add_failed", { defaultValue: "Failed to add to region" }),
+        );
+      }
+    },
+    [regions, nodes, selectedMembers, t, dispatch, fetchData],
+  );
 
-  const handleCreateRegion = () => {
+  const handleCreateRegion = useCallback(() => {
     setCreateRegionDialogOpen(true);
-  };
+  }, []);
+
+  // Notify parent about region state
+  useEffect(() => {
+    if (onRegionStateChange) {
+      onRegionStateChange({
+        selectedCount: selectedMembers.length,
+        regions: regions,
+        onDeleteAll: handleDeleteAll,
+        onCreateRegion: handleCreateRegion,
+        onAddToRegion: handleAddToRegion,
+      });
+    }
+  }, [
+    onRegionStateChange,
+    selectedMembers.length,
+    regions,
+    handleDeleteAll,
+    handleCreateRegion,
+    handleAddToRegion,
+  ]);
 
   const handleConfirmCreateRegion = async (
     name: string,
@@ -593,14 +619,14 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
         <Background />
         <Controls />
 
-        {/* Region Panel */}
-        <RegionPanel
+        {/* Region Panel - Moved to Home.tsx to prevent flickering */}
+        {/* <RegionPanel
           selectedCount={selectedMembers.length}
           onDeleteAll={handleDeleteAll}
           onCreateRegion={handleCreateRegion}
           onAddToRegion={handleAddToRegion}
           regions={regions}
-        />
+        /> */}
 
         {/* Dialogs */}
         <CreateRegionDialog

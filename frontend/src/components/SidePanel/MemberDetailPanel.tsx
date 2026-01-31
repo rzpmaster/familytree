@@ -4,13 +4,15 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { cn, getSurname } from "../../lib/utils";
 import { createMember, updateMember } from "../../services/api";
-import { Member } from "../../types";
+import { Member, RegionState } from "../../types";
+import { MultiSelectionActions } from "../MultiSelectionActions";
 
 interface MemberDetailProps {
   member: Member;
   onClose: () => void;
   onUpdate: () => void; // Trigger refresh
   readOnly?: boolean;
+  regionState?: RegionState | null;
 }
 
 const MemberDetailPanel: React.FC<MemberDetailProps> = ({
@@ -18,6 +20,7 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
   onClose,
   onUpdate,
   readOnly = false,
+  regionState,
 }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<Partial<Member>>({});
@@ -302,6 +305,22 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
             })}
           />
         </div>
+
+        {/* Region Actions */}
+        {regionState && regionState.selectedCount > 0 && !isNewMember && (
+          <div className="p-3 bg-blue-50 border border-blue-100 rounded-md">
+            <h3 className="text-sm font-semibold text-blue-900 mb-2">
+              {t("region.actions", { defaultValue: "Region Actions" })}
+            </h3>
+            <MultiSelectionActions
+              selectedCount={regionState.selectedCount}
+              regions={regionState.regions}
+              onDeleteAll={regionState.onDeleteAll}
+              onCreateRegion={regionState.onCreateRegion}
+              onAddToRegion={regionState.onAddToRegion}
+            />
+          </div>
+        )}
       </div>
 
       {!readOnly && (

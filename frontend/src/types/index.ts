@@ -105,3 +105,11 @@ export interface GraphData {
   edges: GraphEdge[];
   regions?: Region[];
 }
+
+export interface RegionState {
+  selectedCount: number;
+  regions: Region[];
+  onDeleteAll: () => void;
+  onCreateRegion: () => void;
+  onAddToRegion: (regionId: string) => void;
+}

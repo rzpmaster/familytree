@@ -1,6 +1,7 @@
 import ConfirmDialog from "@/components/ConfirmDialog";
 import MemberDetailPanel from "@/components/SidePanel/MemberDetailPanel";
 import PropertyPanel from "@/components/SidePanel/PropertyPanel";
+import RegionPanel from "@/components/SidePanel/RegionPanel";
 import { RootState } from "@/store";
 import { setLastSelectedFamilyId } from "@/store/familySlice";
 import { Loader2 } from "lucide-react";
@@ -16,7 +17,7 @@ import {
   deleteSpouseRelationship,
   getFamilies,
 } from "../../services/api";
-import { Family, GraphEdge, Member } from "../../types";
+import { Family, GraphEdge, Member, RegionState } from "../../types";
 import FamilyTreeCanvas from "./FamilyTreeCanvas";
 
 const Home: React.FC = () => {
@@ -27,6 +28,7 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<GraphEdge | null>(null);
+  const [regionState, setRegionState] = useState<RegionState | null>(null);
   const [refreshKey, setRefreshKey] = useState(0); // to force refresh canvas
   const [confirmState, setConfirmState] = useState<{
     isOpen: boolean;
@@ -228,6 +230,11 @@ const Home: React.FC = () => {
     );
   }
 
+  const showSidebar =
+    !!selectedMember ||
+    !!selectedEdge ||
+    (!!regionState && regionState.selectedCount > 1);
+
   return (
     <div className="h-full w-full flex flex-col overflow-hidden isolate">
       {/* Main Content */}
@@ -253,6 +260,7 @@ const Home: React.FC = () => {
                 currentFamily={family}
                 onSelectFamily={setFamily}
                 onFamilyCreated={handleFamilyCreated}
+                onRegionStateChange={setRegionState}
               />
               <div
                 className="absolute top-4 left-4 bg-white/80 p-2 rounded text-xs text-gray-500 pointer-events-none"
@@ -276,23 +284,34 @@ const Home: React.FC = () => {
 
         {/* Sidebar */}
         <div
-          className={`transition-all duration-300 ease-in-out ${selectedMember || selectedEdge ? "w-80" : "w-0"} overflow-hidden border-l`}
+          className={`transition-all duration-300 ease-in-out ${showSidebar ? "w-80" : "w-0"} overflow-hidden border-l`}
         >
-          {selectedMember && (
+          {selectedMember ? (
             <MemberDetailPanel
               member={selectedMember}
               onClose={() => setSelectedMember(null)}
               onUpdate={handleRefresh}
               readOnly={isReadOnly}
+              regionState={regionState}
             />
-          )}
-          {selectedEdge && (
+          ) : selectedEdge ? (
             <PropertyPanel
               edge={selectedEdge}
               onClose={() => setSelectedEdge(null)}
               onUpdate={handleRefresh}
               readOnly={isReadOnly}
             />
+          ) : (
+            regionState &&
+            regionState.selectedCount > 1 && (
+              <RegionPanel
+                selectedCount={regionState.selectedCount}
+                regions={regionState.regions}
+                onDeleteAll={regionState.onDeleteAll}
+                onCreateRegion={regionState.onCreateRegion}
+                onAddToRegion={regionState.onAddToRegion}
+              />
+            )
           )}
         </div>
       </div>
