@@ -1,12 +1,12 @@
 import axios from "axios";
 import { loadConfig } from "../config/constants";
 import {
-	Family,
-	GraphData,
-	Member,
-	ParentChildRelationship,
-	SpouseRelationship,
-	User,
+  Family,
+  GraphData,
+  Member,
+  ParentChildRelationship,
+  SpouseRelationship,
+  User,
 } from "../types";
 
 const api = axios.create({
