@@ -267,12 +267,62 @@ def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
     return db_member
 
 
+def delete_region(db: Session, region_id: str):
+    db_region = db.query(models.Region).filter(models.Region.id == region_id).first()
+    if db_region:
+        db.delete(db_region)
+        db.commit()
+    return db_region
+
+
 def delete_member(db: Session, member_id: str):
     db_member = get_member(db, member_id)
     if db_member:
+        region_id = db_member.region_id
         db.delete(db_member)
+        
+        # Check if region is empty after deletion
+        # We flush first to ensure the member is considered deleted in the current transaction
+        db.flush()
+        
+        if region_id:
+            count = db.query(models.Member).filter(models.Member.region_id == region_id).count()
+            if count == 0:
+                # Region is empty, delete it
+                # We do this in the same transaction
+                db_region = db.query(models.Region).filter(models.Region.id == region_id).first()
+                if db_region:
+                    db.delete(db_region)
+        
         db.commit()
     return db_member
+
+
+def delete_members(db: Session, member_ids: list[str]):
+    # Get all members to find their regions
+    members = db.query(models.Member).filter(models.Member.id.in_(member_ids)).all()
+    if not members:
+        return []
+
+    # Collect affected regions
+    affected_region_ids = {m.region_id for m in members if m.region_id}
+    
+    # Delete members
+    for member in members:
+        db.delete(member)
+    
+    db.flush() # Apply deletions in transaction
+    
+    # Check affected regions
+    for region_id in affected_region_ids:
+        count = db.query(models.Member).filter(models.Member.region_id == region_id).count()
+        if count == 0:
+             db_region = db.query(models.Region).filter(models.Region.id == region_id).first()
+             if db_region:
+                 db.delete(db_region)
+
+    db.commit()
+    return members
 
 
 # Relationships

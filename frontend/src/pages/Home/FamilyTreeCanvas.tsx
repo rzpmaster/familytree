@@ -9,10 +9,10 @@ import { useHighlighting } from "@/hooks/familyTree/useHighlighting";
 import { useSettings } from "@/hooks/useSettings";
 import {
   createRegion,
-  deleteMember,
+  deleteMembers,
   deleteRegion,
   updateMember,
-  updateRegion,
+  updateRegion
 } from "@/services/api";
 import { RootState } from "@/store";
 import {
@@ -177,6 +177,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   const [createRegionDialogOpen, setCreateRegionDialogOpen] = useState(false);
   const [editRegionDialogOpen, setEditRegionDialogOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteMembersConfirmOpen, setDeleteMembersConfirmOpen] = useState(false);
   const [editingRegion, setEditingRegion] = useState<Region | null>(null);
 
   // Filter selected members (exclude regions)
@@ -188,26 +189,28 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     [nodes, selectedNodeIds],
   );
 
-  const handleDeleteAll = useCallback(async () => {
-    if (
-      window.confirm(
-        t("common.confirm_delete_all", {
-          defaultValue: "Are you sure you want to delete these members?",
-        }),
-      )
-    ) {
-      try {
-        const promises = selectedMembers.map((node) => deleteMember(node.id));
-        await Promise.all(promises);
-        toast.success(
-          t("common.deleted_success", { defaultValue: "Deleted successfully" }),
-        );
-        dispatch(clearNodeSelection());
-        fetchData();
-      } catch (e) {
-        console.error("Failed to delete members", e);
-        toast.error(t("common.error", { defaultValue: "Error occurred" }));
-      }
+  const handleDeleteAll = useCallback(() => {
+    if (selectedMembers.length > 0) {
+      setDeleteMembersConfirmOpen(true);
+    }
+  }, [selectedMembers]);
+
+  const executeDeleteAll = useCallback(async () => {
+    try {
+      const memberIds = selectedMembers.map((node) => node.id);
+      if (memberIds.length === 0) return;
+
+      await deleteMembers(memberIds);
+
+      toast.success(
+        t("common.deleted_success", { defaultValue: "Deleted successfully" }),
+      );
+      setDeleteMembersConfirmOpen(false);
+      dispatch(clearNodeSelection());
+      fetchData();
+    } catch (e) {
+      console.error("Failed to delete members", e);
+      toast.error(t("common.error", { defaultValue: "Error occurred" }));
     }
   }, [selectedMembers, t, dispatch, fetchData]);
 
@@ -659,6 +662,18 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
             setDeleteConfirmOpen(false);
             setEditRegionDialogOpen(true); // Re-open edit dialog if canceled
           }}
+          confirmText={t("common.delete", { defaultValue: "Delete" })}
+          cancelText={t("common.cancel", { defaultValue: "Cancel" })}
+        />
+
+        <ConfirmDialog
+          isOpen={deleteMembersConfirmOpen}
+          title={t("common.delete", { defaultValue: "Delete" })}
+          message={t("common.confirm_delete_all", {
+            defaultValue: "Are you sure you want to delete these members?",
+          })}
+          onConfirm={executeDeleteAll}
+          onCancel={() => setDeleteMembersConfirmOpen(false)}
           confirmText={t("common.delete", { defaultValue: "Delete" })}
           cancelText={t("common.cancel", { defaultValue: "Cancel" })}
         />

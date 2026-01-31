@@ -47,6 +47,13 @@ export const deleteMember = async (id: string) => {
   return response.data;
 };
 
+export const deleteMembers = async (ids: string[]) => {
+  const response = await api.delete('/members/', {
+    data: { member_ids: ids }
+  });
+  return response.data;
+};
+
 export const getFamilyGraph = async (familyId: string) => {
   const response = await api.get<GraphData>(`/relationships/graph/${familyId}`);
   return response.data;

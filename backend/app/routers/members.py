@@ -44,6 +44,12 @@ def update_member(
     return db_member
 
 
+@router.delete("/", status_code=204)
+def delete_members(batch: schemas.MemberBatchDelete, db: Session = Depends(get_db)):
+    crud.delete_members(db, member_ids=batch.member_ids)
+    return None
+
+
 @router.delete("/{member_id}", response_model=schemas.Member)
 def delete_member(member_id: str, db: Session = Depends(get_db)):
     db_member = crud.delete_member(db, member_id=member_id)

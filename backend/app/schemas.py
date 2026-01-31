@@ -179,6 +179,10 @@ class MemberUpdate(BaseModel):
     region_id: Optional[str] = None
 
 
+class MemberBatchDelete(BaseModel):
+    member_ids: List[str]
+
+
 class Member(MemberBase):
     id: str
     family_id: str
