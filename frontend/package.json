@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "start": "npm run dev",
-    "dev": "concurrently \"npm run backend\" \"wait-on tcp:8000 && vite\"",
-    "backend": "cd ../backend && call start.bat",
+    "dev": "concurrently \"npm run dev:backend\" \"wait-on tcp:8000 && vite\"",
+    "dev:frontend":"vite",
+    "dev:backend": "cd ../backend && call start.bat",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

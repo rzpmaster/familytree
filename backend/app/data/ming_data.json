@@ -1,627 +1,1531 @@
 {
-    "user": {
-        "email": "hongwu@ming.dynasty",
-        "name": "Emperor Hongwu"
+  "family_name": "大明皇族 (Ming Dynasty) (Export)",
+  "user_id": "dfa21df5-0f66-4218-a858-ef3a204befa6",
+  "members": [
+    {
+      "name": "朱元璋 (Hongwu)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1328-10-21",
+      "death_date": "1398-06-24",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2438,
+      "position_y": 0,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "ff4c9cde-4d53-4318-8698-4f71b1dad0a2",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:23:43",
+      "original_id": "ff4c9cde-4d53-4318-8698-4f71b1dad0a2"
     },
-    "family": {
-        "name": "大明皇族 (Ming Dynasty)"
+    {
+      "name": "马皇后 (Empress Ma)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "1332-07-18",
+      "death_date": "1382-09-23",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2724,
+      "position_y": 0,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "6caed54a-53b5-4836-a462-e80a718e3e43",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:23:43",
+      "original_id": "6caed54a-53b5-4836-a462-e80a718e3e43"
     },
-    "members": [
-        {
-            "id": "zhu_yuanzhang",
-            "name": "朱元璋 (Hongwu)",
-            "gender": "male",
-            "birth": "1328-10-21",
-            "death": "1398-06-24"
-        },
-        {
-            "id": "empress_ma",
-            "name": "马皇后 (Empress Ma)",
-            "gender": "female",
-            "birth": "1332-07-18",
-            "death": "1382-09-23"
-        },
-        {
-            "id": "zhu_biao",
-            "name": "朱标 (Zhu Biao)",
-            "gender": "male",
-            "birth": "1355-10-10",
-            "death": "1392-05-17"
-        },
-        {
-            "id": "zhu_shuang",
-            "name": "朱樉 (Zhu Shuang)",
-            "gender": "male",
-            "birth": "1356-12-03",
-            "death": "1395-04-09"
-        },
-        {
-            "id": "zhu_gang",
-            "name": "朱棡 (Zhu Gang)",
-            "gender": "male",
-            "birth": "1358-12-18",
-            "death": "1398-03-30"
-        },
-        {
-            "id": "zhu_di",
-            "name": "朱棣 (Yongle)",
-            "gender": "male",
-            "birth": "1360-05-02",
-            "death": "1424-08-12"
-        },
-        {
-            "id": "zhu_su",
-            "name": "朱橚 (Zhu Su)",
-            "gender": "male",
-            "birth": "1361-10-08",
-            "death": "1425-09-02"
-        },
-        {
-            "id": "empress_chang",
-            "name": "常氏 (Consort Chang)",
-            "gender": "female",
-            "death": "1378-12-04"
-        },
-        {
-            "id": "empress_xu",
-            "name": "徐皇后 (Empress Xu)",
-            "gender": "female",
-            "birth": "1362-03-05",
-            "death": "1407-08-06"
-        },
-        {
-            "id": "zhu_yunwen",
-            "name": "朱允炆 (Jianwen)",
-            "gender": "male",
-            "birth": "1377-12-05",
-            "death": "1402-07-13"
-        },
-        {
-            "id": "zhu_wenkui",
-            "name": "朱文奎 (Zhu Wenkui)",
-            "gender": "male",
-            "birth": "1396-11-30",
-            "death": "1402-07-13"
-        },
-        {
-            "id": "zhu_gaochi",
-            "name": "朱高炽 (Hongxi)",
-            "gender": "male",
-            "birth": "1378-08-16",
-            "death": "1425-05-29"
-        },
-        {
-            "id": "zhu_gaoxu",
-            "name": "朱高煦 (Zhu Gaoxu)",
-            "gender": "male",
-            "birth": "1380-12-30",
-            "death": "1426-10-06"
-        },
-        {
-            "id": "zhu_gaosui",
-            "name": "朱高燧 (Zhu Gaosui)",
-            "gender": "male",
-            "birth": "1383-01-19",
-            "death": "1431-10-05"
-        },
-        {
-            "id": "empress_zhang",
-            "name": "张皇后 (Empress Zhang)",
-            "gender": "female",
-            "death": "1442-11-20"
-        },
-        {
-            "id": "zhu_zhanji",
-            "name": "朱瞻基 (Xuande)",
-            "gender": "male",
-            "birth": "1399-03-16",
-            "death": "1435-01-31"
-        },
-        {
-            "id": "zhu_zhanshan",
-            "name": "朱瞻埏 (Zhu Zhanshan)",
-            "gender": "male",
-            "birth": "1406-04-04",
-            "death": "1478-01-03"
-        },
-        {
-            "id": "zhu_zhanyong",
-            "name": "朱瞻墉 (Zhu Zhanyong)",
-            "gender": "male",
-            "birth": "1405-02-09",
-            "death": "1439-08-05"
-        },
-        {
-            "id": "empress_sun",
-            "name": "孙皇后 (Empress Sun)",
-            "gender": "female",
-            "death": "1462-09-26"
-        },
-        {
-            "id": "empress_hu",
-            "name": "胡善祥 (Empress Hu)",
-            "gender": "female",
-            "death": "1443-12-05"
-        },
-        {
-            "id": "zhu_qizhen",
-            "name": "朱祁镇 (Zhengtong)",
-            "gender": "male",
-            "birth": "1427-11-29",
-            "death": "1464-02-23"
-        },
-        {
-            "id": "zhu_qiyu",
-            "name": "朱祁钰 (Jingtai)",
-            "gender": "male",
-            "birth": "1428-09-21",
-            "death": "1457-03-14"
-        },
-        {
-            "id": "empress_qian",
-            "name": "钱皇后 (Empress Qian)",
-            "gender": "female",
-            "death": "1468-07-26"
-        },
-        {
-            "id": "empress_zhou",
-            "name": "周皇后 (Empress Zhou)",
-            "gender": "female",
-            "death": "1504-03-16"
-        },
-        {
-            "id": "empress_hang",
-            "name": "杭皇后 (Empress Hang)",
-            "gender": "female",
-            "death": "1456-02-21"
-        },
-        {
-            "id": "zhu_jianshen",
-            "name": "朱见深 (Chenghua)",
-            "gender": "male",
-            "birth": "1447-12-09",
-            "death": "1487-09-09"
-        },
-        {
-            "id": "zhu_jianji",
-            "name": "朱见济 (Zhu Jianji)",
-            "gender": "male",
-            "birth": "1448-08-01",
-            "death": "1453-12-18"
-        },
-        {
-            "id": "empress_wang",
-            "name": "王皇后 (Empress Wang)",
-            "gender": "female",
-            "death": "1518-02-12"
-        },
-        {
-            "id": "consort_ji",
-            "name": "纪妃 (Consort Ji)",
-            "gender": "female",
-            "death": "1475-07-04"
-        },
-        {
-            "id": "consort_wan",
-            "name": "万贵妃 (Consort Wan)",
-            "gender": "female",
-            "birth": "1428-01-01",
-            "death": "1487-03-10"
-        },
-        {
-            "id": "zhu_youtang",
-            "name": "朱祐樘 (Hongzhi)",
-            "gender": "male",
-            "birth": "1470-07-30",
-            "death": "1505-06-08"
-        },
-        {
-            "id": "zhu_youyuan",
-            "name": "朱祐杬 (Prince of Xing)",
-            "gender": "male",
-            "birth": "1476-07-22",
-            "death": "1519-07-13"
-        },
-        {
-            "id": "empress_zhang_hz",
-            "name": "张皇后 (Empress Zhang)",
-            "gender": "female",
-            "birth": "1471-01-01",
-            "death": "1541-08-28"
-        },
-        {
-            "id": "empress_jiang",
-            "name": "蒋妃 (Consort Jiang)",
-            "gender": "female",
-            "death": "1538-12-06"
-        },
-        {
-            "id": "zhu_houzhao",
-            "name": "朱厚照 (Zhengde)",
-            "gender": "male",
-            "birth": "1491-10-27",
-            "death": "1521-04-20"
-        },
-        {
-            "id": "zhu_houcong",
-            "name": "朱厚熜 (Jiajing)",
-            "gender": "male",
-            "birth": "1507-09-16",
-            "death": "1567-01-23"
-        },
-        {
-            "id": "empress_xia",
-            "name": "夏皇后 (Empress Xia)",
-            "gender": "female",
-            "death": "1535-01-25"
-        },
-        {
-            "id": "empress_chen",
-            "name": "陈皇后 (Empress Chen)",
-            "gender": "female",
-            "birth": "1508-01-01",
-            "death": "1528-10-21"
-        },
-        {
-            "id": "consort_du",
-            "name": "杜康妃 (Consort Du)",
-            "gender": "female",
-            "death": "1554-02-12"
-        },
-        {
-            "id": "zhu_zaihou",
-            "name": "朱载坖 (Longqing)",
-            "gender": "male",
-            "birth": "1537-03-04",
-            "death": "1572-07-05"
-        },
-        {
-            "id": "empress_li",
-            "name": "李贵妃 (Consort Li)",
-            "gender": "female",
-            "death": "1614-02-09"
-        },
-        {
-            "id": "zhu_yijun",
-            "name": "朱翊钧 (Wanli)",
-            "gender": "male",
-            "birth": "1563-09-04",
-            "death": "1620-08-18"
-        },
-        {
-            "id": "empress_wang_wl",
-            "name": "王皇后 (Empress Wang)",
-            "gender": "female",
-            "birth": "1565-01-01",
-            "death": "1620-04-07"
-        },
-        {
-            "id": "consort_wang",
-            "name": "王恭妃 (Consort Wang)",
-            "gender": "female",
-            "birth": "1565-02-27",
-            "death": "1611-10-18"
-        },
-        {
-            "id": "consort_zheng",
-            "name": "郑贵妃 (Consort Zheng)",
-            "gender": "female",
-            "birth": "1565-01-01",
-            "death": "1630-01-01"
-        },
-        {
-            "id": "zhu_changluo",
-            "name": "朱常洛 (Taichang)",
-            "gender": "male",
-            "birth": "1582-08-28",
-            "death": "1620-09-26"
-        },
-        {
-            "id": "zhu_changxun",
-            "name": "朱常洵 (Prince of Fu)",
-            "gender": "male",
-            "birth": "1586-02-22",
-            "death": "1641-03-02"
-        },
-        {
-            "id": "consort_wang_tc",
-            "name": "王才人 (Consort Wang)",
-            "gender": "female",
-            "death": "1619-01-01"
-        },
-        {
-            "id": "consort_liu",
-            "name": "刘淑女 (Consort Liu)",
-            "gender": "female",
-            "death": "1615-01-01"
-        },
-        {
-            "id": "zhu_youjiao",
-            "name": "朱由校 (Tianqi)",
-            "gender": "male",
-            "birth": "1605-12-23",
-            "death": "1627-09-30"
-        },
-        {
-            "id": "zhu_youjian",
-            "name": "朱由检 (Chongzhen)",
-            "gender": "male",
-            "birth": "1611-02-06",
-            "death": "1644-04-25"
-        },
-        {
-            "id": "empress_zhou_cz",
-            "name": "周皇后 (Empress Zhou)",
-            "gender": "female",
-            "birth": "1611-05-10",
-            "death": "1644-04-24"
-        },
-        {
-            "id": "zhu_cilang",
-            "name": "朱慈烺 (Crown Prince)",
-            "gender": "male",
-            "birth": "1629-02-26",
-            "death": "1644-01-01"
-        },
-        {
-            "id": "zhu_cixuan",
-            "name": "朱慈 泫 (Prince)",
-            "gender": "male",
-            "birth": "1629-01-01",
-            "death": "1630-01-15"
-        },
-        {
-            "id": "zhu_cijiong",
-            "name": "朱慈 炯 (Prince)",
-            "gender": "male",
-            "birth": "1632-01-01",
-            "death": "1644-01-01"
-        }
-    ],
-    "spouses": [
-        [
-            "zhu_yuanzhang",
-            "empress_ma"
-        ],
-        [
-            "zhu_biao",
-            "empress_chang"
-        ],
-        [
-            "zhu_di",
-            "empress_xu"
-        ],
-        [
-            "zhu_gaochi",
-            "empress_zhang"
-        ],
-        [
-            "zhu_zhanji",
-            "empress_sun"
-        ],
-        [
-            "zhu_zhanji",
-            "empress_hu"
-        ],
-        [
-            "zhu_qizhen",
-            "empress_qian"
-        ],
-        [
-            "zhu_qizhen",
-            "empress_zhou"
-        ],
-        [
-            "zhu_qiyu",
-            "empress_hang"
-        ],
-        [
-            "zhu_jianshen",
-            "empress_wang"
-        ],
-        [
-            "zhu_jianshen",
-            "consort_ji"
-        ],
-        [
-            "zhu_jianshen",
-            "consort_wan"
-        ],
-        [
-            "zhu_youtang",
-            "empress_zhang_hz"
-        ],
-        [
-            "zhu_youyuan",
-            "empress_jiang"
-        ],
-        [
-            "zhu_houzhao",
-            "empress_xia"
-        ],
-        [
-            "zhu_houcong",
-            "empress_chen"
-        ],
-        [
-            "zhu_houcong",
-            "consort_du"
-        ],
-        [
-            "zhu_zaihou",
-            "empress_li"
-        ],
-        [
-            "zhu_yijun",
-            "empress_wang_wl"
-        ],
-        [
-            "zhu_yijun",
-            "consort_wang"
-        ],
-        [
-            "zhu_yijun",
-            "consort_zheng"
-        ],
-        [
-            "zhu_changluo",
-            "consort_wang_tc"
-        ],
-        [
-            "zhu_changluo",
-            "consort_liu"
-        ],
-        [
-            "zhu_youjian",
-            "empress_zhou_cz"
-        ]
-    ],
-    "parents": [
-        {
-            "father": "zhu_yuanzhang",
-            "mother": "empress_ma",
-            "children": [
-                "zhu_biao",
-                "zhu_shuang",
-                "zhu_gang",
-                "zhu_di",
-                "zhu_su"
-            ]
-        },
-        {
-            "father": "zhu_biao",
-            "children": [
-                "zhu_yunwen",
-                "zhu_wenkui"
-            ]
-        },
-        {
-            "father": "zhu_di",
-            "mother": "empress_xu",
-            "children": [
-                "zhu_gaochi",
-                "zhu_gaoxu",
-                "zhu_gaosui"
-            ]
-        },
-        {
-            "father": "zhu_gaochi",
-            "mother": "empress_zhang",
-            "children": [
-                "zhu_zhanji",
-                "zhu_zhanshan",
-                "zhu_zhanyong"
-            ]
-        },
-        {
-            "father": "zhu_zhanji",
-            "mother": "empress_sun",
-            "children": [
-                "zhu_qizhen"
-            ]
-        },
-        {
-            "father": "zhu_zhanji",
-            "children": [
-                "zhu_qiyu"
-            ]
-        },
-        {
-            "father": "zhu_qizhen",
-            "mother": "empress_zhou",
-            "children": [
-                "zhu_jianshen"
-            ]
-        },
-        {
-            "father": "zhu_qiyu",
-            "mother": "empress_hang",
-            "children": [
-                "zhu_jianji"
-            ]
-        },
-        {
-            "father": "zhu_jianshen",
-            "mother": "consort_ji",
-            "children": [
-                "zhu_youtang"
-            ]
-        },
-        {
-            "father": "zhu_jianshen",
-            "children": [
-                "zhu_youyuan"
-            ]
-        },
-        {
-            "father": "zhu_youtang",
-            "mother": "empress_zhang_hz",
-            "children": [
-                "zhu_houzhao"
-            ]
-        },
-        {
-            "father": "zhu_youyuan",
-            "mother": "empress_jiang",
-            "children": [
-                "zhu_houcong"
-            ]
-        },
-        {
-            "father": "zhu_houcong",
-            "mother": "consort_du",
-            "children": [
-                "zhu_zaihou"
-            ]
-        },
-        {
-            "father": "zhu_zaihou",
-            "mother": "empress_li",
-            "children": [
-                "zhu_yijun"
-            ]
-        },
-        {
-            "father": "zhu_yijun",
-            "mother": "consort_wang",
-            "children": [
-                "zhu_changluo"
-            ]
-        },
-        {
-            "father": "zhu_yijun",
-            "mother": "consort_zheng",
-            "children": [
-                "zhu_changxun"
-            ]
-        },
-        {
-            "father": "zhu_changluo",
-            "mother": "consort_wang_tc",
-            "children": [
-                "zhu_youjiao"
-            ]
-        },
-        {
-            "father": "zhu_changluo",
-            "mother": "consort_liu",
-            "children": [
-                "zhu_youjian"
-            ]
-        },
-        {
-            "father": "zhu_youjian",
-            "mother": "empress_zhou_cz",
-            "children": [
-                "zhu_cilang"
-            ]
-        },
-        {
-            "father": "zhu_youjian",
-            "children": [
-                "zhu_cixuan",
-                "zhu_cijiong"
-            ]
-        }
-    ]
+    {
+      "name": "朱标 (Zhu Biao)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1355-10-10",
+      "death_date": "1392-05-17",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 10,
+      "position_y": 188,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "30d95ee2-ba5b-4115-812a-634fd78139e2",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:34",
+      "original_id": "30d95ee2-ba5b-4115-812a-634fd78139e2"
+    },
+    {
+      "name": "朱樉 (Zhu Shuang)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1356-12-03",
+      "death_date": "1395-04-09",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 612,
+      "position_y": 188,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "a63914cb-15cc-4774-a241-84eb728db38d",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:34",
+      "original_id": "a63914cb-15cc-4774-a241-84eb728db38d"
+    },
+    {
+      "name": "朱棡 (Zhu Gang)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1358-12-18",
+      "death_date": "1398-03-30",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 918,
+      "position_y": 188,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "0c8c8a6d-39ec-4620-ba4b-680d94d69e41",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "0c8c8a6d-39ec-4620-ba4b-680d94d69e41"
+    },
+    {
+      "name": "朱棣 (Yongle)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1360-05-02",
+      "death_date": "1424-08-12",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2897,
+      "position_y": 188,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "9fd65fe1-f2fc-4da2-9ddb-e0fc06cdd52c",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "9fd65fe1-f2fc-4da2-9ddb-e0fc06cdd52c"
+    },
+    {
+      "name": "朱橚 (Zhu Su)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1361-10-08",
+      "death_date": "1425-09-02",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 5162,
+      "position_y": 188,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "598cbc1e-5ccb-448e-9146-8a837af7badd",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "598cbc1e-5ccb-448e-9146-8a837af7badd"
+    },
+    {
+      "name": "常氏 (Consort Chang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1378-12-04",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 296,
+      "position_y": 188,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "5eb40a1f-9e02-4b74-ba27-a151b44f01c2",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "5eb40a1f-9e02-4b74-ba27-a151b44f01c2"
+    },
+    {
+      "name": "徐皇后 (Empress Xu)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "1362-03-05",
+      "death_date": "1407-08-06",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 3183,
+      "position_y": 188,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "905b6bc8-821a-4d26-802f-bc54a3718bb6",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:34",
+      "original_id": "905b6bc8-821a-4d26-802f-bc54a3718bb6"
+    },
+    {
+      "name": "朱允炆 (Jianwen)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1377-12-05",
+      "death_date": "1402-07-13",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 0,
+      "position_y": 376,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "6ecfe525-dc66-4d1c-b655-3e9c62c1f81c",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:34",
+      "original_id": "6ecfe525-dc66-4d1c-b655-3e9c62c1f81c"
+    },
+    {
+      "name": "朱文奎 (Zhu Wenkui)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1396-11-30",
+      "death_date": "1402-07-13",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 306,
+      "position_y": 376,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "22b96aa7-34db-4fac-90ea-497d03356571",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:34",
+      "original_id": "22b96aa7-34db-4fac-90ea-497d03356571"
+    },
+    {
+      "name": "朱高炽 (Hongxi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1378-08-16",
+      "death_date": "1425-05-29",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2591,
+      "position_y": 376,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "ab2858c3-37b6-4b62-8ed0-17fd504434d4",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:34",
+      "original_id": "ab2858c3-37b6-4b62-8ed0-17fd504434d4"
+    },
+    {
+      "name": "朱高煦 (Zhu Gaoxu)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1380-12-30",
+      "death_date": "1426-10-06",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 4550,
+      "position_y": 376,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "439c0e37-8778-48ee-a727-afbe758c65e3",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "439c0e37-8778-48ee-a727-afbe758c65e3"
+    },
+    {
+      "name": "朱高燧 (Zhu Gaosui)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1383-01-19",
+      "death_date": "1431-10-05",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 4856,
+      "position_y": 376,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "d932ba8d-0e75-472e-8e09-2e564f8694c5",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:34",
+      "original_id": "d932ba8d-0e75-472e-8e09-2e564f8694c5"
+    },
+    {
+      "name": "张皇后 (Empress Zhang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1442-11-20",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2877,
+      "position_y": 376,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "1a3ddb79-ca4b-4da8-8f26-3e7014d59073",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "1a3ddb79-ca4b-4da8-8f26-3e7014d59073"
+    },
+    {
+      "name": "朱瞻基 (Xuande)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1399-03-16",
+      "death_date": "1435-01-31",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2235,
+      "position_y": 564,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "a5940dfa-e59b-43b4-83d4-471599d679f1",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "a5940dfa-e59b-43b4-83d4-471599d679f1"
+    },
+    {
+      "name": "朱瞻埏 (Zhu Zhanshan)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1406-04-04",
+      "death_date": "1478-01-03",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 4244,
+      "position_y": 564,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "a2b46d6f-30d7-4581-a520-e0554eb5648b",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "a2b46d6f-30d7-4581-a520-e0554eb5648b"
+    },
+    {
+      "name": "朱瞻墉 (Zhu Zhanyong)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1405-02-09",
+      "death_date": "1439-08-05",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 3938,
+      "position_y": 564,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "b87f4847-dd20-49fe-9258-48a90f137c33",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "b87f4847-dd20-49fe-9258-48a90f137c33"
+    },
+    {
+      "name": "孙皇后 (Empress Sun)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1462-09-26",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2621,
+      "position_y": 564,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "9c4ce787-0ecb-4353-ac5b-2d10f2c310be",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "9c4ce787-0ecb-4353-ac5b-2d10f2c310be"
+    },
+    {
+      "name": "胡善祥 (Empress Hu)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1443-12-05",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2521,
+      "position_y": 564,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "196f0d45-4413-4f66-a001-ca33dd563df5",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "196f0d45-4413-4f66-a001-ca33dd563df5"
+    },
+    {
+      "name": "朱祁镇 (Zhengtong)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1427-11-29",
+      "death_date": "1464-02-23",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 1939,
+      "position_y": 752,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "a0f9cab3-7b7c-429c-8a77-df3936a8f695",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "a0f9cab3-7b7c-429c-8a77-df3936a8f695"
+    },
+    {
+      "name": "朱祁钰 (Jingtai)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1428-09-21",
+      "death_date": "1457-03-14",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 3346,
+      "position_y": 752,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "af2550db-425f-4d3d-8a5d-80cf20457feb",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "af2550db-425f-4d3d-8a5d-80cf20457feb"
+    },
+    {
+      "name": "钱皇后 (Empress Qian)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1468-07-26",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2325,
+      "position_y": 752,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "e659a5ae-4818-46a9-ae05-405267f9efab",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "e659a5ae-4818-46a9-ae05-405267f9efab"
+    },
+    {
+      "name": "周皇后 (Empress Zhou)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1504-03-16",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2225,
+      "position_y": 752,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "c5feab28-00ee-46e6-babc-3bc3bc623b6e",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "c5feab28-00ee-46e6-babc-3bc3bc623b6e"
+    },
+    {
+      "name": "杭皇后 (Empress Hang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1456-02-21",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 3632,
+      "position_y": 752,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "12cdd0bb-4cb7-4653-96a2-eefa850abc4d",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "12cdd0bb-4cb7-4653-96a2-eefa850abc4d"
+    },
+    {
+      "name": "朱见深 (Chenghua)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1447-12-09",
+      "death_date": "1487-09-09",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 1889,
+      "position_y": 940,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "43f51a66-97f6-4ae4-a629-8ba2ddf0f95a",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "43f51a66-97f6-4ae4-a629-8ba2ddf0f95a"
+    },
+    {
+      "name": "朱见济 (Zhu Jianji)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1448-08-01",
+      "death_date": "1453-12-18",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 3489,
+      "position_y": 940,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "3f15973f-491b-4eee-95a5-de835cdd882a",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "3f15973f-491b-4eee-95a5-de835cdd882a"
+    },
+    {
+      "name": "王皇后 (Empress Wang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1518-02-12",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2375,
+      "position_y": 940,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "8d4ead9f-0135-4883-b92e-36238dab0a8b",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "8d4ead9f-0135-4883-b92e-36238dab0a8b"
+    },
+    {
+      "name": "纪妃 (Consort Ji)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1475-07-04",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2175,
+      "position_y": 940,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "7a26bdfe-ac35-499b-b7fa-444a47a4ffb3",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "7a26bdfe-ac35-499b-b7fa-444a47a4ffb3"
+    },
+    {
+      "name": "万贵妃 (Consort Wan)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "1428-01-01",
+      "death_date": "1487-03-10",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2275,
+      "position_y": 940,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "7d041593-6555-4ac1-a0fd-50ac82d345ac",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "7d041593-6555-4ac1-a0fd-50ac82d345ac"
+    },
+    {
+      "name": "朱祐樘 (Hongzhi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1470-07-30",
+      "death_date": "1505-06-08",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 1224,
+      "position_y": 1128,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "8e851af6-62e3-49ba-96f6-4e7a52807cf4",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "8e851af6-62e3-49ba-96f6-4e7a52807cf4"
+    },
+    {
+      "name": "朱祐杬 (Prince of Xing)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1476-07-22",
+      "death_date": "1519-07-13",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2285,
+      "position_y": 1128,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "922f0e60-03ee-413a-ae09-34b2289f4ea8",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "922f0e60-03ee-413a-ae09-34b2289f4ea8"
+    },
+    {
+      "name": "张皇后 (Empress Zhang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "1471-01-01",
+      "death_date": "1541-08-28",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 1510,
+      "position_y": 1128,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "56f7f0e8-68f1-45b3-9197-959b8793b451",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "56f7f0e8-68f1-45b3-9197-959b8793b451"
+    },
+    {
+      "name": "蒋妃 (Consort Jiang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1538-12-06",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2571,
+      "position_y": 1128,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "9d484990-a2e4-48f6-9e6b-8f04ed86d78a",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "9d484990-a2e4-48f6-9e6b-8f04ed86d78a"
+    },
+    {
+      "name": "朱厚照 (Zhengde)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1491-10-27",
+      "death_date": "1521-04-20",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 1224,
+      "position_y": 1316,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "508afff5-93fb-4f21-8e21-1dc41fd61aa3",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "508afff5-93fb-4f21-8e21-1dc41fd61aa3"
+    },
+    {
+      "name": "朱厚熜 (Jiajing)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1507-09-16",
+      "death_date": "1567-01-23",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2235,
+      "position_y": 1316,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "d64c3971-0ec0-47f3-86f5-a3f0949aa1ce",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "d64c3971-0ec0-47f3-86f5-a3f0949aa1ce"
+    },
+    {
+      "name": "夏皇后 (Empress Xia)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1535-01-25",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 1510,
+      "position_y": 1316,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "b927b64e-9ae7-42cd-b941-8b629af1393e",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "b927b64e-9ae7-42cd-b941-8b629af1393e"
+    },
+    {
+      "name": "陈皇后 (Empress Chen)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "1508-01-01",
+      "death_date": "1528-10-21",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2521,
+      "position_y": 1316,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "0cabe802-7a3b-47e3-8b6c-53ffbc269358",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "0cabe802-7a3b-47e3-8b6c-53ffbc269358"
+    },
+    {
+      "name": "杜康妃 (Consort Du)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1554-02-12",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2621,
+      "position_y": 1316,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "fc721301-b5a2-4823-a737-1e946d61f682",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "fc721301-b5a2-4823-a737-1e946d61f682"
+    },
+    {
+      "name": "朱载坖 (Longqing)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1537-03-04",
+      "death_date": "1572-07-05",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2285,
+      "position_y": 1504,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "ce61a41e-3382-48e8-8b5b-67eb7a7603ab",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "ce61a41e-3382-48e8-8b5b-67eb7a7603ab"
+    },
+    {
+      "name": "李贵妃 (Consort Li)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1614-02-09",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2571,
+      "position_y": 1504,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "bff35b1c-c302-4423-87a8-5ad112f70a3e",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "bff35b1c-c302-4423-87a8-5ad112f70a3e"
+    },
+    {
+      "name": "朱翊钧 (Wanli)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1563-09-04",
+      "death_date": "1620-08-18",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2185,
+      "position_y": 1692,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "00d27623-b91f-453e-8aa0-a45c3dd94a6f",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "00d27623-b91f-453e-8aa0-a45c3dd94a6f"
+    },
+    {
+      "name": "王皇后 (Empress Wang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "1565-01-01",
+      "death_date": "1620-04-07",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2571,
+      "position_y": 1692,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "e5c09673-b891-4d29-ae1b-616aff9b95bd",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "e5c09673-b891-4d29-ae1b-616aff9b95bd"
+    },
+    {
+      "name": "王恭妃 (Consort Wang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "1565-02-27",
+      "death_date": "1611-10-18",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2671,
+      "position_y": 1692,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "a93b61b9-79b8-41a5-821d-3ab3d31cfa36",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "a93b61b9-79b8-41a5-821d-3ab3d31cfa36"
+    },
+    {
+      "name": "郑贵妃 (Consort Zheng)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "1565-01-01",
+      "death_date": "1630-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2471,
+      "position_y": 1692,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "2d55e051-aa32-43f0-a546-7c5ba3e83d25",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "2d55e051-aa32-43f0-a546-7c5ba3e83d25"
+    },
+    {
+      "name": "朱常洛 (Taichang)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1582-08-28",
+      "death_date": "1620-09-26",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2388,
+      "position_y": 1880,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "b804bebb-e053-4ed8-be50-439548c94fac",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:23:43",
+      "original_id": "b804bebb-e053-4ed8-be50-439548c94fac"
+    },
+    {
+      "name": "朱常洵 (Prince of Fu)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1586-02-22",
+      "death_date": "1641-03-02",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 1816,
+      "position_y": 1880,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "80d4b2db-81ca-452e-bb45-e06315c22acc",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "80d4b2db-81ca-452e-bb45-e06315c22acc"
+    },
+    {
+      "name": "王才人 (Consort Wang)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1619-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2774,
+      "position_y": 1880,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "b0ce790d-fc58-4157-be1b-8abef3e0ff6e",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:23:43",
+      "original_id": "b0ce790d-fc58-4157-be1b-8abef3e0ff6e"
+    },
+    {
+      "name": "刘淑女 (Consort Liu)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": null,
+      "death_date": "1615-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2674,
+      "position_y": 1880,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "b032276b-a612-46fd-b9dc-3ad5f878b1ca",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:23:43",
+      "original_id": "b032276b-a612-46fd-b9dc-3ad5f878b1ca"
+    },
+    {
+      "name": "朱由校 (Tianqi)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1605-12-23",
+      "death_date": "1627-09-30",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 3040,
+      "position_y": 2068,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "6098ee8f-0983-494a-86f2-c15a06f8fccc",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:23:43",
+      "original_id": "6098ee8f-0983-494a-86f2-c15a06f8fccc"
+    },
+    {
+      "name": "朱由检 (Chongzhen)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1611-02-06",
+      "death_date": "1644-04-25",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2285,
+      "position_y": 2068,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "97faa904-75d0-43bb-91f2-3455bca17fe6",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:23:43",
+      "original_id": "97faa904-75d0-43bb-91f2-3455bca17fe6"
+    },
+    {
+      "name": "周皇后 (Empress Zhou)",
+      "surname": null,
+      "gender": "female",
+      "birth_date": "1611-05-10",
+      "death_date": "1644-04-24",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2571,
+      "position_y": 2068,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "c0fed12f-9625-41c1-9054-19613919ab8e",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:23:43",
+      "original_id": "c0fed12f-9625-41c1-9054-19613919ab8e"
+    },
+    {
+      "name": "朱慈烺 (Crown Prince)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1629-02-26",
+      "death_date": "1644-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2122,
+      "position_y": 2256,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "901b2f50-0917-4f28-964d-fdede3b5c3ed",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:37:12",
+      "original_id": "901b2f50-0917-4f28-964d-fdede3b5c3ed"
+    },
+    {
+      "name": "朱慈 泫 (Prince)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1629-01-01",
+      "death_date": "1630-01-15",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2428,
+      "position_y": 2256,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "ff51dd31-2612-4317-a377-76247cdc6314",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "ff51dd31-2612-4317-a377-76247cdc6314"
+    },
+    {
+      "name": "朱慈 炯 (Prince)",
+      "surname": null,
+      "gender": "male",
+      "birth_date": "1632-01-01",
+      "death_date": "1644-01-01",
+      "is_deceased": false,
+      "is_fuzzy": false,
+      "remark": null,
+      "birth_place": null,
+      "photo_url": null,
+      "position_x": 2734,
+      "position_y": 2256,
+      "sort_order": 0,
+      "region_id": null,
+      "id": "43069198-3e7b-4fd7-b55d-3efdd4a7f4b2",
+      "family_id": "5f2231b3-5725-4370-a8d3-ea42fd05e35a",
+      "created_at": "2026-01-27T17:56:30",
+      "updated_at": "2026-01-30T18:38:35",
+      "original_id": "43069198-3e7b-4fd7-b55d-3efdd4a7f4b2"
+    }
+  ],
+  "spouse_relationships": [
+    {
+      "member1_original_id": "ff4c9cde-4d53-4318-8698-4f71b1dad0a2",
+      "member2_original_id": "6caed54a-53b5-4836-a462-e80a718e3e43"
+    },
+    {
+      "member1_original_id": "30d95ee2-ba5b-4115-812a-634fd78139e2",
+      "member2_original_id": "5eb40a1f-9e02-4b74-ba27-a151b44f01c2"
+    },
+    {
+      "member1_original_id": "9fd65fe1-f2fc-4da2-9ddb-e0fc06cdd52c",
+      "member2_original_id": "905b6bc8-821a-4d26-802f-bc54a3718bb6"
+    },
+    {
+      "member1_original_id": "ab2858c3-37b6-4b62-8ed0-17fd504434d4",
+      "member2_original_id": "1a3ddb79-ca4b-4da8-8f26-3e7014d59073"
+    },
+    {
+      "member1_original_id": "a5940dfa-e59b-43b4-83d4-471599d679f1",
+      "member2_original_id": "9c4ce787-0ecb-4353-ac5b-2d10f2c310be"
+    },
+    {
+      "member1_original_id": "a5940dfa-e59b-43b4-83d4-471599d679f1",
+      "member2_original_id": "196f0d45-4413-4f66-a001-ca33dd563df5"
+    },
+    {
+      "member1_original_id": "a0f9cab3-7b7c-429c-8a77-df3936a8f695",
+      "member2_original_id": "e659a5ae-4818-46a9-ae05-405267f9efab"
+    },
+    {
+      "member1_original_id": "a0f9cab3-7b7c-429c-8a77-df3936a8f695",
+      "member2_original_id": "c5feab28-00ee-46e6-babc-3bc3bc623b6e"
+    },
+    {
+      "member1_original_id": "af2550db-425f-4d3d-8a5d-80cf20457feb",
+      "member2_original_id": "12cdd0bb-4cb7-4653-96a2-eefa850abc4d"
+    },
+    {
+      "member1_original_id": "43f51a66-97f6-4ae4-a629-8ba2ddf0f95a",
+      "member2_original_id": "8d4ead9f-0135-4883-b92e-36238dab0a8b"
+    },
+    {
+      "member1_original_id": "43f51a66-97f6-4ae4-a629-8ba2ddf0f95a",
+      "member2_original_id": "7a26bdfe-ac35-499b-b7fa-444a47a4ffb3"
+    },
+    {
+      "member1_original_id": "43f51a66-97f6-4ae4-a629-8ba2ddf0f95a",
+      "member2_original_id": "7d041593-6555-4ac1-a0fd-50ac82d345ac"
+    },
+    {
+      "member1_original_id": "8e851af6-62e3-49ba-96f6-4e7a52807cf4",
+      "member2_original_id": "56f7f0e8-68f1-45b3-9197-959b8793b451"
+    },
+    {
+      "member1_original_id": "922f0e60-03ee-413a-ae09-34b2289f4ea8",
+      "member2_original_id": "9d484990-a2e4-48f6-9e6b-8f04ed86d78a"
+    },
+    {
+      "member1_original_id": "508afff5-93fb-4f21-8e21-1dc41fd61aa3",
+      "member2_original_id": "b927b64e-9ae7-42cd-b941-8b629af1393e"
+    },
+    {
+      "member1_original_id": "d64c3971-0ec0-47f3-86f5-a3f0949aa1ce",
+      "member2_original_id": "0cabe802-7a3b-47e3-8b6c-53ffbc269358"
+    },
+    {
+      "member1_original_id": "d64c3971-0ec0-47f3-86f5-a3f0949aa1ce",
+      "member2_original_id": "fc721301-b5a2-4823-a737-1e946d61f682"
+    },
+    {
+      "member1_original_id": "ce61a41e-3382-48e8-8b5b-67eb7a7603ab",
+      "member2_original_id": "bff35b1c-c302-4423-87a8-5ad112f70a3e"
+    },
+    {
+      "member1_original_id": "00d27623-b91f-453e-8aa0-a45c3dd94a6f",
+      "member2_original_id": "e5c09673-b891-4d29-ae1b-616aff9b95bd"
+    },
+    {
+      "member1_original_id": "00d27623-b91f-453e-8aa0-a45c3dd94a6f",
+      "member2_original_id": "a93b61b9-79b8-41a5-821d-3ab3d31cfa36"
+    },
+    {
+      "member1_original_id": "00d27623-b91f-453e-8aa0-a45c3dd94a6f",
+      "member2_original_id": "2d55e051-aa32-43f0-a546-7c5ba3e83d25"
+    },
+    {
+      "member1_original_id": "b804bebb-e053-4ed8-be50-439548c94fac",
+      "member2_original_id": "b0ce790d-fc58-4157-be1b-8abef3e0ff6e"
+    },
+    {
+      "member1_original_id": "b804bebb-e053-4ed8-be50-439548c94fac",
+      "member2_original_id": "b032276b-a612-46fd-b9dc-3ad5f878b1ca"
+    },
+    {
+      "member1_original_id": "97faa904-75d0-43bb-91f2-3455bca17fe6",
+      "member2_original_id": "c0fed12f-9625-41c1-9054-19613919ab8e"
+    }
+  ],
+  "parent_child_relationships": [
+    {
+      "parent_original_id": "ff4c9cde-4d53-4318-8698-4f71b1dad0a2",
+      "child_original_id": "30d95ee2-ba5b-4115-812a-634fd78139e2",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "6caed54a-53b5-4836-a462-e80a718e3e43",
+      "child_original_id": "30d95ee2-ba5b-4115-812a-634fd78139e2",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "ff4c9cde-4d53-4318-8698-4f71b1dad0a2",
+      "child_original_id": "a63914cb-15cc-4774-a241-84eb728db38d",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "6caed54a-53b5-4836-a462-e80a718e3e43",
+      "child_original_id": "a63914cb-15cc-4774-a241-84eb728db38d",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "ff4c9cde-4d53-4318-8698-4f71b1dad0a2",
+      "child_original_id": "0c8c8a6d-39ec-4620-ba4b-680d94d69e41",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "6caed54a-53b5-4836-a462-e80a718e3e43",
+      "child_original_id": "0c8c8a6d-39ec-4620-ba4b-680d94d69e41",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "ff4c9cde-4d53-4318-8698-4f71b1dad0a2",
+      "child_original_id": "9fd65fe1-f2fc-4da2-9ddb-e0fc06cdd52c",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "6caed54a-53b5-4836-a462-e80a718e3e43",
+      "child_original_id": "9fd65fe1-f2fc-4da2-9ddb-e0fc06cdd52c",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "ff4c9cde-4d53-4318-8698-4f71b1dad0a2",
+      "child_original_id": "598cbc1e-5ccb-448e-9146-8a837af7badd",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "6caed54a-53b5-4836-a462-e80a718e3e43",
+      "child_original_id": "598cbc1e-5ccb-448e-9146-8a837af7badd",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "30d95ee2-ba5b-4115-812a-634fd78139e2",
+      "child_original_id": "6ecfe525-dc66-4d1c-b655-3e9c62c1f81c",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "30d95ee2-ba5b-4115-812a-634fd78139e2",
+      "child_original_id": "22b96aa7-34db-4fac-90ea-497d03356571",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "9fd65fe1-f2fc-4da2-9ddb-e0fc06cdd52c",
+      "child_original_id": "ab2858c3-37b6-4b62-8ed0-17fd504434d4",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "905b6bc8-821a-4d26-802f-bc54a3718bb6",
+      "child_original_id": "ab2858c3-37b6-4b62-8ed0-17fd504434d4",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "9fd65fe1-f2fc-4da2-9ddb-e0fc06cdd52c",
+      "child_original_id": "439c0e37-8778-48ee-a727-afbe758c65e3",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "905b6bc8-821a-4d26-802f-bc54a3718bb6",
+      "child_original_id": "439c0e37-8778-48ee-a727-afbe758c65e3",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "9fd65fe1-f2fc-4da2-9ddb-e0fc06cdd52c",
+      "child_original_id": "d932ba8d-0e75-472e-8e09-2e564f8694c5",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "905b6bc8-821a-4d26-802f-bc54a3718bb6",
+      "child_original_id": "d932ba8d-0e75-472e-8e09-2e564f8694c5",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "ab2858c3-37b6-4b62-8ed0-17fd504434d4",
+      "child_original_id": "a5940dfa-e59b-43b4-83d4-471599d679f1",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "1a3ddb79-ca4b-4da8-8f26-3e7014d59073",
+      "child_original_id": "a5940dfa-e59b-43b4-83d4-471599d679f1",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "ab2858c3-37b6-4b62-8ed0-17fd504434d4",
+      "child_original_id": "a2b46d6f-30d7-4581-a520-e0554eb5648b",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "1a3ddb79-ca4b-4da8-8f26-3e7014d59073",
+      "child_original_id": "a2b46d6f-30d7-4581-a520-e0554eb5648b",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "ab2858c3-37b6-4b62-8ed0-17fd504434d4",
+      "child_original_id": "b87f4847-dd20-49fe-9258-48a90f137c33",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "1a3ddb79-ca4b-4da8-8f26-3e7014d59073",
+      "child_original_id": "b87f4847-dd20-49fe-9258-48a90f137c33",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "a5940dfa-e59b-43b4-83d4-471599d679f1",
+      "child_original_id": "a0f9cab3-7b7c-429c-8a77-df3936a8f695",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "9c4ce787-0ecb-4353-ac5b-2d10f2c310be",
+      "child_original_id": "a0f9cab3-7b7c-429c-8a77-df3936a8f695",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "a5940dfa-e59b-43b4-83d4-471599d679f1",
+      "child_original_id": "af2550db-425f-4d3d-8a5d-80cf20457feb",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "a0f9cab3-7b7c-429c-8a77-df3936a8f695",
+      "child_original_id": "43f51a66-97f6-4ae4-a629-8ba2ddf0f95a",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "c5feab28-00ee-46e6-babc-3bc3bc623b6e",
+      "child_original_id": "43f51a66-97f6-4ae4-a629-8ba2ddf0f95a",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "af2550db-425f-4d3d-8a5d-80cf20457feb",
+      "child_original_id": "3f15973f-491b-4eee-95a5-de835cdd882a",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "12cdd0bb-4cb7-4653-96a2-eefa850abc4d",
+      "child_original_id": "3f15973f-491b-4eee-95a5-de835cdd882a",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "43f51a66-97f6-4ae4-a629-8ba2ddf0f95a",
+      "child_original_id": "8e851af6-62e3-49ba-96f6-4e7a52807cf4",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "7a26bdfe-ac35-499b-b7fa-444a47a4ffb3",
+      "child_original_id": "8e851af6-62e3-49ba-96f6-4e7a52807cf4",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "43f51a66-97f6-4ae4-a629-8ba2ddf0f95a",
+      "child_original_id": "922f0e60-03ee-413a-ae09-34b2289f4ea8",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "8e851af6-62e3-49ba-96f6-4e7a52807cf4",
+      "child_original_id": "508afff5-93fb-4f21-8e21-1dc41fd61aa3",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "56f7f0e8-68f1-45b3-9197-959b8793b451",
+      "child_original_id": "508afff5-93fb-4f21-8e21-1dc41fd61aa3",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "922f0e60-03ee-413a-ae09-34b2289f4ea8",
+      "child_original_id": "d64c3971-0ec0-47f3-86f5-a3f0949aa1ce",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "9d484990-a2e4-48f6-9e6b-8f04ed86d78a",
+      "child_original_id": "d64c3971-0ec0-47f3-86f5-a3f0949aa1ce",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "d64c3971-0ec0-47f3-86f5-a3f0949aa1ce",
+      "child_original_id": "ce61a41e-3382-48e8-8b5b-67eb7a7603ab",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "fc721301-b5a2-4823-a737-1e946d61f682",
+      "child_original_id": "ce61a41e-3382-48e8-8b5b-67eb7a7603ab",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "ce61a41e-3382-48e8-8b5b-67eb7a7603ab",
+      "child_original_id": "00d27623-b91f-453e-8aa0-a45c3dd94a6f",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "bff35b1c-c302-4423-87a8-5ad112f70a3e",
+      "child_original_id": "00d27623-b91f-453e-8aa0-a45c3dd94a6f",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "00d27623-b91f-453e-8aa0-a45c3dd94a6f",
+      "child_original_id": "b804bebb-e053-4ed8-be50-439548c94fac",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "a93b61b9-79b8-41a5-821d-3ab3d31cfa36",
+      "child_original_id": "b804bebb-e053-4ed8-be50-439548c94fac",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "00d27623-b91f-453e-8aa0-a45c3dd94a6f",
+      "child_original_id": "80d4b2db-81ca-452e-bb45-e06315c22acc",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "2d55e051-aa32-43f0-a546-7c5ba3e83d25",
+      "child_original_id": "80d4b2db-81ca-452e-bb45-e06315c22acc",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "b804bebb-e053-4ed8-be50-439548c94fac",
+      "child_original_id": "6098ee8f-0983-494a-86f2-c15a06f8fccc",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "b0ce790d-fc58-4157-be1b-8abef3e0ff6e",
+      "child_original_id": "6098ee8f-0983-494a-86f2-c15a06f8fccc",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "b804bebb-e053-4ed8-be50-439548c94fac",
+      "child_original_id": "97faa904-75d0-43bb-91f2-3455bca17fe6",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "b032276b-a612-46fd-b9dc-3ad5f878b1ca",
+      "child_original_id": "97faa904-75d0-43bb-91f2-3455bca17fe6",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "97faa904-75d0-43bb-91f2-3455bca17fe6",
+      "child_original_id": "901b2f50-0917-4f28-964d-fdede3b5c3ed",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "c0fed12f-9625-41c1-9054-19613919ab8e",
+      "child_original_id": "901b2f50-0917-4f28-964d-fdede3b5c3ed",
+      "relationship_type": "mother"
+    },
+    {
+      "parent_original_id": "97faa904-75d0-43bb-91f2-3455bca17fe6",
+      "child_original_id": "ff51dd31-2612-4317-a377-76247cdc6314",
+      "relationship_type": "father"
+    },
+    {
+      "parent_original_id": "97faa904-75d0-43bb-91f2-3455bca17fe6",
+      "child_original_id": "43069198-3e7b-4fd7-b55d-3efdd4a7f4b2",
+      "relationship_type": "father"
+    }
+  ]
 }

@@ -8,18 +8,18 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import {
-    createFamily,
-    deleteFamily,
-    getCollaborators,
-    getFamilies,
-    getFamilyGraph,
-    getMembers,
-    importFamily,
-    importFamilyPreset,
-    inviteCollaborator,
-    removeCollaborator,
-    updateCollaboratorRole,
-    updateFamily,
+  createFamily,
+  deleteFamily,
+  getCollaborators,
+  getFamilies,
+  getFamilyGraph,
+  getMembers,
+  importFamily,
+  importFamilyPreset,
+  inviteCollaborator,
+  removeCollaborator,
+  updateCollaboratorRole,
+  updateFamily,
 } from "../../services/api";
 import { Family, FamilyCollaborator, Member } from "../../types";
 import FamilyCard from "./FamilyCard";
@@ -241,7 +241,11 @@ const Manage: React.FC = () => {
   const handleUpdateFamily = async () => {
     if (!editingFamily || !editFamilyName.trim()) return;
     try {
-      await updateFamily(editingFamily.id, editFamilyName, editFamilyDescription);
+      await updateFamily(
+        editingFamily.id,
+        editFamilyName,
+        editFamilyDescription,
+      );
       toast.success(
         t("common.update_success", { defaultValue: "Updated successfully" }),
       );
@@ -287,12 +291,20 @@ const Manage: React.FC = () => {
           relationship_type: e.label || "unknown",
         }));
 
+      const regions = (graph.regions || []).map((r) => ({
+        name: r.name,
+        description: r.description,
+        color: r.color,
+        original_id: r.id,
+      }));
+
       const exportData = {
         family_name: family.family_name + " (Export)",
         user_id: family.user_id,
         members,
         spouse_relationships,
         parent_child_relationships,
+        regions,
       };
 
       const blob = new Blob([JSON.stringify(exportData, null, 2)], {

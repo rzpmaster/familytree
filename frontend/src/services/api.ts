@@ -219,12 +219,20 @@ export interface ImportParentChildRelationship {
   relationship_type: string;
 }
 
+export interface ImportRegion {
+  name: string;
+  description?: string;
+  color?: string;
+  original_id: string;
+}
+
 export interface ImportData {
   family_name: string;
   user_id?: string;
   members: ImportMember[];
   spouse_relationships: ImportSpouseRelationship[];
   parent_child_relationships: ImportParentChildRelationship[];
+  regions?: ImportRegion[];
   [key: string]: unknown;
 }
 

@@ -232,9 +232,13 @@ class ImportParentChild(BaseModel):
     child_original_id: str
     relationship_type: str
 
+class ImportRegion(RegionBase):
+    original_id: str
+
 class FamilyImport(BaseModel):
     family_name: str
     user_id: str
     members: List[ImportMember]
     spouse_relationships: List[ImportSpouse]
     parent_child_relationships: List[ImportParentChild]
+    regions: Optional[List[ImportRegion]] = []
