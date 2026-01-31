@@ -3,9 +3,9 @@ import { Mars, Trash2, Venus } from "lucide-react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Handle, Position } from "reactflow";
-import { MemberNodeProps } from "./MemberNode";
+import { MemberNodeDisplayProps } from "./MemberNode";
 
-const CompactMemberNode = memo((props: MemberNodeProps) => {
+const CompactMemberNode = memo((props: MemberNodeDisplayProps) => {
   const {
     data,
     selected,

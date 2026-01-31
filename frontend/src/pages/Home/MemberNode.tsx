@@ -11,10 +11,12 @@ import { RootState } from "@/store";
 import { Family, Member } from "@/types";
 import React, { memo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { NodeProps } from "reactflow";
 import CompactMemberNode from "./CompactMemberNode";
 import NormalMemberNode from "./NormalMemberNode";
 
-export interface MemberNodeProps {
+// Props passed to the display components (Normal/Compact)
+export interface MemberNodeDisplayProps {
   data: Member;
   selected: boolean;
   width: number;
@@ -29,7 +31,7 @@ export interface MemberNodeProps {
   onDelete: (e: React.MouseEvent) => void;
 }
 
-const MemberNode = memo(({ data, selected }: MemberNodeProps) => {
+const MemberNode = memo(({ data, selected }: NodeProps<Member>) => {
   const { user } = useAuth();
 
   const {
@@ -108,9 +110,9 @@ const MemberNode = memo(({ data, selected }: MemberNodeProps) => {
 
   const isMale = data.gender === "male";
 
-  const viewProps: MemberNodeProps = {
+  const viewProps: MemberNodeDisplayProps = {
     data,
-    selected,
+    selected: !!selected,
     width,
     height,
     displayName,

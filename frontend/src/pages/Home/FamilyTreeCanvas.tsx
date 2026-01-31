@@ -17,7 +17,7 @@ import {
 } from "@/strategies/layout/RecursiveFamilyLayoutStrategy";
 import { Family, GraphEdge, Member } from "@/types";
 import { Focus, Layout, Plus } from "lucide-react";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,29 +26,18 @@ import ReactFlow, {
   ConnectionMode,
   Controls,
   Edge,
-  EdgeTypes,
   Node,
-  NodeTypes,
   OnSelectionChangeParams,
   Panel,
   ReactFlowInstance,
   SelectionMode,
   Viewport,
   useEdgesState,
-  useNodesState,
+  useNodesState
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { CustomEdge } from "./CustomEdge";
 import MemberNode from "./MemberNode";
-
-const nodeTypes: NodeTypes = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  member: MemberNode as any,
-};
-
-const edgeTypes: EdgeTypes = {
-  custom: CustomEdge,
-};
 
 interface FamilyTreeCanvasProps {
   familyId: string;
@@ -311,6 +300,14 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     setNodes((nds) => nds.map((n) => ({ ...n, zIndex: undefined })));
   }, [setNodes]);
 
+  const nodeTypes = useMemo(() => ({
+    member: MemberNode,
+  }), []);
+
+  const edgeTypes = useMemo(() => ({
+    custom: CustomEdge,
+  }), []);
+
   return (
     <div
       className="w-full h-full bg-slate-50 relative"
@@ -347,9 +344,9 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
         nodesDraggable={!readOnly}
         elementsSelectable={true}
         // Enable multi-selection features
-        selectionOnDrag={true} 
+        selectionOnDrag={true}
         selectionMode={SelectionMode.Partial}
-        panOnDrag={true} 
+        panOnDrag={true}
         selectionKeyCode="Shift"
         multiSelectionKeyCode="Control"
       >

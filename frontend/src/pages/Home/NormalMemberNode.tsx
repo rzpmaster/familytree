@@ -3,9 +3,9 @@ import { Trash2, User } from "lucide-react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Handle, Position } from "reactflow";
-import { MemberNodeProps } from "./MemberNode";
+import { MemberNodeDisplayProps } from "./MemberNode";
 
-const NormalMemberNode = memo((props: MemberNodeProps) => {
+const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
   const {
     data,
     selected,
