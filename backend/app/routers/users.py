@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from .. import crud, models, schemas
+from .. import crud, schemas
 from ..database import get_db
 
 
