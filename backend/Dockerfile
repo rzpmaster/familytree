@@ -1,5 +1,5 @@
 # Use official Python runtime as a parent image
-FROM python:3.9-slim
+FROM python:3.12-slim
 
 # Set working directory
 WORKDIR /app
@@ -21,7 +21,7 @@ RUN pip install --no-cache-dir uv
 # copy dependency descriptors first for layer caching
 COPY pyproject.toml uv.lock ./
 # create venv + sync deps (no dev deps in production)
-RUN uv sync --frozen --no-dev
+RUN uv sync --frozen --no-dev --no-install-project
 
 # Copy project files
 COPY . .
@@ -34,4 +34,4 @@ EXPOSE 8000
 
 # Command to run the application
 # Using shell form to allow variable expansion if needed, but array form is preferred
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
