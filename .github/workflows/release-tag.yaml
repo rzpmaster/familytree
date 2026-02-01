@@ -237,6 +237,8 @@ jobs:
           push: true
           tags: ${{ steps.meta_backend.outputs.tags }}
           labels: ${{ steps.meta_backend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build & push frontend
         uses: docker/build-push-action@v6
@@ -246,6 +248,8 @@ jobs:
           push: true
           tags: ${{ steps.meta_frontend.outputs.tags }}
           labels: ${{ steps.meta_frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   # =========================
   # Manual promote: unset prerelease
@@ -345,6 +349,8 @@ jobs:
           push: true
           tags: ${{ steps.meta_backend.outputs.tags }}
           labels: ${{ steps.meta_backend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build & push frontend (stable)
         uses: docker/build-push-action@v6
@@ -354,3 +360,85 @@ jobs:
           push: true
           tags: ${{ steps.meta_frontend.outputs.tags }}
           labels: ${{ steps.meta_frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # =========================
+  # clear image
+  # =========================
+  cleanup_rc_images:
+    needs: [meta, promote_release, promote_docker]
+    if: ${{ needs.meta.outputs.mode == 'promote' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Delete RC container image versions (backend/frontend)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const rcTag = `${{ needs.meta.outputs.rc_tag }}`;
+            const packages = ['backend', 'frontend'];
+
+            async function listVersions(pkg) {
+              // Try user-owned package first, then org-owned.
+              try {
+                return await github.rest.packages.getAllPackageVersionsForPackageOwnedByUser({
+                  package_type: "container",
+                  package_name: `${repo}/${pkg}`,
+                  username: owner,
+                  per_page: 100,
+                });
+              } catch (e1) {
+                return await github.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
+                  package_type: "container",
+                  package_name: `${repo}/${pkg}`,
+                  org: owner,
+                  per_page: 100,
+                });
+              }
+            }
+
+            async function deleteVersion(pkg, id) {
+              // Try user-owned delete first, then org-owned.
+              try {
+                await github.rest.packages.deletePackageVersionForUser({
+                  package_type: "container",
+                  package_name: `${repo}/${pkg}`,
+                  username: owner,
+                  package_version_id: id,
+                });
+              } catch (e1) {
+                await github.rest.packages.deletePackageVersionForOrg({
+                  package_type: "container",
+                  package_name: `${repo}/${pkg}`,
+                  org: owner,
+                  package_version_id: id,
+                });
+              }
+            }
+
+            for (const pkg of packages) {
+              core.info(`Scanning package: ${repo}/${pkg} for rc tag: ${rcTag}`);
+              const res = await listVersions(pkg);
+              const versions = res.data || [];
+
+              // Each version may have metadata.container.tags
+              const targets = versions.filter(v => {
+                const tags = v.metadata?.container?.tags || [];
+                return tags.includes(rcTag);
+              });
+
+              if (targets.length === 0) {
+                core.info(`No versions found with tag ${rcTag} for ${repo}/${pkg}`);
+                continue;
+              }
+
+              for (const v of targets) {
+                core.info(`Deleting ${repo}/${pkg} version_id=${v.id} tags=${(v.metadata?.container?.tags||[]).join(',')}`);
+                await deleteVersion(pkg, v.id);
+              }
+            }
+
+            core.info(`Cleanup done for rc tag: ${rcTag}`);
