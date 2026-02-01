@@ -176,8 +176,8 @@ jobs:
           images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-frontend
           tags: |
             type=raw,value=${{ steps.ver.outputs.to_tag }}
+            type=raw,value=latest
             type=sha,format=short
-            type=raw,value=latest,enable=${{ inputs.make_latest }}
 
       - name: Build & push frontend image (final)
         uses: docker/build-push-action@v6
@@ -198,8 +198,8 @@ jobs:
           images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-backend
           tags: |
             type=raw,value=${{ steps.ver.outputs.to_tag }}
+            type=raw,value=latest
             type=sha,format=short
-            type=raw,value=latest,enable=${{ inputs.make_latest }}
 
       - name: Build & push backend image (final)
         uses: docker/build-push-action@v6
@@ -212,13 +212,23 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # ----------------- make release as last -----------------------
+      - name: Ensure final release is published (not draft/prerelease)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TO: ${{ steps.ver.outputs.to_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release edit "$TO" --draft=false --prerelease=false
+
       - name: Mark final release as latest (optional)
         if: ${{ inputs.make_latest }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TO: ${{ steps.ver.outputs.to_tag }}
         run: |
-          set -e
+          set -euo pipefail
           gh release edit "$TO" --latest
 
       - name: Optionally convert source prerelease to draft
@@ -229,7 +239,7 @@ jobs:
         run: |
           set -e
           gh release edit "$FROM" --draft=true
-
+      # ----------------- faile roll back tag -------------------------
       - name: Rollback created tag on failure
         if: ${{ failure() && steps.tag.outputs.tag_created == 'true' }}
         env:
