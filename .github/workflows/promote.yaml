@@ -1,0 +1,196 @@
+name: Promote RC -> Stable
+
+on:
+  workflow_dispatch:
+    inputs:
+      rc_tag:
+        description: "RC tag to promote (e.g. v0.0.5-rc.1)"
+        required: true
+      build_ref:
+        description: "Ref/sha to build for stable images (default: rc_tag)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  meta:
+    runs-on: ubuntu-latest
+    outputs:
+      rc_tag: ${{ steps.meta.outputs.rc_tag }}
+      stable_tag: ${{ steps.meta.outputs.stable_tag }}
+      build_ref: ${{ steps.meta.outputs.build_ref }}
+    steps:
+      - id: meta
+        shell: bash
+        run: |
+          rc="${{ inputs.rc_tag }}"
+          stable="${rc%%-rc*}"
+          ref="${{ inputs.build_ref }}"
+          if [[ -z "$ref" ]]; then ref="$rc"; fi
+          echo "rc_tag=$rc" >> $GITHUB_OUTPUT
+          echo "stable_tag=$stable" >> $GITHUB_OUTPUT
+          echo "build_ref=$ref" >> $GITHUB_OUTPUT
+
+  create_stable_tag:
+    needs: meta
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create stable tag if not exists
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          stable="${{ needs.meta.outputs.stable_tag }}"
+          rc="${{ needs.meta.outputs.rc_tag }}"
+
+          git fetch --tags
+          if git rev-parse "$stable" >/dev/null 2>&1; then
+            echo "Stable tag $stable already exists, skip."
+            exit 0
+          fi
+
+          echo "Creating stable tag $stable from $rc"
+          git tag "$stable" "$rc"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$stable"
+
+  promote_release:
+    needs: meta
+    runs-on: ubuntu-latest
+    steps:
+      - name: Promote GitHub Release (prerelease -> false)
+        uses: actions/github-script@v7
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+          script: |
+            const rcTag = `${{ needs.meta.outputs.rc_tag }}`;
+            const rel = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: rcTag
+            });
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: rel.data.id,
+              prerelease: false,
+              draft: false
+            });
+            core.info(`Promoted ${rcTag} to stable release.`);
+
+  promote_docker:
+    needs: meta
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.meta.outputs.build_ref }}
+          fetch-depth: 0
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Set up Docker Buildx (docker-container)
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker-container
+
+      - name: Docker meta (backend)
+        id: meta_backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/backend
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ needs.meta.outputs.stable_tag }}
+
+      - name: Docker meta (frontend)
+        id: meta_frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/frontend
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ needs.meta.outputs.stable_tag }}
+
+      - name: Build & push backend (stable)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta_backend.outputs.tags }}
+          labels: ${{ steps.meta_backend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build & push frontend (stable)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta_frontend.outputs.tags }}
+          labels: ${{ steps.meta_frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  cleanup_rc_images:
+    needs: [meta, promote_docker]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete RC container image versions (backend/frontend)
+        uses: actions/github-script@v7
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const rcTag = `${{ needs.meta.outputs.rc_tag }}`;
+            const packages = ['backend', 'frontend'];
+
+            async function listVersions(pkg) {
+              return await github.rest.packages.getAllPackageVersionsForPackageOwnedByUser({
+                package_type: "container",
+                package_name: `${repo}/${pkg}`,
+                username: owner,
+                per_page: 100,
+              });
+            }
+
+            async function deleteVersion(pkg, id) {
+              await github.rest.packages.deletePackageVersionForUser({
+                package_type: "container",
+                package_name: `${repo}/${pkg}`,
+                username: owner,
+                package_version_id: id,
+              });
+            }
+
+            for (const pkg of packages) {
+              core.info(`Scanning package: ${repo}/${pkg} for rc tag: ${rcTag}`);
+              const res = await listVersions(pkg);
+              const versions = res.data || [];
+              const targets = versions.filter(v => (v.metadata?.container?.tags || []).includes(rcTag));
+
+              for (const v of targets) {
+                core.info(`Deleting ${repo}/${pkg} version_id=${v.id}`);
+                await deleteVersion(pkg, v.id);
+              }
+            }
