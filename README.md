@@ -30,76 +30,93 @@
 
 最简单的方式是使用 Docker Compose 一键启动。
 
-1. **克隆项目**
-   ```bash
-   git clone https://github.com/rzpmaster/familytree.git
-   cd familytree
-   ```
+1. **使用源码**
 
-2. **启动服务**
-   ```bash
-   docker-compose up -d
-   ```
+- 克隆项目
 
-3. **访问应用**
-   打开浏览器访问 `http://localhost`。
+```bash
+git clone https://github.com/rzpmaster/familytree.git
+cd familytree
+```
+
+- 修改环境变量（可选）
+
+复制 `.env.example` 为 `.env` 并按需修改。
+
+```bash
+cp .env.example .env
+```
+
+- 一键启动
+
+```bash
+   docker compose -f docker-compose-source.yaml up -d --build
+```
+
+- 打开浏览器访问 `http://localhost`。
+
+2. **使用镜像**
+
+- 复制本仓库 `docker-compose.yaml` 到你到文件夹
+- 修改环境变量（可选）
+
+  复制本仓库 `.env.example` 为 `.env` 并按需修改。
+
+- 一键启动
+
+```bash
+docker-compose up -d
+```
+
+- 打开浏览器访问 `http://localhost`。
 
 ### 方式二：本地开发运行
 
+### 环境要求
+
+- Python **3.12+**
+- Node.js **24+**
+- （可选）uv（Python 包管理工具，推荐）
+
 #### 后端
 
-1. 进入后端目录：
+1. 安装依赖：
+
+   **前端**
+
    ```bash
    cd backend
+   pip install --no-cache-dir uv
+   uv synv
    ```
 
-2. 创建并激活虚拟环境：
+   **后端**
+
    ```bash
-   python -m venv venv
-   # Windows
-   .\venv\Scripts\activate
-   # Linux/Mac
-   source venv/bin/activate
+   cd frontend
+   npm install
    ```
 
-3. 安装依赖：
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. 配置环境变量：
+2. 配置环境变量：
    复制 `.env.example` 为 `.env` 并按需修改。
+
    ```bash
    cp .env.example .env
    ```
 
-5. 启动后端服务：
-   ```bash
-   python -m uvicorn app.main:app --reload
-   ```
-   后端默认运行在 `http://localhost:8000`。
-
-#### 前端
-
-1. 进入前端目录：
-   ```bash
-   cd frontend
-   ```
-
-2. 安装依赖：
-   ```bash
-   npm install
-   ```
-
 3. 启动开发服务器：
+
    ```bash
-   npm run dev
+   npm start
    ```
+
+   后端默认运行在 `http://localhost:8000`
    前端默认运行在 `http://localhost:5173`。
 
 ## ⚙️ 配置说明
 
 ### 数据库配置
+
 在 `backend/.env` 中设置 `DATABASE_URL`：
 
 - **SQLite (默认)**: `sqlite:///./app/data/family_tree.db`
@@ -109,6 +126,7 @@
 系统会在启动时自动检测并初始化数据库结构。
 
 ### 超级管理员
+
 在 `backend/.env` 中设置 `SUPERUSER_IDS`（逗号分隔的 UUID）以指定系统超级管理员。
 
 ## 📄 许可证 (License)
@@ -116,10 +134,12 @@
 本项目采用 **CC BY-NC-SA 4.0** (署名-非商业性使用-相同方式共享 4.0 国际) 许可协议。
 
 这意味着您可以：
+
 - **共享** — 在任何媒介以任何形式复制、发行本作品。
 - **演绎** — 修改、转换或以本作品为基础进行创作。
 
 但在遵守以下条件的情况下：
+
 - **署名** — 您必须给出适当的署名，提供指向本许可协议的链接，同时标明是否（对原始作品）作了修改。
 - **非商业性使用** — **您不得将本作品用于商业目的**。
 - **相同方式共享** — 如果您再混合、转换或者基于本作品进行创作，您必须基于与原先许可协议相同的许可协议分发您贡献的作品。

@@ -26,11 +26,15 @@ RUN uv sync --frozen --no-dev --no-install-project
 # Copy project files
 COPY . .
 
-RUN ls -al /app/app/data
+# copy to seed
+COPY /app/app/data /app/app/data.seed
+# copy seed to volume if empty
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Expose port
 EXPOSE 8000
-
 # Command to run the application
 # Using shell form to allow variable expansion if needed, but array form is preferred
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
