@@ -42,9 +42,10 @@ services:
       - BACKEND_URL=${BACKEND_URL:-http://backend:8000}
     volumes:
       # Mount config.json for runtime configuration
-      # - ./config.json:/usr/share/nginx/html/config.json
+      # you must docker cp out the config.json first
+      #- ./frontend/config.json:/usr/share/nginx/html/config.json
       # Mount nginx config template
-      - ./nginx.conf.template:/etc/nginx/templates/default.conf.template
+      - ./frontend/nginx.conf:/etc/nginx/templates
     networks:
       - family-tree-network
 
