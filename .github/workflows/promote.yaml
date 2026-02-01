@@ -84,8 +84,8 @@ jobs:
             echo "tag_created=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Read source release info (title/body)
-        id: src
+      - name: Build release notes from previous published release to current commit
+        id: notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FROM: ${{ steps.ver.outputs.from_tag }}
@@ -93,40 +93,73 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git fetch --tags --force
 
-          TITLE="$(gh release view "$FROM" --json name -q .name || true)"
-          if [[ -z "${TITLE:-}" || "$TITLE" == "null" ]]; then
-            TITLE="$TO"
+          # 当前这次 promote 的目标 commit（以 rc tag 指向为准）
+          TO_SHA="$(git rev-list -n 1 "$FROM")"
+
+          # 1) 找到“最近一个正式 release”（非 draft、非 prerelease）
+          #    注意：过滤掉本次要创建/更新的 TO（避免把自己当成 previous）
+          PREV_RELEASE_TAG="$(
+            gh release list --limit 50 \
+              --json tagName,isDraft,isPrerelease,createdAt,publishedAt \
+              -q '.[] 
+                  | select(.isDraft==false and .isPrerelease==false) 
+                  | .tagName' \
+            | grep -vx "$TO" \
+            | head -n 1 || true
+          )"
+
+          if [[ -z "${PREV_RELEASE_TAG:-}" ]]; then
+            echo "No previous published release found. Treat as initial release."
+            PREV_SHA=""
+            RANGE_TITLE="Initial release"
+          else
+            # 2) 上一个正式 release tag 对应的 commit
+            PREV_SHA="$(git rev-list -n 1 "$PREV_RELEASE_TAG")"
+            RANGE_TITLE="${PREV_RELEASE_TAG} → ${TO}"
           fi
 
-          BODY="$(gh release view "$FROM" --json body -q .body || true)"
-          if [[ -z "${BODY:-}" || "$BODY" == "null" ]]; then
-            BODY=""
+          # 3) 生成变更列表：从 PREV_SHA 到 TO_SHA
+          if [[ -z "${PREV_SHA:-}" ]]; then
+            CHANGELOG="$(git log "$TO_SHA" --no-merges --pretty=format:'- %s (%h)')"
+          else
+            CHANGELOG="$(git log "${PREV_SHA}..${TO_SHA}" --no-merges --pretty=format:'- %s (%h)')"
           fi
 
-          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+          if [[ -z "${CHANGELOG:-}" ]]; then
+            CHANGELOG="- No changes detected."
+          fi
 
+          # 4) 最终 release 标题固定为 TO
+          echo "title=$TO" >> "$GITHUB_OUTPUT"
+
+          # 5) 多行 body（随机分隔符，避免 EOF 问题）
           DELIM="__GH_OUTPUT_$(date +%s%N)__"
           {
             echo "body<<$DELIM"
-            printf '%s\n' "$BODY"
+            echo "## Changes (${RANGE_TITLE})"
             echo ""
-            echo "---"
-            echo "Promoted from $FROM -> $TO"
+            printf '%s\n' "$CHANGELOG"
+            echo ""
+            echo "## Docker images"
+            echo ""
+            echo "- ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-frontend:${TO}"
+            echo "- ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-backend:${TO}"
             echo "$DELIM"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Create/Update final release (non-prerelease)
+      - name: Create/Update final release (non-draft, non-prerelease)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TO: ${{ steps.ver.outputs.to_tag }}
-          TITLE: ${{ steps.src.outputs.title }}
+          TITLE: ${{ steps.notes.outputs.title }}
         run: |
           set -e
           if gh release view "$TO" >/dev/null 2>&1; then
-            gh release edit "$TO" --title "$TITLE" --notes "${{ steps.src.outputs.body }}" --prerelease=false
+            gh release edit "$TO" --title "$TITLE" --notes "${{ steps.notes.outputs.body }}" --draft=false --prerelease=false
           else
-            gh release create "$TO" --title "$TITLE" --notes "${{ steps.src.outputs.body }}" --prerelease=false
+            gh release create "$TO" --title "$TITLE" --notes "${{ steps.notes.outputs.body }}" --draft=false --prerelease=false
           fi
 
       - name: Copy assets from source release to final release
