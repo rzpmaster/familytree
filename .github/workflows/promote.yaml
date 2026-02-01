@@ -1,4 +1,4 @@
-name: Promote Release (create final tag + copy assets/notes)
+name: Promote Release
 
 on:
   workflow_dispatch:
@@ -7,12 +7,8 @@ on:
         description: "Pre-release tag to promote from, e.g. v0.2.0-rc.1"
         required: true
         type: string
-      to_tag:
-        description: "Final release tag to create/update, e.g. v0.2.0"
-        required: true
-        type: string
       make_latest:
-        description: "Mark final release as latest?"
+        description: "Mark final release/image as latest?"
         required: true
         default: true
         type: boolean
@@ -24,10 +20,14 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   promote:
     runs-on: ubuntu-latest
+    env:
+      FRONTEND_DIR: frontend
+      BACKEND_DIR: backend
 
     steps:
       - name: Checkout (for git tag push)
@@ -35,10 +35,24 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Resolve tags (auto to_tag)
+        id: ver
+        shell: bash
+        run: |
+          set -euo pipefail
+          FROM="${{ inputs.from_tag }}"
+          TO="${FROM%%-*}"   # 截取 '-' 之前
+          if [[ "$TO" == "$FROM" ]]; then
+            echo "ERROR: from_tag has no '-' part, expected like v0.2.0-rc.1"
+            exit 1
+          fi
+          echo "from_tag=$FROM" >> "$GITHUB_OUTPUT"
+          echo "to_tag=$TO" >> "$GITHUB_OUTPUT"
+
       - name: Validate source release exists
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FROM: ${{ inputs.from_tag }}
+          FROM: ${{ steps.ver.outputs.from_tag }}
         run: |
           set -e
           gh release view "$FROM" >/dev/null
@@ -46,26 +60,20 @@ jobs:
 
       - name: Create final tag (points to same commit as from_tag)
         env:
-          FROM: ${{ inputs.from_tag }}
-          TO: ${{ inputs.to_tag }}
+          FROM: ${{ steps.ver.outputs.from_tag }}
+          TO: ${{ steps.ver.outputs.to_tag }}
         run: |
-          set -e
-
+          set -euo pipefail
           git fetch --tags --force
-
-          # Resolve commit SHA of from_tag
           SHA="$(git rev-list -n 1 "$FROM")"
-          echo "from_tag=$FROM sha=$SHA"
 
-          # If to_tag already exists, ensure it points to same commit
           if git show-ref --tags --verify --quiet "refs/tags/$TO"; then
             EXIST_SHA="$(git rev-list -n 1 "$TO")"
-            echo "to_tag exists sha=$EXIST_SHA"
             if [[ "$EXIST_SHA" != "$SHA" ]]; then
               echo "ERROR: $TO points to $EXIST_SHA, but $FROM points to $SHA. Refusing to overwrite."
               exit 1
             fi
-            echo "Tag $TO already exists and matches commit. Skip create."
+            echo "Tag $TO already exists and matches commit."
           else
             git tag "$TO" "$SHA"
             git push origin "refs/tags/$TO"
@@ -76,25 +84,140 @@ jobs:
         id: src
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FROM: ${{ inputs.from_tag }}
+          FROM: ${{ steps.ver.outputs.from_tag }}
+          TO: ${{ steps.ver.outputs.to_tag }}
+        shell: bash
         run: |
-          set -e
+          set -euo pipefail
 
-          # Title
-          TITLE="$(gh release view "$FROM" --json name -q .name)"
-          if [[ -z "$TITLE" || "$TITLE" == "null" ]]; then
-            TITLE="$FROM"
+          TITLE="$(gh release view "$FROM" --json name -q .name || true)"
+          if [[ -z "${TITLE:-}" || "$TITLE" == "null" ]]; then
+            TITLE="$TO"
           fi
 
-          # Body
-          BODY="$(gh release view "$FROM" --json body -q .body)"
-          if [[ -z "$BODY" || "$BODY" == "null" ]]; then
+          BODY="$(gh release view "$FROM" --json body -q .body || true)"
+          if [[ -z "${BODY:-}" || "$BODY" == "null" ]]; then
             BODY=""
           fi
 
           echo "title=$TITLE" >> "$GITHUB_OUTPUT"
 
-          # Multiline output for body
-          echo "body<<EOF" >> "$GITHUB_OUTPUT"
-          echo "$BODY" >> "$GITHUB_OUTPUT"
-          echo "" >> "$GITHUB_OUTPUT"
+          DELIM="__GH_OUTPUT_$(date +%s%N)__"
+          {
+            echo "body<<$DELIM"
+            printf '%s\n' "$BODY"
+            echo ""
+            echo "---"
+            echo "Promoted from $FROM -> $TO"
+            echo "$DELIM"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create/Update final release (non-prerelease)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TO: ${{ steps.ver.outputs.to_tag }}
+          TITLE: ${{ steps.src.outputs.title }}
+        run: |
+          set -e
+          if gh release view "$TO" >/dev/null 2>&1; then
+            gh release edit "$TO" --title "$TITLE" --notes "${{ steps.src.outputs.body }}" --prerelease=false
+          else
+            gh release create "$TO" --title "$TITLE" --notes "${{ steps.src.outputs.body }}" --prerelease=false
+          fi
+
+      - name: Copy assets from source release to final release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FROM: ${{ steps.ver.outputs.from_tag }}
+          TO: ${{ steps.ver.outputs.to_tag }}
+        run: |
+          set -euo pipefail
+          mkdir -p _assets
+          ASSETS="$(gh release view "$FROM" --json assets -q '.assets[].name' || true)"
+          if [[ -z "$ASSETS" ]]; then
+            echo "No assets found on $FROM, skip."
+            exit 0
+          fi
+
+          echo "$ASSETS" | while IFS= read -r name; do
+            [[ -z "$name" ]] && continue
+            gh release download "$FROM" --pattern "$name" --dir _assets
+
+            # If exists on TO, delete first (idempotent)
+            EXIST="$(gh release view "$TO" --json assets -q ".assets[] | select(.name==\"$name\") | .id" || true)"
+            if [[ -n "$EXIST" ]]; then
+              gh release delete-asset "$TO" "$name" -y
+            fi
+
+            gh release upload "$TO" "_assets/$name" --clobber
+          done
+
+      # ---------------- Docker: login ----------------
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # ---------------- Docker: build + push frontend ----------------
+      - name: Docker meta (frontend)
+        id: meta_fe
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-frontend
+          tags: |
+            type=raw,value=${{ steps.ver.outputs.to_tag }}
+            type=sha,format=short
+            type=raw,value=latest,enable=${{ inputs.make_latest }}
+
+      - name: Build & push frontend image (final)
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.FRONTEND_DIR }}
+          file: ${{ env.FRONTEND_DIR }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta_fe.outputs.tags }}
+          labels: ${{ steps.meta_fe.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # ---------------- Docker: build + push backend ----------------
+      - name: Docker meta (backend)
+        id: meta_be
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-backend
+          tags: |
+            type=raw,value=${{ steps.ver.outputs.to_tag }}
+            type=sha,format=short
+            type=raw,value=latest,enable=${{ inputs.make_latest }}
+
+      - name: Build & push backend image (final)
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ env.BACKEND_DIR }}
+          file: ${{ env.BACKEND_DIR }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta_be.outputs.tags }}
+          labels: ${{ steps.meta_be.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Mark final release as latest (optional)
+        if: ${{ inputs.make_latest }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TO: ${{ steps.ver.outputs.to_tag }}
+        run: |
+          set -e
+          gh release edit "$TO" --latest
+
+      - name: Optionally convert source prerelease to draft
+        if: ${{ !inputs.keep_prerelease }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FROM: ${{ steps.ver.outputs.from_tag }}
+        run: |
+          set -e
+          gh release edit "$FROM" --draft=true

@@ -104,12 +104,19 @@ jobs:
           fi
 
           # 4) include README if exists
-          if [[ -f "README.md" ]]; then
-            cp README.md release_bundle/README.md
-          fi
-          if [[ -f "docker-compose.yaml" ]]; then
-            cp docker-compose.yaml release_bundle/docker-compose.yaml
-          fi
+          files=(
+            "README.md"
+            "docker-compose.yaml"
+            "docker-compose-source.yml"
+            "docker-compose-source.sqlite.yml"
+            ".env.example"
+          )
+          for file in "${files[@]}"; do
+            if [[ -f "$file" ]]; then
+              cp "$file" release_bundle/
+              echo "Copied $file to release_bundle/"
+            fi
+          done
 
           # 5) create zip
           ZIP="familytree-${{ steps.ver.outputs.tag }}.zip"
