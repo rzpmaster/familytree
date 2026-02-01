@@ -517,7 +517,7 @@ def import_family_from_preset(db: Session, key: str, user_id: str):
     if not filename:
         return None
 
-    file_path = os.path.join(os.path.dirname(__file__), "data", filename)
+    file_path = os.path.join(os.path.dirname(__file__), "historicol_data", filename)
 
     # 1) Read JSON
     try:
