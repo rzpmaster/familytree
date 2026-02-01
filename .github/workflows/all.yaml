@@ -1,4 +1,4 @@
-name: Release All (pre-release -> promote)
+name: Release All
 
 on:
   workflow_dispatch:
