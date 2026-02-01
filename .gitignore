@@ -18,7 +18,6 @@ backend/app/data/*.db
 # Environment variables
 .env
 backend/.env
-backend/data/*.db
 frontend/.env
 
 # IDEs

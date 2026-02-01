@@ -30,5 +30,4 @@ COPY . .
 EXPOSE 8000
 # Command to run the application
 # Using shell form to allow variable expansion if needed, but array form is preferred
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
