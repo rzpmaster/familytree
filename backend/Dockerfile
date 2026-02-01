@@ -26,12 +26,6 @@ RUN uv sync --frozen --no-dev --no-install-project
 # Copy project files
 COPY . .
 
-# copy to seed
-COPY /app/data /app/data.seed
-# copy seed to volume if empty
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
 # Expose port
 EXPOSE 8000
 # Command to run the application
