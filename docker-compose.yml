@@ -15,7 +15,7 @@ services:
 
   # Backend Service (FastAPI)
   backend:
-    image: ghcr.io/rzpmaster/familytree/backend:latest
+    image: ghcr.io/rzpmaster/familytree-backend:latest
     container_name: family_tree_backend
     restart: always
     depends_on:
@@ -31,7 +31,7 @@ services:
 
   # Frontend Service (React + Nginx)
   frontend:
-    image: ghcr.io/rzpmaster/familytree/frontend:latest
+    image: ghcr.io/rzpmaster/familytree-frontend:latest
     container_name: family_tree_frontend
     restart: always
     ports:
