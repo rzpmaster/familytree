@@ -1,0 +1,42 @@
+name: Release All (pre-release -> promote)
+
+on:
+  workflow_dispatch:
+    inputs:
+      from_tag:
+        description: "RC tag, e.g. v0.2.0-rc.1"
+        required: true
+        type: string
+      make_latest:
+        description: "Mark final release/image as latest?"
+        required: true
+        default: true
+        type: boolean
+      keep_prerelease:
+        description: "Keep the source release as prerelease?"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  pre_release:
+    name: Run pre-release workflow
+    uses: ./.github/workflows/pre-release.yaml
+    with:
+      version: ${{ inputs.from_tag }}
+      prerelease: true
+    secrets: inherit
+
+  promote:
+    name: Run promote workflow
+    needs: pre_release
+    uses: ./.github/workflows/promote.yaml
+    with:
+      from_tag: ${{ inputs.from_tag }}
+      make_latest: ${{ inputs.make_latest }}
+      keep_prerelease: ${{ inputs.keep_prerelease }}
+    secrets: inherit
