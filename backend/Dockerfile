@@ -27,7 +27,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY . .
 
 # copy to seed
-COPY /app/app/data /app/app/data.seed
+COPY /app/data /app/data.seed
 # copy seed to volume if empty
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
