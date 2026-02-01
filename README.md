@@ -1,6 +1,6 @@
 # Family Tree – Genealogy Management System
 
-English | [简体中文](./README.md)
+English | [简体中文](./README-cn.md)
 
 A modern, web-based genealogy management system designed to help users record and preserve family history in an intuitive and interactive way. The system supports multi-user collaboration, family member management, relationship graph visualization, and fine-grained access control.
 
