@@ -170,25 +170,50 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _assets
+
           ASSETS="$(gh release view "$FROM" --json assets -q '.assets[].name' || true)"
-          if [[ -z "$ASSETS" ]]; then
+          if [[ -z "${ASSETS:-}" ]]; then
             echo "No assets found on $FROM, skip."
             exit 0
           fi
 
           echo "$ASSETS" | while IFS= read -r name; do
             [[ -z "$name" ]] && continue
+
+            echo "Downloading asset: $name"
             gh release download "$FROM" --pattern "$name" --dir _assets
 
-            # If exists on TO, delete first (idempotent)
-            EXIST="$(gh release view "$TO" --json assets -q ".assets[] | select(.name==\"$name\") | .id" || true)"
-            if [[ -n "$EXIST" ]]; then
-              gh release delete-asset "$TO" "$name" -y
+            src="_assets/$name"
+            if [[ ! -f "$src" ]]; then
+              echo "WARN: file not found after download: $src"
+              continue
             fi
 
-            gh release upload "$TO" "_assets/$name" --clobber
-          done
+            # 默认不改名
+            new_name="$name"
 
+            # 只处理 zip 把 FROM 替换成 TO 并去掉 -rc.N
+            if [[ "$name" == *.zip ]]; then
+              new_name="${new_name//$FROM/$TO}"
+              new_name="$(echo "$new_name" | sed -E 's/-rc\.[0-9]+//g')"
+            fi
+
+            # 如果需要改名，就 mv
+            if [[ "$new_name" != "$name" ]]; then
+              echo "Renaming: $name -> $new_name"
+              mv -f "$src" "_assets/$new_name"
+            fi
+
+            # 如果 TO release 已存在同名资产，先删掉（幂等）
+            EXIST_ID="$(gh release view "$TO" --json assets -q ".assets[] | select(.name==\"$new_name\") | .id" || true)"
+            if [[ -n "${EXIST_ID:-}" ]]; then
+              echo "Deleting existing asset on $TO: $new_name"
+              gh release delete-asset "$TO" "$new_name" -y
+            fi
+
+            echo "Uploading to $TO: $new_name"
+            gh release upload "$TO" "_assets/$new_name" --clobber
+          done
       # ---------------- Docker: login ----------------
       - name: Log in to GHCR
         uses: docker/login-action@v3
