@@ -1,217 +1,145 @@
-name: Tag -> Pre-release
+name: Pre-release
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release tag, e.g. v0.1.0"
+        required: true
+        type: string
+      prerelease:
+        description: "Create as prerelease?"
+        required: true
+        default: true
+        type: boolean
   push:
     tags:
-      - "v"
+      - "v*.*.*-rc.*"
+      - "v*.*.*-beta.*"
+      - "v*.*.*-alpha.*"
 
 permissions:
   contents: write
-  packages: write
 
 concurrency:
-  group: prerelease
-  cancel-in-progress: false
+  group: prerelease-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  # =========================
-  # Meta: generate rc tag
-  # =========================
-  meta:
+  build-and-prerelease:
     runs-on: ubuntu-latest
-    outputs:
-      rc_tag: ${{ steps.meta.outputs.rc_tag }}
-      base_tag: ${{ steps.meta.outputs.base_tag }}
-      build_ref: ${{ steps.meta.outputs.build_ref }}
+
+    env:
+      FRONTEND_DIR: frontend
+      BACKEND_DIR: backend
+      SCRIPTS_DIR: scripts
+      DIST_NAME: dist
 
     steps:
-      - id: meta
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve tag/version
+        id: ver
         shell: bash
         run: |
           set -e
-
-          raw_tag="${GITHUB_REF_NAME}"
-
-          # 1️⃣ 防御：rc tag 不应该触发 prerelease
-          if [[ "$raw_tag" == *"-rc."* ]]; then
-            echo "ERROR: RC tag '$raw_tag' should not trigger prerelease workflow." >&2
-            exit 1
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TAG="${{ inputs.version }}"
+          else
+            # refs/tags/v1.2.3-rc.1
+            TAG="${GITHUB_REF#refs/tags/}"
           fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
-          # 2️⃣ 基础版本校验（vX.Y.Z）
-          if ! [[ "$raw_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "ERROR: Invalid tag format '$raw_tag'. Expected vX.Y.Z" >&2
-            exit 1
-          fi
-
-          base="$raw_tag"
-
-          # 3️⃣ build_ref 一定是这个 tag
-          build_ref="$raw_tag"
-
-          # 4️⃣ 判断远端 tag 是否存在
-          tag_exists() {
-            local tag="$1"
-            git ls-remote --tags \
-              "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
-              "refs/tags/${tag}" | grep -q .
-          }
-
-          # 5️⃣ rc 永远从 rc.1 开始递增
-          i=1
-          while true; do
-            candidate="${base}-rc.${i}"
-            if ! tag_exists "$candidate"; then
-              rc="$candidate"
-              break
-            fi
-            i=$((i + 1))
-            if [[ $i -gt 9999 ]]; then
-              echo "ERROR: too many rc tags for ${base}" >&2
-              exit 1
-            fi
-          done
-
-          echo "base_tag=$base" >> "$GITHUB_OUTPUT"
-          echo "rc_tag=$rc" >> "$GITHUB_OUTPUT"
-          echo "build_ref=$build_ref" >> "$GITHUB_OUTPUT"
-
-  # =========================
-  # Build artifacts
-  # =========================
-  build:
-    needs: meta
-    runs-on: ubuntu-latest
-    outputs:
-      commit_sha: ${{ steps.sha.outputs.commit_sha }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.meta.outputs.build_ref }}
-          fetch-depth: 0
-
-      - name: Resolve commit sha
-        id: sha
-        run: echo "commit_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-
+      # ---- Frontend build (Vite/React) ----
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: ${{ env.FRONTEND_DIR }}/package-lock.json
 
-      - name: Install frontend and build
-        working-directory: frontend
-        run: |
-          npm ci
-          npm run build
+      - name: Install frontend deps
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm ci
 
-      - name: Pack release artifacts
-        run: |
-          mkdir -p artifacts
-          tar -czf artifacts/frontend-dist.tar.gz -C frontend dist
-          tar -czf artifacts/backend-src.tar.gz \
-            --exclude=backend/.venv \
-            --exclude=backend/__pycache__ \
-            --exclude=backend/.ruff_cache \
-            --exclude=backend/.pytest_cache \
-            --exclude=backend/.mypy_cache \
-            -C . backend
+      - name: Build frontend
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run build
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      # ---- Backend packaging (Python source + requirements) ----
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          name: build-artifacts
-          path: artifacts/*
+          python-version: "3.12"
 
-  # =========================
-  # Create GitHub pre-release
-  # =========================
-  release:
-    needs: [meta, build]
-    runs-on: ubuntu-latest
+      - name: Prepare release bundle
+        shell: bash
+        run: |
+          set -e
+          mkdir -p release_bundle
 
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-          path: artifacts
+          # 1) frontend dist
+          if [[ ! -d "${{ env.FRONTEND_DIR }}/${{ env.DIST_NAME }}" ]]; then
+            echo "Frontend dist not found: ${{ env.FRONTEND_DIR }}/${{ env.DIST_NAME }}"
+            exit 1
+          fi
+          mkdir -p release_bundle/frontend
+          cp -r "${{ env.FRONTEND_DIR }}/${{ env.DIST_NAME }}" "release_bundle/frontend/${{ env.DIST_NAME }}"
 
-      - name: Create GitHub Pre-release
+          # 2) backend source
+          if [[ ! -d "${{ env.BACKEND_DIR }}" ]]; then
+            echo "Backend dir not found: ${{ env.BACKEND_DIR }}"
+            exit 1
+          fi
+          mkdir -p release_bundle/backend
+          rsync -a --exclude="__pycache__" --exclude=".venv" --exclude=".pytest_cache" --exclude=".mypy_cache" \
+            "${{ env.BACKEND_DIR }}/" "release_bundle/backend/"
+
+          # 3) scripts
+          if [[ -d "${{ env.SCRIPTS_DIR }}" ]]; then
+            mkdir -p release_bundle/scripts
+            rsync -a "${{ env.SCRIPTS_DIR }}/" "release_bundle/scripts/"
+          fi
+
+          # 4) include README if exists
+          if [[ -f "README.md" ]]; then
+            cp README.md release_bundle/README.md
+          fi
+          if [[ -f "docker-compose.yaml" ]]; then
+            cp docker-compose.yaml release_bundle/docker-compose.yaml
+          fi
+
+          # 5) create zip
+          ZIP="familytree-${{ steps.ver.outputs.tag }}.zip"
+          (cd release_bundle && zip -r "../${ZIP}" .)
+          echo "zip=${ZIP}" >> $GITHUB_ENV
+
+      - name: Generate release notes (simple)
+        id: notes
+        shell: bash
+        run: |
+          set -e
+          TAG="${{ steps.ver.outputs.tag }}"
+          # Try to generate notes from commits (best-effort)
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "Build: ${TAG}" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "包含：" >> $GITHUB_OUTPUT
+          echo "- frontend/dist（前端静态文件）" >> $GITHUB_OUTPUT
+          echo "- backend（后端源码 + requirements 等）" >> $GITHUB_OUTPUT
+          echo "- scripts（Windows 启动脚本，如 start-all.bat）" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub pre-release (and upload asset)
         uses: softprops/action-gh-release@v2
         with:
-          token: ${{ secrets.RELEASE_TOKEN }}
-          tag_name: ${{ needs.meta.outputs.rc_tag }}
-          target_commitish: ${{ needs.build.outputs.commit_sha }}
-          prerelease: true
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: ${{ steps.ver.outputs.tag }}
+          prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || true }}
           generate_release_notes: true
+          body: ${{ steps.notes.outputs.notes }}
           files: |
-            artifacts/frontend-dist.tar.gz
-            artifacts/backend-src.tar.gz
-
-  # =========================
-  # Docker (rc only, no latest)
-  # =========================
-  docker:
-    needs: [meta, build]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.meta.outputs.build_ref }}
-
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Docker Buildx (docker-container)
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker-container
-
-      - name: Docker meta (backend)
-        id: meta_backend
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}/backend
-          tags: |
-            type=raw,value=${{ needs.meta.outputs.rc_tag }}
-
-      - name: Docker meta (frontend)
-        id: meta_frontend
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}/frontend
-          tags: |
-            type=raw,value=${{ needs.meta.outputs.rc_tag }}
-
-      - name: Build & push backend (rc)
-        uses: docker/build-push-action@v6
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          push: true
-          tags: ${{ steps.meta_backend.outputs.tags }}
-          labels: ${{ steps.meta_backend.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build & push frontend (rc)
-        uses: docker/build-push-action@v6
-        with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
-          push: true
-          tags: ${{ steps.meta_frontend.outputs.tags }}
-          labels: ${{ steps.meta_frontend.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+            ${{ env.zip }}
