@@ -69,25 +69,31 @@ jobs:
     needs: meta
     runs-on: ubuntu-latest
     steps:
-      - name: Promote GitHub Release (prerelease -> false)
-        uses: actions/github-script@v7
-        with:
-          token: ${{ secrets.RELEASE_TOKEN }}
-          script: |
-            const rcTag = `${{ needs.meta.outputs.rc_tag }}`;
-            const rel = await github.rest.repos.getReleaseByTag({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag: rcTag
-            });
-            await github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: rel.data.id,
-              prerelease: false,
-              draft: false
-            });
-            core.info(`Promoted ${rcTag} to stable release.`);
+    - name: Promote GitHub Release (rc -> stable)
+      uses: actions/github-script@v7
+      with:
+        token: ${{ secrets.RELEASE_TOKEN }}
+        script: |
+          const rcTag = `${{ needs.meta.outputs.rc_tag }}`;
+          const stableTag = `${{ needs.meta.outputs.stable_tag }}`;
+
+          const rel = await github.rest.repos.getReleaseByTag({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag: rcTag
+          });
+
+          await github.rest.repos.updateRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            release_id: rel.data.id,
+            tag_name: stableTag,     // 关键：把 release 绑定到 stable tag
+            name: stableTag,         // 可选：把 release 标题也改成 v0.0.6
+            prerelease: false,
+            draft: false
+          });
+
+          core.info(`Promoted release ${rcTag} -> ${stableTag}`);
 
   promote_docker:
     needs: meta
