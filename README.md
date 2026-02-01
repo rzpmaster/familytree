@@ -1,147 +1,151 @@
-# Family Tree - 家族族谱管理系统
+# Family Tree – Genealogy Management System
 
-这是一个现代化的在线家谱管理系统，旨在帮助用户以直观、互动的方式记录和传承家族历史。系统支持多用户协作、家族成员管理、关系图谱可视化以及权限控制等功能。
+English | [简体中文](./README.md)
 
-## ✨ 主要功能
+A modern, web-based genealogy management system designed to help users record and preserve family history in an intuitive and interactive way. The system supports multi-user collaboration, family member management, relationship graph visualization, and fine-grained access control.
 
-- **多家族支持**：用户可以创建并管理多个独立的家谱。
-- **可视化图谱**：基于 React Flow 的交互式家谱图，支持拖拽、缩放和自动布局。
-- **成员管理**：详细记录成员信息（姓名、生卒年、出生地、照片等）。
-- **关系管理**：轻松添加配偶和亲子关系，自动生成关系连线。
-- **协作共享**：
-  - 支持邀请其他用户协作编辑家谱。
-  - 细粒度的权限控制：可读 (Viewer)、可写 (Editor)、管理员 (Admin)。
-- **权限系统**：
-  - 超级管理员 (SuperAdmin)：系统级管理权限。
-  - 家谱管理员：特定家谱的管理权限。
-- **多语言支持**：内置中英文切换。
-- **多数据库支持**：兼容 SQLite、MySQL 和 PostgreSQL。
+## ✨ Key Features
 
-## 🛠️ 技术栈
+- **Multiple Family Support**: Create and manage multiple independent family trees.
+- **Visualized Graph**: Interactive genealogy graph based on React Flow, supporting drag, zoom, and automatic layout.
+- **Member Management**: Maintain detailed member information (name, birth/death year, birthplace, photos, etc.).
+- **Relationship Management**: Easily add spouse and parent–child relationships with automatic relationship edges.
+- **Collaboration & Sharing**:
+  - Invite other users to collaboratively edit a family tree.
+  - Fine-grained permission control: Viewer (read-only), Editor (write), Admin.
+- **Permission System**:
+  - SuperAdmin: system-level administrative privileges.
+  - Family Admin: administrative privileges for a specific family tree.
+- **Multi-language Support**: Built-in Chinese and English language switching.
+- **Multi-database Support**: Compatible with SQLite, MySQL, and PostgreSQL.
 
-- **前端**: React 18, TypeScript, TailwindCSS, Vite, React Flow
-- **后端**: Python 3.9+, FastAPI, SQLAlchemy
-- **数据库**: PostgreSQL / MySQL / SQLite
-- **部署**: Docker, Docker Compose
+## 🛠️ Tech Stack
 
-## 🚀 快速开始
+- **Frontend**: React 18, TypeScript, TailwindCSS, Vite, React Flow
+- **Backend**: Python 3.9+, FastAPI, SQLAlchemy
+- **Database**: PostgreSQL / MySQL / SQLite
+- **Deployment**: Docker, Docker Compose
 
-### 方式一：Docker 部署 (推荐)
+## 🚀 Quick Start
 
-最简单的方式是使用 Docker Compose 一键启动。
+### Option 1: Docker Deployment (Recommended)
 
-1. **使用源码**
+The easiest way to get started is using Docker Compose.
 
-- 克隆项目
+1. **Using Source Code**
+
+- Clone the repository
 
 ```bash
 git clone https://github.com/rzpmaster/familytree.git
 cd familytree
 ```
 
-- 修改环境变量（可选）
+- Configure environment variables (optional)
 
-复制 `.env.example` 为 `.env` 并按需修改。
+Copy `.env.example` to `.env` and modify as needed.
 
 ```bash
 cp .env.example .env
 ```
 
-- 一键启动
+- One-command startup
 
 ```bash
-   docker compose -f docker-compose-source.yaml up -d --build
+docker compose -f docker-compose-source.yaml up -d --build
 ```
 
-- 打开浏览器访问 `http://localhost`。
+- Open your browser and visit `http://localhost`.
 
-2. **使用镜像**
+2. **Using Docker Images**
 
-- 复制本仓库 `docker-compose.yaml` 到你到文件夹
-- 修改环境变量（可选）
+- Copy `docker-compose.yaml` from this repository to your directory
+- Configure environment variables (optional)
 
-  复制本仓库 `.env.example` 为 `.env` 并按需修改。
+Copy `.env.example` to `.env` and modify as needed.
 
-- 一键启动
+- One-command startup
 
 ```bash
 docker-compose up -d
 ```
 
-- 打开浏览器访问 `http://localhost`。
+- Open your browser and visit `http://localhost`.
 
-### 方式二：本地开发运行
+### Option 2: Local Development
 
-### 环境要求
+### Requirements
 
 - Python **3.12+**
 - Node.js **24+**
-- （可选）uv（Python 包管理工具，推荐）
+- (Optional) uv (Python package manager, recommended)
 
-#### 后端
+#### Run Project
 
-1. 安装依赖：
+1. Install dependencies:
 
-   **前端**
+**Backend**
 
-   ```bash
-   cd backend
-   pip install --no-cache-dir uv
-   uv synv
-   ```
+```bash
+cd backend
+pip install --no-cache-dir uv
+uv sync
+```
 
-   **后端**
+**Frontend**
 
-   ```bash
-   cd frontend
-   npm install
-   ```
+```bash
+cd frontend
+npm install
+```
 
-2. 配置环境变量：
-   复制 `.env.example` 为 `.env` 并按需修改。
+2. Configure environment variables:
 
-   ```bash
-   cp .env.example .env
-   ```
+Copy `.env.example` to `.env` and modify as needed.
 
-3. 启动开发服务器：
+```bash
+cp .env.example .env
+```
 
-   ```bash
-   npm start
-   ```
+3. Start development servers:
 
-   后端默认运行在 `http://localhost:8000`
-   前端默认运行在 `http://localhost:5173`。
+```bash
+npm start
+```
 
-## ⚙️ 配置说明
+Backend runs at `http://localhost:8000`  
+Frontend runs at `http://localhost:5173`
 
-### 数据库配置
+## ⚙️ Configuration
 
-在 `backend/.env` 中设置 `DATABASE_URL`：
+### Database Configuration
 
-- **SQLite (默认)**: `sqlite:///./app/data/family_tree.db`
+Set `DATABASE_URL` in `backend/.env`:
+
+- **SQLite (default)**: `sqlite:///./app/data/family_tree.db`
 - **PostgreSQL**: `postgresql://user:password@localhost/dbname`
 - **MySQL**: `mysql+pymysql://user:password@localhost/dbname`
 
-系统会在启动时自动检测并初始化数据库结构。
+The database schema will be automatically detected and initialized on startup.
 
-### 超级管理员
+### Super Administrator
 
-在 `backend/.env` 中设置 `SUPERUSER_IDS`（逗号分隔的 UUID）以指定系统超级管理员。
+Set `SUPERUSER_IDS` (comma-separated UUIDs) in `backend/.env` to define system super administrators.
 
-## 📄 许可证 (License)
+## 📄 License
 
-本项目采用 **CC BY-NC-SA 4.0** (署名-非商业性使用-相同方式共享 4.0 国际) 许可协议。
+This project is licensed under **CC BY-NC-SA 4.0** (Attribution-NonCommercial-ShareAlike 4.0 International).
 
-这意味着您可以：
+You are free to:
 
-- **共享** — 在任何媒介以任何形式复制、发行本作品。
-- **演绎** — 修改、转换或以本作品为基础进行创作。
+- **Share** — copy and redistribute the material in any medium or format.
+- **Adapt** — remix, transform, and build upon the material.
 
-但在遵守以下条件的情况下：
+Under the following conditions:
 
-- **署名** — 您必须给出适当的署名，提供指向本许可协议的链接，同时标明是否（对原始作品）作了修改。
-- **非商业性使用** — **您不得将本作品用于商业目的**。
-- **相同方式共享** — 如果您再混合、转换或者基于本作品进行创作，您必须基于与原先许可协议相同的许可协议分发您贡献的作品。
+- **Attribution** — You must give appropriate credit, provide a link to the license, and indicate if changes were made.
+- **Non-Commercial** — **You may not use the material for commercial purposes**.
+- **ShareAlike** — If you remix or build upon the material, you must distribute your contributions under the same license.
 
-查看完整协议：[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/)
+View the full license:  
+http://creativecommons.org/licenses/by-nc-sa/4.0/
