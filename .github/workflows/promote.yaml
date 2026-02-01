@@ -59,9 +59,11 @@ jobs:
           echo "Source release $FROM found."
 
       - name: Create final tag (points to same commit as from_tag)
+        id: tag
         env:
           FROM: ${{ steps.ver.outputs.from_tag }}
           TO: ${{ steps.ver.outputs.to_tag }}
+        shell: bash
         run: |
           set -euo pipefail
           git fetch --tags --force
@@ -74,10 +76,12 @@ jobs:
               exit 1
             fi
             echo "Tag $TO already exists and matches commit."
+            echo "tag_created=false" >> "$GITHUB_OUTPUT"
           else
             git tag "$TO" "$SHA"
             git push origin "refs/tags/$TO"
             echo "Created and pushed tag $TO -> $SHA"
+            echo "tag_created=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Read source release info (title/body)
@@ -221,3 +225,21 @@ jobs:
         run: |
           set -e
           gh release edit "$FROM" --draft=true
+
+      - name: Rollback created tag on failure
+        if: ${{ failure() && steps.tag.outputs.tag_created == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TO: ${{ steps.ver.outputs.to_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Workflow failed. Rolling back tag: $TO"
+
+          # 删除远端 tag（失败也不要让回滚 step 再失败）
+          git push --delete origin "$TO" || true
+
+          # 删除本地 tag（runner 本地）
+          git tag -d "$TO" || true
+
+          echo "Rollback done."
