@@ -1,6 +1,17 @@
 name: Pre-release
 
 on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Release tag, e.g. v0.1.0-rc.1"
+        required: true
+        type: string
+      prerelease:
+        description: "Create as prerelease?"
+        required: true
+        default: true
+        type: boolean
   workflow_dispatch:
     inputs:
       version:

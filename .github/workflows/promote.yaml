@@ -1,6 +1,22 @@
 name: Promote Release
 
 on:
+  workflow_call:
+    inputs:
+      from_tag:
+        description: "Pre-release tag to promote from, e.g. v0.2.0-rc.1"
+        required: true
+        type: string
+      make_latest:
+        description: "Mark final release/image as latest?"
+        required: true
+        default: true
+        type: boolean
+      keep_prerelease:
+        description: "Keep the source release as prerelease (true) or convert it to draft (false)?"
+        required: true
+        default: true
+        type: boolean
   workflow_dispatch:
     inputs:
       from_tag:
