@@ -6,11 +6,18 @@ on:
       - "v*"
   workflow_dispatch:
     inputs:
-      rc_tag:
-        description: "RC tag to promote (e.g. v1.2.3-rc)"
+      action:
+        description: "What to do: prerelease or promote"
+        required: true
+        type: choice
+        options:
+          - prerelease
+          - promote
+      version:
+        description: "Base version tag (e.g. v1.2.3) for prerelease; or RC tag (e.g. v1.2.3-rc) for promote"
         required: true
       target:
-        description: "Target ref/commit for promote build (default: rc_tag)"
+        description: "Target ref/commit (optional). For prerelease: build this ref; for promote: build this ref (default: version)"
         required: false
         default: ""
 
@@ -24,38 +31,107 @@ concurrency:
 
 jobs:
   # =========================
-  # Tag push => build prerelease artifacts (tag + '-rc')
+  # Decide tags/ref for both triggers
   # =========================
-  build:
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+  meta:
     runs-on: ubuntu-latest
     outputs:
+      mode: ${{ steps.meta.outputs.mode }}
       base_tag: ${{ steps.meta.outputs.base_tag }}
       rc_tag: ${{ steps.meta.outputs.rc_tag }}
+      stable_tag: ${{ steps.meta.outputs.stable_tag }}
+      build_ref: ${{ steps.meta.outputs.build_ref }}
+
+    steps:
+      - id: meta
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Determine mode and input
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            mode="prerelease"
+            input_version="${GITHUB_REF_NAME}"
+            input_target=""
+          else
+            mode="${{ inputs.action }}"
+            input_version="${{ inputs.version }}"
+            input_target="${{ inputs.target }}"
+          fi
+
+          # Determine build ref
+          if [[ -z "$input_target" ]]; then
+            build_ref="$input_version"
+          else
+            build_ref="$input_target"
+          fi
+
+          # Check if tag exists in remote
+          tag_exists() {
+            local tag="$1"
+            git ls-remote --tags \
+              "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+              "refs/tags/${tag}" | grep -q .
+          }
+
+          # RC always starts from rc.1
+          next_rc_tag() {
+            local base="$1"
+            local i=1
+            while true; do
+              local candidate="${base}-rc.${i}"
+              if ! tag_exists "$candidate"; then
+                echo "$candidate"
+                return 0
+              fi
+              i=$((i+1))
+              if [[ $i -gt 9999 ]]; then
+                echo "ERROR: too many rc tags for ${base}" >&2
+                exit 1
+              fi
+            done
+          }
+
+          if [[ "$mode" == "prerelease" ]]; then
+            base="$input_version"
+            # Strip rc if user mistakenly passed one
+            if [[ "$base" == *"-rc"* ]]; then
+              base="${base%%-rc*}"
+            fi
+
+            rc="$(next_rc_tag "$base")"
+            stable="$base"
+          else
+            # promote mode
+            rc="$input_version"
+            stable="${rc%%-rc*}"
+            base="$stable"
+          fi
+
+          echo "mode=$mode" >> $GITHUB_OUTPUT
+          echo "base_tag=$base" >> $GITHUB_OUTPUT
+          echo "rc_tag=$rc" >> $GITHUB_OUTPUT
+          echo "stable_tag=$stable" >> $GITHUB_OUTPUT
+          echo "build_ref=$build_ref" >> $GITHUB_OUTPUT
+
+  # =========================
+  # Build artifacts (only for prerelease)
+  # =========================
+  build:
+    needs: meta
+    if: ${{ needs.meta.outputs.mode == 'prerelease' }}
+    runs-on: ubuntu-latest
+    outputs:
+      rc_tag: ${{ needs.meta.outputs.rc_tag }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: ${{ needs.meta.outputs.build_ref }}
           fetch-depth: 0
 
-      # 1) Generate tags:
-      #    base_tag = vX.Y.Z
-      #    rc_tag   = vX.Y.Z-rc   (if already contains -rc, keep as-is)
-      - id: meta
-        shell: bash
-        run: |
-          base="${GITHUB_REF_NAME}"
-          if [[ "$base" == *"-rc"* ]]; then
-            rc="$base"
-            base="${base%%-rc*}"
-          else
-            rc="${base}-rc"
-          fi
-          echo "base_tag=$base" >> $GITHUB_OUTPUT
-          echo "rc_tag=$rc" >> $GITHUB_OUTPUT
-
-      # 2) Frontend build
+      # Frontend build
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -69,7 +145,7 @@ jobs:
           npm ci
           npm run build
 
-      # 3) Pack artifacts for release
+      # Pack artifacts for release
       - name: Pack release artifacts
         run: |
           mkdir -p artifacts
@@ -84,17 +160,19 @@ jobs:
             --exclude=backend/.mypy_cache \
             -C . backend
 
-      # 4) Upload artifacts for other jobs to download
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: artifacts/*
 
+  # =========================
+  # Create pre-release (tag push OR manual prerelease)
+  # =========================
   release:
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+    needs: [meta, build]
+    if: ${{ needs.meta.outputs.mode == 'prerelease' }}
     runs-on: ubuntu-latest
-    needs: build
 
     steps:
       - name: Download build artifacts
@@ -103,27 +181,31 @@ jobs:
           name: build-artifacts
           path: artifacts
 
-      # Create GitHub Pre-release on rc_tag
       - name: Create GitHub Pre-release and upload assets
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.build.outputs.rc_tag }}
+          tag_name: ${{ needs.meta.outputs.rc_tag }}
+          target_commitish: ${{ needs.meta.outputs.build_ref }}
           prerelease: true
           generate_release_notes: true
           files: |
             artifacts/frontend-dist.tar.gz
             artifacts/backend-src.tar.gz
 
+  # =========================
+  # Docker for prerelease: only push rc tag (no latest)
+  # =========================
   docker:
-    if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+    needs: [meta, build]
+    if: ${{ needs.meta.outputs.mode == 'prerelease' }}
     runs-on: ubuntu-latest
-    needs: build
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.meta.outputs.build_ref }}
 
-      # Login to GHCR
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
@@ -131,14 +213,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Pre-release: DO NOT push latest, only push rc_tag
       - name: Docker meta (backend)
         id: meta_backend
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}/backend
           tags: |
-            type=raw,value=${{ needs.build.outputs.rc_tag }}
+            type=raw,value=${{ needs.meta.outputs.rc_tag }}
 
       - name: Docker meta (frontend)
         id: meta_frontend
@@ -146,7 +227,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}/frontend
           tags: |
-            type=raw,value=${{ needs.build.outputs.rc_tag }}
+            type=raw,value=${{ needs.meta.outputs.rc_tag }}
 
       - name: Build & push backend
         uses: docker/build-push-action@v6
@@ -167,38 +248,43 @@ jobs:
           labels: ${{ steps.meta_frontend.outputs.labels }}
 
   # =========================
-  # Manual promote: unset prerelease + push stable docker tags
+  # Manual promote: unset prerelease
   # =========================
   promote_release:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: meta
+    if: ${{ needs.meta.outputs.mode == 'promote' }}
     runs-on: ubuntu-latest
 
-    outputs:
-      stable_tag: ${{ steps.meta.outputs.stable_tag }}
-      rc_tag: ${{ steps.meta.outputs.rc_tag }}
-      target_ref: ${{ steps.meta.outputs.target_ref }}
-
     steps:
-      - id: meta
+      - name: Create stable tag if not exists
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          rc="${{ inputs.rc_tag }}"
-          stable="${rc%%-rc*}"
-          target="${{ inputs.target }}"
-          if [[ -z "$target" ]]; then target="$rc"; fi
-          echo "rc_tag=$rc" >> $GITHUB_OUTPUT
-          echo "stable_tag=$stable" >> $GITHUB_OUTPUT
-          echo "target_ref=$target" >> $GITHUB_OUTPUT
+          stable="${{ needs.meta.outputs.stable_tag }}"
+          rc="${{ needs.meta.outputs.rc_tag }}"
+
+          git fetch --tags
+
+          if git rev-parse "$stable" >/dev/null 2>&1; then
+            echo "Stable tag $stable already exists, skip."
+            exit 0
+          fi
+
+          echo "Creating stable tag $stable from $rc"
+          git tag "$stable" "$rc"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$stable"
 
       - name: Promote GitHub Release (prerelease -> false)
         uses: actions/github-script@v7
         with:
           script: |
-            const tag = `${{ steps.meta.outputs.rc_tag }}`;
+            const rcTag = `${{ needs.meta.outputs.rc_tag }}`;
+
             const rel = await github.rest.repos.getReleaseByTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag
+              tag: rcTag
             });
 
             await github.rest.repos.updateRelease({
@@ -209,18 +295,21 @@ jobs:
               draft: false
             });
 
-            core.info(`Promoted ${tag} to stable release.`);
+            core.info(`Promoted ${rcTag} to stable release.`);
 
+  # =========================
+  # Manual promote: push stable docker tags + latest
+  # =========================
   promote_docker:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: meta
+    if: ${{ needs.meta.outputs.mode == 'promote' }}
     runs-on: ubuntu-latest
-    needs: promote_release
 
     steps:
-      - name: Checkout (at rc tag or specified target)
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.promote_release.outputs.target_ref }}
+          ref: ${{ needs.meta.outputs.build_ref }}
           fetch-depth: 0
 
       - name: Login to GHCR
@@ -230,7 +319,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Promote: push stable_tag + latest
       - name: Docker meta (backend)
         id: meta_backend
         uses: docker/metadata-action@v5
@@ -238,7 +326,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}/backend
           tags: |
             type=raw,value=latest
-            type=raw,value=${{ needs.promote_release.outputs.stable_tag }}
+            type=raw,value=${{ needs.meta.outputs.stable_tag }}
 
       - name: Docker meta (frontend)
         id: meta_frontend
@@ -247,7 +335,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}/frontend
           tags: |
             type=raw,value=latest
-            type=raw,value=${{ needs.promote_release.outputs.stable_tag }}
+            type=raw,value=${{ needs.meta.outputs.stable_tag }}
 
       - name: Build & push backend (stable)
         uses: docker/build-push-action@v6
