@@ -49,7 +49,7 @@ services:
       # you must docker cp out the config.json first
       #- ./frontend/config.json:/usr/share/nginx/html/config.json
       # Mount nginx config template
-      - ./frontend/nginx.conf:/etc/nginx/templates
+      - ./frontend/nginxconfs:/etc/nginx/templates
     networks:
       - family-tree-network
 
