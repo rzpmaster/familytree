@@ -52,14 +52,14 @@
 - 一键启动
 
   ```bash
-  docker compose -f docker-compose-source.yaml up -d --build
+  docker compose -f docker-compose-source.yml up -d --build
   ```
 
 - 打开浏览器访问 `http://localhost`。
 
 2. **使用镜像**
 
-- 复制本仓库 `docker-compose.yaml` 到你到文件夹
+- 复制本仓库 `docker-compose.yml` 到你到文件夹
 - 修改环境变量（可选）
 
   复制本仓库 `.env.example` 为 `.env` 并按需修改。
