@@ -113,14 +113,18 @@ jobs:
             mkdir -p release_bundle/scripts
             rsync -a "${{ env.SCRIPTS_DIR }}/" "release_bundle/scripts/"
           fi
+          # copy nginx.conf
+          SRC_NGINX_TEMPLATE="${{ env.FRONTEND_DIR }}/nginx.conf.template"
+          if [[ -f "$SRC_NGINX_TEMPLATE" ]]; then
+            cp "$SRC_NGINX_TEMPLATE" "release_bundle/scripts/nginx.conf.template"
+            echo "Copied $SRC_NGINX_TEMPLATE -> release_bundle/scripts/nginx.conf.template"
+          else
+            echo "WARNING: nginx.conf.template not found: $SRC_NGINX_TEMPLATE (skipped)"
+          fi
 
           # 4) include README if exists
           files=(
             "README.md"
-            "docker-compose.yaml"
-            "docker-compose-source.yml"
-            "docker-compose-source.sqlite.yml"
-            ".env.example"
           )
           for file in "${files[@]}"; do
             if [[ -f "$file" ]]; then
