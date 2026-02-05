@@ -1,5 +1,6 @@
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
 from pydantic import BaseModel
 
 
@@ -191,7 +192,7 @@ class Member(MemberBase):
     created_at: datetime
     updated_at: datetime
     # Return region_ids explicitly if needed, or rely on MemberBase
-    
+
     class Config:
         from_attributes = True
 
@@ -289,4 +290,5 @@ class FamilyImport(BaseModel):
     members: List[ImportMember]
     spouse_relationships: List[ImportSpouse]
     parent_child_relationships: List[ImportParentChild]
+    regions: Optional[List[ImportRegion]] = []
     regions: Optional[List[ImportRegion]] = []

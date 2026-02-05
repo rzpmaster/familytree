@@ -64,10 +64,10 @@ const FamilyManager: React.FC<FamilyManagerProps> = ({
 
       // Auto select new family with optimistic role update
       const familyWithRole = {
-          ...newFamily,
-          current_user_role: selectedUserId === user?.id ? "owner" : "viewer"
+        ...newFamily,
+        current_user_role: selectedUserId === user?.id ? "owner" : "viewer",
       };
-      // @ts-ignore - API returns Family, but we enrich it with current_user_role for UI
+      // @ts-expect-error - API returns Family, but we enrich it with current_user_role for UI
       onSelectFamily(familyWithRole);
     } catch (error) {
       console.error(error);
