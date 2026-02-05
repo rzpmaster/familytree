@@ -1,7 +1,10 @@
 import json
+import logging
 import os
 import uuid
 from collections import Counter
+
+logger = logging.getLogger(__name__)
 
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
@@ -578,15 +581,15 @@ def import_family_from_preset(db: Session, key: str, user_id: str):
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
     except FileNotFoundError:
-        print(f"File not found: {file_path}")
+        logger.error(f"File not found: {file_path}")
         return None
     except json.JSONDecodeError as e:
-        print(f"Invalid JSON in preset file: {file_path}, error: {e}")
+        logger.error(f"Invalid JSON in preset file: {file_path}, error: {e}")
         return None
 
     # 2) Override user_id (do not trust preset)
     if not isinstance(data, dict):
-        print(f"Preset JSON root must be an object/dict: {file_path}")
+        logger.error(f"Preset JSON root must be an object/dict: {file_path}")
         return None
     data["user_id"] = user_id
 
@@ -602,13 +605,13 @@ def import_family_from_preset(db: Session, key: str, user_id: str):
             db.rollback()
         except Exception:
             pass
-        print(f"Unexpected error importing preset key={key}: {e}")
+        logger.error(f"Unexpected error importing preset key={key}: {e}")
         return None
 
 
 def import_family(db: Session, import_data: schemas.FamilyImport):
     try:
-        print("DEBUG: Starting import_family")
+        logger.info("Starting import_family")
         with db.begin():  # 事务：成功一次性提交，失败自动回滚
             # 0. Identify Source Family ID
             # We assume the most frequent family_id in the members list is the source family ID.
@@ -618,7 +621,7 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
             source_family_id = None
             if family_ids:
                 source_family_id = Counter(family_ids).most_common(1)[0][0]
-            print(f"DEBUG: Identified source_family_id: {source_family_id}")
+            logger.info(f"Identified source_family_id: {source_family_id}")
 
             # 1. Create Family
             family_data = schemas.FamilyCreate(
@@ -627,7 +630,7 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
             db_family = models.Family(**family_data)
             db.add(db_family)
             db.flush()  # Ensure ID is generated
-            print(f"DEBUG: Created family: {db_family.id}")
+            logger.info(f"Created family: {db_family.id}")
 
             # 2. Create Regions & Map IDs
             region_id_map: dict[str, str] = {}  # original_id -> new_db_id
@@ -646,7 +649,7 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                     if r.original_id:
                         region_id_map[r.original_id.strip()] = db_region.id
 
-            print(f"DEBUG: Created {len(region_id_map)} regions")
+            logger.info(f"Created {len(region_id_map)} regions")
 
             # 3. Create Members & Map IDs
             id_map: dict[str, str] = {}  # original_id -> new_db_id
@@ -671,7 +674,7 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                         resolved_ids_cache[original_id] = original_id
                         return original_id
                 except SQLAlchemyError as e:
-                    print(f"DEBUG: DB Error in resolve_id: {e}")
+                    logger.error(f"DB Error in resolve_id: {e}")
                     pass
 
                 return None
@@ -708,14 +711,14 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                     # If it's a linked member but NOT found in DB, skip it!
                     # Do NOT create it as a new member in the current family.
                     if not existing_member_id:
-                        print(
-                            f"DEBUG: External member {m.original_id} (Family: {m.family_id}) not found in DB. Skipping."
+                        logger.info(
+                            f"External member {m.original_id} (Family: {m.family_id}) not found in DB. Skipping."
                         )
                         continue
 
                 if existing_member_id:
-                    print(
-                        f"DEBUG: Member exists and is EXTERNAL: {existing_member_id}. Linking..."
+                    logger.info(
+                        f"Member exists and is EXTERNAL: {existing_member_id}. Linking..."
                     )
                     # Member exists (likely from a linked family)
                     # We update their regions to include the newly imported regions
@@ -757,13 +760,13 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                             # They were added and flushed in step 2. So they should be queryable in same transaction.
                             for lr in linked_regions:
                                 regions_to_add.add(lr)
-                                print(
-                                    f"DEBUG: Auto-linking member {db_member.id} to linked region {lr.id}"
+                                logger.info(
+                                    f"Auto-linking member {db_member.id} to linked region {lr.id}"
                                 )
 
                         if regions_to_add:
-                            print(
-                                f"DEBUG: Updating regions for {existing_member_id}. Total regions to add: {len(regions_to_add)}"
+                            logger.info(
+                                f"Updating regions for {existing_member_id}. Total regions to add: {len(regions_to_add)}"
                             )
                             updated = False
                             for reg in regions_to_add:
@@ -775,12 +778,12 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                                 db.add(
                                     db_member
                                 )  # Force add to session to ensure dirty state
-                                print(
-                                    f"DEBUG: Regions updated for {existing_member_id}"
+                                logger.info(
+                                    f"Regions updated for {existing_member_id}"
                                 )
                         else:
-                            print(
-                                f"DEBUG: No new regions for existing member {existing_member_id}"
+                            logger.debug(
+                                f"No new regions for existing member {existing_member_id}"
                             )
 
                     # We map the ID but do not create a new member
@@ -821,7 +824,7 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                 db.flush()
                 id_map[m.original_id] = db_member.id
 
-            print(f"DEBUG: Processed {len(import_data.members)} members")
+            logger.info(f"Processed {len(import_data.members)} members")
 
             # 4. Create Spouse Relationships
             for s in import_data.spouse_relationships or []:
@@ -863,11 +866,11 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                             db_rel = models.SpouseRelationship(**rel_data)
                             db.add(db_rel)
                         else:
-                            print(
-                                f"DEBUG: Spouse relationship already exists (reverse): {b} <-> {a}"
+                            logger.info(
+                                f"Spouse relationship already exists (reverse): {b} <-> {a}"
                             )
                     else:
-                        print(f"DEBUG: Spouse relationship already exists: {a} <-> {b}")
+                        logger.info(f"Spouse relationship already exists: {a} <-> {b}")
 
             # 5. Create Parent-Child Relationships
             for pc in import_data.parent_child_relationships or []:
@@ -896,8 +899,8 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                         db_rel = models.ParentChildRelationship(**rel_data)
                         db.add(db_rel)
                     else:
-                        print(
-                            f"DEBUG: Parent-Child relationship already exists: {p} -> {c}"
+                        logger.info(
+                            f"Parent-Child relationship already exists: {p} -> {c}"
                         )
 
             # 刷新 family（可选）
@@ -906,13 +909,13 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
             db.flush()
             # db.refresh(db_family) # 在 begin() 块内 refresh 是安全的
 
-            print("DEBUG: Import completed successfully")
+            logger.info("Import completed successfully")
             return db_family
 
     except SQLAlchemyError as e:
-        print(f"DEBUG: SQLAlchemyError in import_family: {e}")
+        logger.error(f"SQLAlchemyError in import_family: {e}")
         # 事务上下文会自动 rollback，这里抛出让上层处理
         raise
     except Exception as e:
-        print(f"DEBUG: Unexpected error in import_family: {e}")
+        logger.error(f"Unexpected error in import_family: {e}")
         raise
