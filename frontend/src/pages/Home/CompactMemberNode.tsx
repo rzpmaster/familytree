@@ -43,12 +43,11 @@ const CompactMemberNode = memo((props: MemberNodeDisplayProps) => {
         className={cn(
           "absolute inset-0 pointer-events-none",
           !data.is_deceased
-            ? isMale
-              ? "bg-blue-100/60"
-              : "bg-pink-100/60"
+            ? isMale ? "bg-blue-200/60"
+              : "bg-pink-200/60"
             : isMale
-              ? "bg-blue-50/40"
-              : "bg-pink-50/40",
+              ? "bg-blue-100/40"
+              : "bg-pink-100/40",
         )}
       />
 
@@ -57,7 +56,7 @@ const CompactMemberNode = memo((props: MemberNodeDisplayProps) => {
         <div
           className={cn(
             "w-7 h-7 rounded-full bg-white/90 border shadow-sm flex items-center justify-center backdrop-blur",
-            isMale ? "text-blue-600" : "text-pink-600",
+            isMale ? "text-blue-700" : "text-pink-700",
           )}
           title={t(`member.${data.gender}`)}
         >
@@ -125,26 +124,26 @@ const CompactMemberNode = memo((props: MemberNodeDisplayProps) => {
         type="source"
         position={Position.Right}
         id="right-source"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
       <Handle
         type="target"
         position={Position.Right}
         id="right-target"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
 
       <Handle
         type="source"
         position={Position.Left}
         id="left-source"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
       <Handle
         type="target"
         position={Position.Left}
         id="left-target"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
     </div>
   );

@@ -1,5 +1,6 @@
-from typing import List, Optional
 from datetime import datetime
+from typing import List, Optional
+
 from pydantic import BaseModel
 
 
@@ -117,6 +118,7 @@ class RegionBase(BaseModel):
     name: str
     description: Optional[str] = None
     color: Optional[str] = "#EBF8FF"
+    linked_family_id: Optional[str] = None
 
 
 class RegionCreate(RegionBase):
@@ -128,6 +130,7 @@ class RegionUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     color: Optional[str] = None
+    linked_family_id: Optional[str] = None
     member_ids: Optional[List[str]] = None
 
 
@@ -189,7 +192,7 @@ class Member(MemberBase):
     created_at: datetime
     updated_at: datetime
     # Return region_ids explicitly if needed, or rely on MemberBase
-    
+
     class Config:
         from_attributes = True
 
@@ -263,6 +266,7 @@ class GraphData(BaseModel):
 # Import Schemas
 class ImportMember(MemberBase):
     original_id: str
+    family_id: Optional[str] = None
 
 
 class ImportSpouse(BaseModel):
@@ -286,4 +290,5 @@ class FamilyImport(BaseModel):
     members: List[ImportMember]
     spouse_relationships: List[ImportSpouse]
     parent_child_relationships: List[ImportParentChild]
+    regions: Optional[List[ImportRegion]] = []
     regions: Optional[List[ImportRegion]] = []

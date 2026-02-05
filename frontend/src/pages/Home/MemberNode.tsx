@@ -66,7 +66,8 @@ const MemberNode = memo(({ data, selected }: NodeProps<Member>) => {
     !!user &&
     !!family &&
     (family.current_user_role === "admin" ||
-      family.current_user_role === "owner");
+      family.current_user_role === "owner") &&
+    !data.isLinked;
 
   const onDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
