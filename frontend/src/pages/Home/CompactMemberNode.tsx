@@ -43,12 +43,11 @@ const CompactMemberNode = memo((props: MemberNodeDisplayProps) => {
         className={cn(
           "absolute inset-0 pointer-events-none",
           !data.is_deceased
-            ? isMale
-              ? "bg-blue-100/60"
-              : "bg-pink-100/60"
+            ? isMale ? "bg-blue-200/60"
+              : "bg-pink-200/60"
             : isMale
-              ? "bg-blue-50/40"
-              : "bg-pink-50/40",
+              ? "bg-blue-100/40"
+              : "bg-pink-100/40",
         )}
       />
 
@@ -57,7 +56,7 @@ const CompactMemberNode = memo((props: MemberNodeDisplayProps) => {
         <div
           className={cn(
             "w-7 h-7 rounded-full bg-white/90 border shadow-sm flex items-center justify-center backdrop-blur",
-            isMale ? "text-blue-600" : "text-pink-600",
+            isMale ? "text-blue-700" : "text-pink-700",
           )}
           title={t(`member.${data.gender}`)}
         >

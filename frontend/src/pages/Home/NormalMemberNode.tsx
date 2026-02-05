@@ -50,7 +50,7 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
       <div
         className={cn(
           "p-2 border-b flex justify-between items-center shrink-0",
-          isMale ? "bg-blue-50" : "bg-pink-50",
+          isMale ? "bg-blue-100" : "bg-pink-100",
           "rounded-t-md",
         )}
       >
@@ -59,7 +59,7 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
             size={16}
             className={cn(
               "shrink-0",
-              isMale ? "text-blue-500" : "text-pink-500",
+              isMale ? "text-blue-600" : "text-pink-600",
             )}
           />
           <span
