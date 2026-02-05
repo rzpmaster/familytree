@@ -222,8 +222,38 @@ export function useFamilyData({
 
           const results = await Promise.all(promises);
           results.forEach((res) => {
-            // Avoid ID collisions if any (though unlikely with UUIDs)
-            // We filter out nodes that might already exist in main graph (unlikely unless same family linked?)
+            // 1. Check for overlapping nodes (exist in both main and linked graph)
+            // If a node exists in both, we must mark the main node as 'isLinked' too,
+            // because it originates from (or is shared with) a linked family.
+            res.nodes.forEach((linkedNode) => {
+              const existingIndex = combinedGraphNodes.findIndex(
+                (mainNode) => mainNode.id === linkedNode.id
+              );
+              
+              if (existingIndex !== -1) {
+                const existingNode = combinedGraphNodes[existingIndex];
+                const existingMember = existingNode.data as Member;
+                const linkedMember = linkedNode.data as Member;
+
+                // Merge region_ids
+                const mergedRegionIds = Array.from(new Set([
+                  ...(existingMember.region_ids || []),
+                  ...(linkedMember.region_ids || [])
+                ]));
+
+                // Update the existing node
+                combinedGraphNodes[existingIndex] = {
+                  ...existingNode,
+                  data: {
+                    ...existingMember,
+                    region_ids: mergedRegionIds,
+                    isLinked: true, // Force read-only even if it's local
+                  }
+                };
+              }
+            });
+
+            // 2. Add new nodes that don't exist in main graph
             const newNodes = res.nodes.filter(
               (n) =>
                 !combinedGraphNodes.some((existing) => existing.id === n.id),

@@ -18,6 +18,7 @@ interface EditRegionDialogProps {
   initialColor: string;
   currentMemberIds: string[];
   allMembers: Member[];
+  linkedFamilyId?: string | null;
 }
 
 const EditRegionDialog: React.FC<EditRegionDialogProps> = ({
@@ -30,6 +31,7 @@ const EditRegionDialog: React.FC<EditRegionDialogProps> = ({
   initialColor,
   currentMemberIds,
   allMembers,
+  linkedFamilyId,
 }) => {
   const { t } = useTranslation();
   const [name, setName] = useState(initialName);
@@ -39,38 +41,8 @@ const EditRegionDialog: React.FC<EditRegionDialogProps> = ({
     new Set(currentMemberIds),
   );
 
-  // Check if it's a linked family region
-  // Usually passed down or we can check via initialName/Description if we don't have the object
-  // But a better way is to check if we have any 'isLinked' members in this region?
-  // Or better, check if ALL current members are linked?
-  // Or check if the region itself is linked. The Region interface has linked_family_id.
-  // But EditRegionDialogProps doesn't have the full Region object.
-  // Let's rely on checking if currentMemberIds contains any members that are "isLinked".
-  // Or, better, pass a `isLinkedRegion` prop.
-  // But since we can't easily change the parent call right now, let's infer it.
-  // Wait, I can pass `isLinkedRegion` from FamilyTreeCanvas easily.
-
-  // For linked regions (or mixed), we still want to allow editing, but with special logic for linked members.
-  // We can identify a "Linked Family Region" by checking if all its members are from the same linked family,
-  // OR better, we should have the Region object passed in to check `linked_family_id`.
-  // Since we only have props here, let's infer it:
-  // If the region contains ANY linked member, and ALL current members are from the same linked family, 
-  // it is likely the original "Linked Family Region".
-  // BUT the user requirement is: "Linked family region nodes can join other regions, BUT other nodes CANNOT join linked family region".
-  // This implies the "Linked Family Region" is special and should remain pure or read-only regarding member addition.
-  
-  // Let's assume if the initial set of members are ALL linked members from the same family, it's a Linked Region.
-  const isLinkedFamilyRegion = React.useMemo(() => {
-      if (currentMemberIds.length === 0) return false;
-      const firstMember = allMembers.find(m => m.id === currentMemberIds[0]);
-      if (!firstMember?.isLinked) return false;
-      
-      // Check if all are linked and from same family
-      return currentMemberIds.every(id => {
-          const m = allMembers.find(mem => mem.id === id);
-          return m?.isLinked && m.family_id === firstMember.family_id;
-      });
-  }, [currentMemberIds, allMembers]);
+  // Determine if this is a Linked Family Region based on the passed prop
+  const isLinkedFamilyRegion = !!linkedFamilyId;
 
   useEffect(() => {
     if (isOpen) {
@@ -193,43 +165,42 @@ const EditRegionDialog: React.FC<EditRegionDialogProps> = ({
           </div>
 
           {!isLinkedFamilyRegion ? (
-          <div className="flex-1 overflow-y-auto border rounded p-2 mb-4 bg-gray-50">
-            {allMembers.map((member) => (
-              <div
-                key={member.id}
-                className="flex items-center gap-2 py-1 hover:bg-gray-100 px-2 rounded"
-              >
-                <input
-                  type="checkbox"
-                  id={`member-${member.id}`}
-                  checked={selectedIds.has(member.id)}
-                  onChange={() => toggleMember(member.id)}
-                  className="rounded text-blue-600 focus:ring-blue-500"
-                />
-                <label
-                  htmlFor={`member-${member.id}`}
-                  className="text-sm cursor-pointer flex-1"
+            <div className="flex-1 overflow-y-auto border rounded p-2 mb-4 bg-gray-50">
+              {allMembers.map((member) => (
+                <div
+                  key={member.id}
+                  className="flex items-center gap-2 py-1 hover:bg-gray-100 px-2 rounded"
                 >
-                  {member.name} {member.surname}
-                  {member.region_ids &&
-                    member.region_ids.length > 0 &&
-                    !selectedIds.has(member.id) && (
+                  <input
+                    type="checkbox"
+                    id={`member-${member.id}`}
+                    checked={selectedIds.has(member.id)}
+                    onChange={() => toggleMember(member.id)}
+                    className="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <label
+                    htmlFor={`member-${member.id}`}
+                    className="text-sm cursor-pointer flex-1"
+                  >
+                    {member.name}
+                    {member.isLinked && (
                       <span className="text-xs text-gray-400 ml-2">
-                        (
-                        {t("region.also_in_another", {
-                          defaultValue: "Also in another region",
+                        {t("region.also_in_another_family", {
+                          defaultValue: "Also in another family",
                         })}
-                        )
                       </span>
                     )}
-                </label>
-              </div>
-            ))}
-          </div>
+                  </label>
+                </div>
+              ))}
+            </div>
           ) : (
-             <div className="p-4 bg-yellow-50 text-yellow-800 text-sm rounded mb-4 border border-yellow-200">
-                {t('region.linked_family_read_only', { defaultValue: 'This is a linked family region. Member management is disabled.' })}
-             </div>
+            <div className="p-4 bg-yellow-50 text-yellow-800 text-sm rounded mb-4 border border-yellow-200">
+              {t("region.linked_family_read_only", {
+                defaultValue:
+                  "This is a linked family region. Member management is disabled.",
+              })}
+            </div>
           )}
 
           <div className="flex justify-between items-center pt-4 border-t">

@@ -734,6 +734,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
           initialDescription={editingRegion?.description || ""}
           currentMemberIds={currentRegionMemberIds}
           allMembers={allMembers}
+          linkedFamilyId={editingRegion?.linked_family_id}
         />
 
         <ConfirmDialog
