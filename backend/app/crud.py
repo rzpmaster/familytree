@@ -431,8 +431,42 @@ def delete_parent_child_relationship(db: Session, relationship_id: str):
     return db_rel
 
 
+from sqlalchemy import or_
+
 def get_family_graph(db: Session, family_id: str):
-    members = get_members(db, family_id, limit=1000)
+    # members = get_members(db, family_id, limit=1000)
+    # Include linked members that belong to regions of this family
+    members = (
+        db.query(models.Member)
+        .filter(
+            or_(
+                models.Member.family_id == family_id,
+                models.Member.regions.any(models.Region.family_id == family_id)
+            )
+        )
+        .limit(1000)
+        .all()
+    )
+
+    # Populate region_ids for each member manually as we bypassed get_members
+    # Also handle implicit linked regions
+    linked_regions = db.query(models.Region).filter(
+        models.Region.family_id == family_id,
+        models.Region.linked_family_id.isnot(None)
+    ).all()
+    linked_family_map = {lr.linked_family_id: lr.id for lr in linked_regions if lr.linked_family_id}
+
+    for m in members:
+        # Start with explicit regions
+        rids = {r.id for r in m.regions}
+        
+        # Add implicit linked region if applicable
+        # If the member belongs to a family that is linked by one of our regions,
+        # they are implicitly part of that region.
+        if m.family_id and m.family_id in linked_family_map:
+            rids.add(linked_family_map[m.family_id])
+            
+        m.region_ids = list(rids)
 
     nodes = []
     member_ids = set()
@@ -467,7 +501,7 @@ def get_family_graph(db: Session, family_id: str):
     )
 
     for s in spouses:
-        if s.member1_id in member_ids and s.member2_id in member_ids:
+        if s.member1_id in member_ids or s.member2_id in member_ids:
             edges.append(
                 schemas.GraphEdge(
                     id=s.id,
@@ -489,7 +523,7 @@ def get_family_graph(db: Session, family_id: str):
     )
 
     for pc in parent_child:
-        if pc.parent_id in member_ids and pc.child_id in member_ids:
+        if pc.parent_id in member_ids or pc.child_id in member_ids:
             edges.append(
                 schemas.GraphEdge(
                     id=pc.id,
@@ -552,9 +586,27 @@ def import_family_from_preset(db: Session, key: str, user_id: str):
         return None
 
 
+import logging
+import sys
+from collections import Counter
+
+# Configure logging to stdout
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
 def import_family(db: Session, import_data: schemas.FamilyImport):
     try:
+        print("DEBUG: Starting import_family")
         with db.begin():  # 事务：成功一次性提交，失败自动回滚
+            # 0. Identify Source Family ID
+            # We assume the most frequent family_id in the members list is the source family ID.
+            # Members belonging to this ID should be CLONED (new members created).
+            # Members belonging to OTHER IDs should be LINKED (if they exist).
+            family_ids = [m.family_id for m in import_data.members if m.family_id]
+            source_family_id = None
+            if family_ids:
+                source_family_id = Counter(family_ids).most_common(1)[0][0]
+            print(f"DEBUG: Identified source_family_id: {source_family_id}")
+
             # 1. Create Family
             family_data = schemas.FamilyCreate(
                 family_name=import_data.family_name, user_id=import_data.user_id
@@ -562,9 +614,11 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
             db_family = models.Family(**family_data)
             db.add(db_family)
             db.flush()  # Ensure ID is generated
+            print(f"DEBUG: Created family: {db_family.id}")
 
             # 2. Create Regions & Map IDs
             region_id_map: dict[str, str] = {}  # original_id -> new_db_id
+            
             if import_data.regions:
                 for r in import_data.regions:
                     db_region = models.Region(
@@ -572,14 +626,45 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                         name=r.name,
                         description=r.description,
                         color=r.color,
+                        linked_family_id=r.linked_family_id,
                     )
                     db.add(db_region)
                     db.flush()  # 拿到 db_region.id，不 commit
                     if r.original_id:
                         region_id_map[r.original_id.strip()] = db_region.id
+            
+            print(f"DEBUG: Created {len(region_id_map)} regions")
 
             # 3. Create Members & Map IDs
             id_map: dict[str, str] = {}  # original_id -> new_db_id
+            # Helper to resolve ID (reused later)
+            resolved_ids_cache = {}
+            def resolve_id(original_id):
+                if not original_id:
+                    return None
+                if original_id in id_map:
+                    return id_map[original_id]
+                if original_id in resolved_ids_cache:
+                    return resolved_ids_cache[original_id]
+                
+                # Validate UUID before querying to avoid DB errors
+                try:
+                    uuid_obj = uuid.UUID(original_id)
+                except ValueError:
+                    print(f"DEBUG: Invalid UUID in resolve_id: {original_id}")
+                    return None
+
+                try:
+                    exists = db.query(models.Member.id).filter(models.Member.id == original_id).first()
+                    if exists:
+                        resolved_ids_cache[original_id] = original_id
+                        return original_id
+                except SQLAlchemyError as e:
+                    print(f"DEBUG: DB Error in resolve_id: {e}")
+                    pass
+                
+                return None
+
             for m in import_data.members:
                 new_region_ids = []
                 # Handle multiple region IDs if present, fallback to singular region_id for backward compatibility
@@ -593,6 +678,69 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                     rid_strip = rid.strip() if rid else None
                     if rid_strip and rid_strip in region_id_map:
                         new_region_ids.append(region_id_map[rid_strip])
+
+                # Determine if we should LINK or CLONE
+                should_link = False
+                if m.family_id and source_family_id:
+                    if m.family_id != source_family_id:
+                        should_link = True
+                elif m.family_id is None:
+                    # Fallback: if no family_id, assume clone unless explicitly handled?
+                    # Or maybe assume clone.
+                    should_link = False
+                
+                # Check if member already exists (linked member)
+                existing_member_id = None
+                if should_link:
+                    existing_member_id = resolve_id(m.original_id)
+
+                if existing_member_id:
+                     print(f"DEBUG: Member exists and is EXTERNAL: {existing_member_id}. Linking...")
+                     # Member exists (likely from a linked family)
+                     # We update their regions to include the newly imported regions
+                     db_member = db.query(models.Member).filter(models.Member.id == existing_member_id).first()
+                     
+                     if db_member:
+                         # 1. Add to explicitly linked regions (from region_ids)
+                         regions_to_add = set()
+                         if new_region_ids:
+                             regions_from_ids = db.query(models.Region).filter(models.Region.id.in_(new_region_ids)).all()
+                             for r in regions_from_ids:
+                                 regions_to_add.add(r)
+                         
+                         # 2. Auto-link to Linked Family Regions
+                         # If the member belongs to a family that corresponds to one of our new linked regions, add them!
+                         # This handles the case where export data has empty region_ids for linked members.
+                         if db_member.family_id:
+                             # Find any new region that links to this member's family
+                             linked_regions = db.query(models.Region).filter(
+                                 models.Region.family_id == db_family.id, # Belongs to current family
+                                 models.Region.linked_family_id == db_member.family_id
+                             ).all()
+                             
+                             # Note: linked_regions might be empty if not yet flushed or committed? 
+                             # They were added and flushed in step 2. So they should be queryable in same transaction.
+                             for lr in linked_regions:
+                                 regions_to_add.add(lr)
+                                 print(f"DEBUG: Auto-linking member {db_member.id} to linked region {lr.id}")
+
+                         if regions_to_add:
+                              print(f"DEBUG: Updating regions for {existing_member_id}. Total regions to add: {len(regions_to_add)}")
+                              updated = False
+                              for reg in regions_to_add:
+                                  if reg not in db_member.regions:
+                                      db_member.regions.append(reg)
+                                      updated = True
+                              
+                              if updated:
+                                  db.add(db_member) # Force add to session to ensure dirty state
+                                  print(f"DEBUG: Regions updated for {existing_member_id}")
+                         else:
+                              print(f"DEBUG: No new regions for existing member {existing_member_id}")
+                     
+                     # We map the ID but do not create a new member
+                     id_map[m.original_id] = existing_member_id
+                     continue
 
                 member_data = schemas.MemberCreate(
                     family_id=db_family.id,
@@ -624,29 +772,65 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                 db.flush()
                 id_map[m.original_id] = db_member.id
 
+            print(f"DEBUG: Processed {len(import_data.members)} members")
+
             # 4. Create Spouse Relationships
             for s in import_data.spouse_relationships or []:
-                a = id_map.get(s.member1_original_id)
-                b = id_map.get(s.member2_original_id)
+                a = resolve_id(s.member1_original_id)
+                b = resolve_id(s.member2_original_id)
+                
                 if a and b:
-                    rel_data = schemas.SpouseRelationshipCreate(
-                        member1_id=a,
-                        member2_id=b,
-                        marriage_date=getattr(s, "marriage_date", None),
-                    ).model_dump()
-                    db_rel = models.SpouseRelationship(**rel_data)
-                    db.add(db_rel)
+                    # Check if relationship already exists
+                    # We check both (a, b) and (b, a) to be safe, though constraint is usually on specific pair
+                    # But if we treat spouse as undirected, we should check both.
+                    # Based on UniqueConstraint("member1_id", "member2_id"), it's directed in DB schema.
+                    # But let's assume we don't want to duplicate if (a,b) exists.
+                    exists_rel = db.query(models.SpouseRelationship).filter(
+                        models.SpouseRelationship.member1_id == a,
+                        models.SpouseRelationship.member2_id == b
+                    ).first()
+                    
+                    if not exists_rel:
+                        # Try reverse too if model logic implies undirected uniqueness (optional but safe)
+                        exists_reverse = db.query(models.SpouseRelationship).filter(
+                            models.SpouseRelationship.member1_id == b,
+                            models.SpouseRelationship.member2_id == a
+                        ).first()
+                        
+                        if not exists_reverse:
+                            rel_data = schemas.SpouseRelationshipCreate(
+                                member1_id=a,
+                                member2_id=b,
+                                marriage_date=getattr(s, "marriage_date", None),
+                            ).model_dump()
+                            db_rel = models.SpouseRelationship(**rel_data)
+                            db.add(db_rel)
+                        else:
+                             print(f"DEBUG: Spouse relationship already exists (reverse): {b} <-> {a}")
+                    else:
+                        print(f"DEBUG: Spouse relationship already exists: {a} <-> {b}")
 
             # 5. Create Parent-Child Relationships
             for pc in import_data.parent_child_relationships or []:
-                p = id_map.get(pc.parent_original_id)
-                c = id_map.get(pc.child_original_id)
+                p = resolve_id(pc.parent_original_id)
+                c = resolve_id(pc.child_original_id)
+                
                 if p and c:
-                    rel_data = schemas.ParentChildRelationshipCreate(
-                        parent_id=p, child_id=c, relationship_type=pc.relationship_type
-                    ).model_dump()
-                    db_rel = models.ParentChildRelationship(**rel_data)
-                    db.add(db_rel)
+                    # Check existence
+                    exists_pc = db.query(models.ParentChildRelationship).filter(
+                        models.ParentChildRelationship.parent_id == p,
+                        models.ParentChildRelationship.child_id == c,
+                        models.ParentChildRelationship.relationship_type == pc.relationship_type
+                    ).first()
+                    
+                    if not exists_pc:
+                        rel_data = schemas.ParentChildRelationshipCreate(
+                            parent_id=p, child_id=c, relationship_type=pc.relationship_type
+                        ).model_dump()
+                        db_rel = models.ParentChildRelationship(**rel_data)
+                        db.add(db_rel)
+                    else:
+                        print(f"DEBUG: Parent-Child relationship already exists: {p} -> {c}")
 
             # 刷新 family（可选）
             # 注意：在 db.begin() 块内，flush 是可以将变更发送到数据库的。
@@ -654,8 +838,13 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
             db.flush()
             # db.refresh(db_family) # 在 begin() 块内 refresh 是安全的
 
+            print("DEBUG: Import completed successfully")
             return db_family
 
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        print(f"DEBUG: SQLAlchemyError in import_family: {e}")
         # 事务上下文会自动 rollback，这里抛出让上层处理
+        raise
+    except Exception as e:
+        print(f"DEBUG: Unexpected error in import_family: {e}")
         raise

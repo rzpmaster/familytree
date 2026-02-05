@@ -57,3 +57,19 @@ def init_db():
     # This is safe to call multiple times (checkfirst=True by default)
     Base.metadata.create_all(bind=engine)
     print("Database initialized.")
+
+    # 3. Simple Migration for linked_family_id
+    try:
+        with engine.connect() as conn:
+            conn = conn.execution_options(isolation_level="AUTOCOMMIT")
+            try:
+                conn.execute(text("SELECT linked_family_id FROM regions LIMIT 1"))
+            except Exception:
+                print("Migrating: Adding linked_family_id to regions table...")
+                # SQLite and Postgres support ADD COLUMN
+                # Note: MySQL might require type length, using TEXT to be safe or VARCHAR(255)
+                # But here we use String equivalent.
+                conn.execute(text("ALTER TABLE regions ADD COLUMN linked_family_id VARCHAR(255)"))
+                print("Migration successful.")
+    except Exception as e:
+        print(f"Migration check failed (ignorable if fresh db): {e}")

@@ -42,6 +42,7 @@ export interface Region {
   name: string;
   description?: string;
   color?: string;
+  linked_family_id?: string;
   created_at: string;
 }
 
@@ -64,6 +65,7 @@ export interface Member {
   sort_order?: number;
   created_at: string;
   updated_at: string;
+  isLinked?: boolean;
 }
 
 export interface SpouseRelationship {

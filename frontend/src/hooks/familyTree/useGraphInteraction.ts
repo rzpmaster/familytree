@@ -26,7 +26,7 @@ import {
   OnConnectStartParams,
   ReactFlowInstance,
   applyEdgeChanges,
-  applyNodeChanges
+  applyNodeChanges,
 } from "reactflow";
 
 interface UseGraphInteractionProps {
@@ -80,7 +80,7 @@ export function useGraphInteraction({
       };
       connectionProcessedRef.current = false;
     },
-    [readOnly]
+    [readOnly],
   );
 
   // 2. Process Connection
@@ -131,7 +131,7 @@ export function useGraphInteraction({
       }));
 
       const allMembers: Member[] = nodesRef.current.map(
-        (n) => n.data as Member
+        (n) => n.data as Member,
       );
 
       const validationContext = {
@@ -157,7 +157,7 @@ export function useGraphInteraction({
         toast.error(
           validationResult.errorKey
             ? t(validationResult.errorKey)
-            : "Validation failed"
+            : "Validation failed",
         );
         return;
       }
@@ -173,7 +173,7 @@ export function useGraphInteraction({
           await createParentChildRelationship(
             finalSourceId,
             finalTargetId,
-            relType
+            relType,
           );
           toast.success(t("relation.created"));
         }
@@ -183,7 +183,7 @@ export function useGraphInteraction({
         toast.error(t("relation.create_failed"));
       }
     },
-    [fetchData, nodesRef, edgesRef, t]
+    [fetchData, nodesRef, edgesRef, t],
   );
 
   // 3. On Connect
@@ -197,7 +197,7 @@ export function useGraphInteraction({
         params.source === initiatorId ? params.target : params.source;
       if (otherNodeId) processConnection(otherNodeId);
     },
-    [processConnection]
+    [processConnection],
   );
 
   // 4. On Connect End
@@ -211,7 +211,7 @@ export function useGraphInteraction({
         if (targetId) processConnection(targetId);
       }
     },
-    [processConnection]
+    [processConnection],
   );
 
   // 5. Node Drag (Multi-select support)
@@ -257,10 +257,10 @@ export function useGraphInteraction({
               position_y: start.y + dy,
             },
           };
-        })
+        }),
       );
     },
-    [readOnly, selectedNodeIds, nodesRef, setNodes]
+    [readOnly, selectedNodeIds, nodesRef, setNodes],
   );
 
   // 6. Node Drag Stop
@@ -292,7 +292,7 @@ export function useGraphInteraction({
         toast.error("Failed to save position");
       }
     },
-    [readOnly, selectedNodeIds, nodesRef]
+    [readOnly, selectedNodeIds, nodesRef],
   );
 
   // 7. On Nodes Change
@@ -306,7 +306,7 @@ export function useGraphInteraction({
       }
       onNodesChangeBase(changes);
     },
-    [onNodesChangeBase, readOnly, setNodes]
+    [onNodesChangeBase, readOnly, setNodes],
   );
 
   // 8. On Edges Change
@@ -327,7 +327,7 @@ export function useGraphInteraction({
             window.dispatchEvent(
               new CustomEvent("request-delete-member", {
                 detail: { edgeId: edge.id, edgeType: edge.data?.type },
-              })
+              }),
             );
           }
           return false;
@@ -339,7 +339,7 @@ export function useGraphInteraction({
         onEdgesChangeBase(changesToApply);
       }
     },
-    [readOnly, edgesRef, onEdgesChangeBase, setEdges]
+    [readOnly, edgesRef, onEdgesChangeBase, setEdges],
   );
 
   return {

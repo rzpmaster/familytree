@@ -2,6 +2,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import FamilyManager from "@/components/FamilyManager";
 import CreateRegionDialog from "@/components/Region/CreateRegionDialog";
 import EditRegionDialog from "@/components/Region/EditRegionDialog";
+import LinkFamilyDialog from "@/components/Region/LinkFamilyDialog";
 import RegionNode from "@/components/Region/RegionNode";
 import { useFamilyData } from "@/hooks/familyTree/useFamilyData";
 import { useGraphInteraction } from "@/hooks/familyTree/useGraphInteraction";
@@ -26,7 +27,7 @@ import {
   NormalLayoutStrategy,
 } from "@/strategies/layout/RecursiveFamilyLayoutStrategy";
 import { Family, GraphEdge, Member, Region, RegionState } from "@/types";
-import { Focus, Layout, Plus } from "lucide-react";
+import { Focus, Layout, Link, Plus } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -175,6 +176,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
 
   // --- Region Logic ---
   const [createRegionDialogOpen, setCreateRegionDialogOpen] = useState(false);
+  const [linkFamilyDialogOpen, setLinkFamilyDialogOpen] = useState(false);
   const [editRegionDialogOpen, setEditRegionDialogOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteMembersConfirmOpen, setDeleteMembersConfirmOpen] =
@@ -190,15 +192,38 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     [nodes, selectedNodeIds],
   );
 
+  const allMembers = useMemo(
+    () => nodes.filter((n) => n.type === "member").map((n) => n.data as Member),
+    [nodes],
+  );
+
   const handleDeleteAll = useCallback(() => {
-    if (selectedMembers.length > 0) {
+    // Filter out linked family members
+    const validMembers = selectedMembers.filter(m => {
+       const member = m.data as Member;
+       return !member.isLinked;
+    });
+
+    if (validMembers.length > 0) {
+      // If we filtered some out, maybe show a toast?
+      if (validMembers.length < selectedMembers.length) {
+          toast(t("member.cannot_delete_linked", { defaultValue: "Some members are from linked families and cannot be deleted." }), {
+              icon: 'ℹ️',
+          });
+      }
       setDeleteMembersConfirmOpen(true);
+    } else if (selectedMembers.length > 0) {
+        toast.error(t("member.all_linked_cannot_delete", { defaultValue: "Cannot delete linked family members." }));
     }
-  }, [selectedMembers]);
+  }, [selectedMembers, t]);
 
   const executeDeleteAll = useCallback(async () => {
     try {
-      const memberIds = selectedMembers.map((node) => node.id);
+      // Re-filter just in case
+      const memberIds = selectedMembers
+          .filter(n => !(n.data as Member).isLinked)
+          .map((node) => node.id);
+      
       if (memberIds.length === 0) return;
 
       await deleteMembers(memberIds);
@@ -215,6 +240,31 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     }
   }, [selectedMembers, t, dispatch, fetchData]);
 
+  const getEffectiveMemberIds = useCallback((selectedNodes: Node[]) => {
+      const ids = new Set<string>();
+      const linkedFamiliesProcessed = new Set<string>();
+      let hasLinked = false;
+
+      selectedNodes.forEach(node => {
+          const member = node.data as Member;
+          ids.add(member.id);
+
+          if (member.isLinked && !linkedFamiliesProcessed.has(member.family_id)) {
+              linkedFamiliesProcessed.add(member.family_id);
+              // Find all members of this linked family in the current graph
+              const familyMembers = allMembers.filter(m => m.family_id === member.family_id && m.isLinked);
+              familyMembers.forEach(m => ids.add(m.id));
+              hasLinked = true;
+          }
+      });
+      
+      if (hasLinked) {
+         toast(t('region.linked_family_included', { defaultValue: 'Linked family members included automatically' }), {icon: '🔗'});
+      }
+
+      return Array.from(ids);
+  }, [allMembers, t]);
+
   const handleAddToRegion = useCallback(
     async (regionId: string) => {
       try {
@@ -230,7 +280,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
           )
           .map((n) => n.id);
 
-        const newMemberIds = selectedMembers.map((n) => n.id);
+        const newMemberIds = getEffectiveMemberIds(selectedMembers);
 
         // Combine and remove duplicates
         const allMemberIds = Array.from(
@@ -250,12 +300,43 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
         );
       }
     },
-    [regions, nodes, selectedMembers, t, dispatch, fetchData],
+    [regions, nodes, selectedMembers, t, dispatch, fetchData, getEffectiveMemberIds],
   );
 
   const handleCreateRegion = useCallback(() => {
     setCreateRegionDialogOpen(true);
   }, []);
+
+  const handleLinkFamily = useCallback(() => {
+    setLinkFamilyDialogOpen(true);
+  }, []);
+
+  const handleConfirmLinkFamily = async (family: Family) => {
+    try {
+      // Create a region with linked_family_id
+      // Name and description from the selected family
+      await createRegion(
+        familyId,
+        family.family_name,
+        family.description,
+        [], // memberIds is empty initially, populated dynamically on load
+        "#EBF8FF",
+        family.id, // linkedFamilyId
+      );
+      toast.success(
+        t("region.linked_success", {
+          defaultValue: "Family linked successfully",
+        }),
+      );
+      setLinkFamilyDialogOpen(false);
+      fetchData();
+    } catch (e) {
+      console.error("Failed to link family", e);
+      toast.error(
+        t("region.link_failed", { defaultValue: "Failed to link family" }),
+      );
+    }
+  };
 
   // Notify parent about region state
   useEffect(() => {
@@ -282,7 +363,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     description: string,
   ) => {
     try {
-      const memberIds = selectedMembers.map((n) => n.id);
+      const memberIds = getEffectiveMemberIds(selectedMembers);
       await createRegion(familyId, name, description, memberIds);
       toast.success(t("region.created", { defaultValue: "Region created" }));
       setCreateRegionDialogOpen(false);
@@ -576,11 +657,6 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       .map((n) => n.id);
   }, [nodes, editingRegion]);
 
-  const allMembers = useMemo(
-    () => nodes.filter((n) => n.type === "member").map((n) => n.data as Member),
-    [nodes],
-  );
-
   return (
     <div
       className="w-full h-full bg-slate-50 relative"
@@ -639,6 +715,13 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
           onClose={() => setCreateRegionDialogOpen(false)}
           onConfirm={handleConfirmCreateRegion}
           selectedCount={selectedMembers.length}
+        />
+
+        <LinkFamilyDialog
+          isOpen={linkFamilyDialogOpen}
+          currentFamilyId={familyId}
+          onClose={() => setLinkFamilyDialogOpen(false)}
+          onConfirm={handleConfirmLinkFamily}
         />
 
         <EditRegionDialog
@@ -703,6 +786,16 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
           </div>
         </Panel>
         <Panel position="top-right" className="flex gap-2">
+          {!readOnly && (
+            <button
+              onClick={handleLinkFamily}
+              className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
+              title={t("family.link_family", { defaultValue: "Link Family" })}
+            >
+              <Link size={16} />
+              {t("family.link_family", { defaultValue: "Link Family" })}
+            </button>
+          )}
           <button
             onClick={handleCenterView}
             className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"

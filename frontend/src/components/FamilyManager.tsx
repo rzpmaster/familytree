@@ -13,6 +13,8 @@ interface FamilyManagerProps {
   onFamilyCreated: () => void;
 }
 
+import { useAuth } from "@/hooks/useAuth";
+
 const FamilyManager: React.FC<FamilyManagerProps> = ({
   families,
   currentFamily,
@@ -20,6 +22,7 @@ const FamilyManager: React.FC<FamilyManagerProps> = ({
   onFamilyCreated,
 }) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [newFamilyName, setNewFamilyName] = useState("");
@@ -59,8 +62,13 @@ const FamilyManager: React.FC<FamilyManagerProps> = ({
       setIsOpen(false);
       onFamilyCreated();
 
-      // Auto select new family
-      onSelectFamily(newFamily);
+      // Auto select new family with optimistic role update
+      const familyWithRole = {
+          ...newFamily,
+          current_user_role: selectedUserId === user?.id ? "owner" : "viewer"
+      };
+      // @ts-ignore - API returns Family, but we enrich it with current_user_role for UI
+      onSelectFamily(familyWithRole);
     } catch (error) {
       console.error(error);
       toast.error(t("failed_to_create_family") || "Failed to create family");

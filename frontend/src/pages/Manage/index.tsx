@@ -352,6 +352,7 @@ const Manage: React.FC = () => {
         name: r.name,
         description: r.description,
         color: r.color,
+        linked_family_id: r.linked_family_id,
         original_id: r.id,
       }));
 

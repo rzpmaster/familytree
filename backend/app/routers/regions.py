@@ -20,6 +20,7 @@ def create_region(region: schemas.RegionCreate, db: Session = Depends(get_db)):
         name=region.name,
         description=region.description,
         color=region.color,
+        linked_family_id=region.linked_family_id,
     )
     db.add(db_region)
     db.commit()
@@ -34,7 +35,10 @@ def create_region(region: schemas.RegionCreate, db: Session = Depends(get_db)):
             .all()
         )
         for member in members:
-            if member.family_id == region.family_id:
+            # Allow members from other families (linked families)
+            # if member.family_id == region.family_id:
+            # Append if not exists
+            if db_region not in member.regions:
                 member.regions.append(db_region)
         db.commit()
         db.refresh(db_region)
@@ -64,6 +68,8 @@ def update_region(
         db_region.description = region.description
     if region.color is not None:
         db_region.color = region.color
+    if region.linked_family_id is not None:
+        db_region.linked_family_id = region.linked_family_id
 
     if region.member_ids is not None:
         # Update members via relationship
@@ -72,9 +78,9 @@ def update_region(
             .filter(models.Member.id.in_(region.member_ids))
             .all()
         )
-        # Ensure members belong to same family
-        valid_members = [m for m in members if m.family_id == db_region.family_id]
-        db_region.members = valid_members
+        # Ensure members belong to same family -> Removed constraint to allow linked families
+        # valid_members = [m for m in members if m.family_id == db_region.family_id]
+        db_region.members = members
 
     db.commit()
     db.refresh(db_region)

@@ -68,7 +68,11 @@ const Home: React.FC = () => {
         if (family) {
           const currentStillExists = data.find((f) => f.id === family.id);
           if (currentStillExists) {
-            if (currentStillExists.family_name !== family.family_name) {
+            // Update if name changed OR if role is missing (e.g. newly created)
+            if (
+              currentStillExists.family_name !== family.family_name ||
+              !family.current_user_role
+            ) {
               setFamily(currentStillExists);
             }
             return;

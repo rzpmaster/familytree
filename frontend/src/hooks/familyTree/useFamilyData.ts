@@ -1,4 +1,9 @@
-import { getCompactNodeHeight, getCompactNodeWidth, getNodeHeight, getNodeWidth } from "@/config/constants";
+import {
+  getCompactNodeHeight,
+  getCompactNodeWidth,
+  getNodeHeight,
+  getNodeWidth,
+} from "@/config/constants";
 import { parseDate } from "@/lib/utils";
 import { getFamilyGraph } from "@/services/api";
 import { RootState } from "@/store";
@@ -31,7 +36,9 @@ export function useFamilyData({
   const { t } = useTranslation();
   const { applyHighlight } = useHighlighting();
 
-  const compactMode = useSelector((state: RootState) => state.settings.compactMode);
+  const compactMode = useSelector(
+    (state: RootState) => state.settings.compactMode,
+  );
 
   const hasFittedView = useRef<string | null>(null);
   const [yearRange, setYearRange] = useState<{ min: number; max: number }>({
@@ -106,6 +113,11 @@ export function useFamilyData({
 
       // second pass, create edges with offsets
       graphEdges.forEach((edge) => {
+        const sourceNode = graphNodes.find((n) => n.id === edge.source);
+        const targetNode = graphNodes.find((n) => n.id === edge.target);
+
+        if (!sourceNode || !targetNode) return;
+
         let sourceOffsetIndex = 0;
         let targetOffsetIndex = 0;
         let sourceHandle: string | undefined = undefined;
@@ -160,14 +172,74 @@ export function useFamilyData({
 
       return flowEdges;
     },
-    [t]
+    [t],
   );
 
   const fetchData = useCallback(async () => {
     try {
       const graphData = await getFamilyGraph(familyId);
 
-      const flowNodes: Node[] = graphData.nodes.map((node: GraphNode) => ({
+      let combinedGraphNodes = [...graphData.nodes];
+      let combinedGraphEdges = [...graphData.edges];
+
+      // Handle Linked Families
+      if (graphData.regions) {
+        const linkedRegions = graphData.regions.filter(
+          (r) => r.linked_family_id,
+        );
+        if (linkedRegions.length > 0) {
+          const promises = linkedRegions.map(async (region) => {
+            try {
+              const linkedData = await getFamilyGraph(region.linked_family_id!);
+              // Inject region_id into members
+              const linkedNodes = linkedData.nodes.map((n) => {
+                const member = n.data as Member;
+                // Ensure we don't duplicate if somehow already there (unlikely)
+                const currentRegionIds = member.region_ids || [];
+                const newRegionIds = currentRegionIds.includes(region.id)
+                  ? currentRegionIds
+                  : [...currentRegionIds, region.id];
+
+                return {
+                  ...n,
+                  data: {
+                    ...member,
+                    region_ids: newRegionIds,
+                    isLinked: true, // Mark as linked family member
+                  },
+                };
+              });
+              return { nodes: linkedNodes, edges: linkedData.edges };
+            } catch (e) {
+              console.error(
+                `Failed to load linked family ${region.linked_family_id}`,
+                e,
+              );
+              // toast.error(`Failed to load linked family data for region ${region.name}`);
+              return { nodes: [], edges: [] };
+            }
+          });
+
+          const results = await Promise.all(promises);
+          results.forEach((res) => {
+            // Avoid ID collisions if any (though unlikely with UUIDs)
+            // We filter out nodes that might already exist in main graph (unlikely unless same family linked?)
+            const newNodes = res.nodes.filter(
+              (n) =>
+                !combinedGraphNodes.some((existing) => existing.id === n.id),
+            );
+            const newEdges = res.edges.filter(
+              (e) =>
+                !combinedGraphEdges.some((existing) => existing.id === e.id),
+            );
+
+            combinedGraphNodes = [...combinedGraphNodes, ...newNodes];
+            combinedGraphEdges = [...combinedGraphEdges, ...newEdges];
+          });
+        }
+      }
+
+      const flowNodes: Node[] = combinedGraphNodes.map((node: GraphNode) => ({
         id: node.id,
         type: "member",
         position: { x: node.x, y: node.y },
@@ -203,17 +275,22 @@ export function useFamilyData({
         setRegions(graphData.regions);
 
         graphData.regions.forEach((region: Region) => {
-          const membersInRegion = flowNodes.filter(n => {
-             const m = n.data as Member;
-             return m.region_ids?.includes(region.id);
+          const membersInRegion = flowNodes.filter((n) => {
+            const m = n.data as Member;
+            return m.region_ids?.includes(region.id);
           });
           if (membersInRegion.length > 0) {
-            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            let minX = Infinity,
+              minY = Infinity,
+              maxX = -Infinity,
+              maxY = -Infinity;
 
             const nodeW = compactMode ? getCompactNodeWidth() : getNodeWidth();
-            const nodeH = compactMode ? getCompactNodeHeight() : getNodeHeight();
+            const nodeH = compactMode
+              ? getCompactNodeHeight()
+              : getNodeHeight();
 
-            membersInRegion.forEach(n => {
+            membersInRegion.forEach((n) => {
               const w = nodeW;
               const h = nodeH;
 
@@ -230,7 +307,7 @@ export function useFamilyData({
 
             regionNodes.push({
               id: `region-${region.id}`,
-              type: 'region',
+              type: "region",
               position: { x: minX - padding, y: minY - padding },
               data: {
                 label: region.name,
@@ -238,12 +315,12 @@ export function useFamilyData({
                 color: region.color,
                 width: regionWidth,
                 height: regionHeight,
-                originalRegion: region
+                originalRegion: region,
               },
               draggable: false,
               selectable: true,
               zIndex: -1,
-              style: { zIndex: -1, width: regionWidth, height: regionHeight }
+              style: { zIndex: -1, width: regionWidth, height: regionHeight },
             });
           }
         });
@@ -254,8 +331,8 @@ export function useFamilyData({
       const allNodes = [...regionNodes, ...flowNodes];
 
       const flowEdges: Edge[] = buildFlowEdges(
-        graphData.nodes,
-        graphData.edges
+        combinedGraphNodes,
+        combinedGraphEdges,
       );
 
       // Save raw data
@@ -263,12 +340,13 @@ export function useFamilyData({
       edgesRef.current = flowEdges;
 
       // Apply initial highlight using REFS to avoid dependency loop
-      const { nodes: highlightedNodes, edges: highlightedEdges } = applyHighlightRef.current(
-        allNodes,
-        flowEdges,
-        selectedNodeIdsRef.current,
-        selectedEdgeIdRef.current
-      );
+      const { nodes: highlightedNodes, edges: highlightedEdges } =
+        applyHighlightRef.current(
+          allNodes,
+          flowEdges,
+          selectedNodeIdsRef.current,
+          selectedEdgeIdRef.current,
+        );
 
       setNodes(highlightedNodes);
       setEdges(highlightedEdges);
@@ -282,17 +360,16 @@ export function useFamilyData({
             const viewport = JSON.parse(savedViewport) as Viewport;
             setTimeout(
               () => reactFlowInstance.current?.setViewport(viewport),
-              50
+              50,
             );
           } else {
             setTimeout(
               () => reactFlowInstance.current?.fitView({ duration: 800 }),
-              100
+              100,
             );
           }
         }
       }
-
     } catch (error) {
       console.error("Failed to fetch graph data", error);
       toast.error("Failed to load family tree");
@@ -303,7 +380,7 @@ export function useFamilyData({
     setNodes,
     setEdges,
     reactFlowInstance,
-    compactMode
+    compactMode,
   ]);
 
   return { fetchData, yearRange, nodesRef, edgesRef, regions, setRegions };

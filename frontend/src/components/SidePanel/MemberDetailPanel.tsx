@@ -25,6 +25,9 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
   const { t } = useTranslation();
   const [formData, setFormData] = useState<Partial<Member>>({});
   const isNewMember = member.id === "new_member";
+  // If member is linked from another family, force readOnly
+  const isLinked = member.isLinked;
+  const effectiveReadOnly = readOnly || isLinked;
 
   useEffect(() => {
     setFormData({
@@ -128,10 +131,10 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
             name="name"
             value={formData.name || ""}
             onChange={handleChange}
-            readOnly={readOnly}
+            readOnly={effectiveReadOnly}
             className={cn(
               "input mt-1",
-              readOnly && "bg-gray-100 cursor-not-allowed",
+              effectiveReadOnly && "bg-gray-100 cursor-not-allowed",
             )}
             placeholder={t("member.name")}
           />
@@ -146,10 +149,10 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
             name="surname"
             value={formData.surname || ""}
             onChange={handleChange}
-            readOnly={readOnly}
+            readOnly={effectiveReadOnly}
             className={cn(
               "input mt-1",
-              readOnly && "bg-gray-100 cursor-not-allowed",
+              effectiveReadOnly && "bg-gray-100 cursor-not-allowed",
             )}
             placeholder={t("member.surname", { defaultValue: "Surname" })}
           />
@@ -168,10 +171,10 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
             name="gender"
             value={formData.gender || "male"}
             onChange={handleChange}
-            disabled={readOnly}
+            disabled={effectiveReadOnly}
             className={cn(
               "input mt-1",
-              readOnly && "bg-gray-100 cursor-not-allowed",
+              effectiveReadOnly && "bg-gray-100 cursor-not-allowed",
             )}
           >
             <option value="male">{t("member.male")}</option>
@@ -187,7 +190,7 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
               name="is_fuzzy"
               checked={formData.is_fuzzy || false}
               onChange={handleChange}
-              disabled={readOnly}
+              disabled={effectiveReadOnly}
               className="rounded text-blue-600"
             />
             <span className="text-sm text-gray-700">
@@ -201,7 +204,7 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
               name="is_deceased"
               checked={formData.is_deceased || false}
               onChange={handleChange}
-              disabled={readOnly}
+              disabled={effectiveReadOnly}
               className="rounded text-blue-600"
             />
             <span className="text-sm text-gray-700">
@@ -221,10 +224,10 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
             name="birth_date"
             value={formData.birth_date || ""}
             onChange={handleChange}
-            readOnly={readOnly}
+            readOnly={effectiveReadOnly}
             className={cn(
               "input mt-1",
-              readOnly && "bg-gray-100 cursor-not-allowed",
+              effectiveReadOnly && "bg-gray-100 cursor-not-allowed",
             )}
           />
         </div>
@@ -238,10 +241,10 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
             name="death_date"
             value={formData.death_date || ""}
             onChange={handleChange}
-            readOnly={readOnly}
+            readOnly={effectiveReadOnly}
             className={cn(
               "input mt-1",
-              readOnly && "bg-gray-100 cursor-not-allowed",
+              effectiveReadOnly && "bg-gray-100 cursor-not-allowed",
             )}
           />
         </div>
@@ -255,10 +258,10 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
             name="birth_place"
             value={formData.birth_place || ""}
             onChange={handleChange}
-            readOnly={readOnly}
+            readOnly={effectiveReadOnly}
             className={cn(
               "input mt-1",
-              readOnly && "bg-gray-100 cursor-not-allowed",
+              effectiveReadOnly && "bg-gray-100 cursor-not-allowed",
             )}
           />
         </div>
@@ -272,10 +275,10 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
             name="sort_order"
             value={formData.sort_order ?? ""}
             onChange={handleChange}
-            readOnly={readOnly}
+            readOnly={effectiveReadOnly}
             className={cn(
               "input mt-1",
-              readOnly && "bg-gray-100 cursor-not-allowed",
+              effectiveReadOnly && "bg-gray-100 cursor-not-allowed",
             )}
             placeholder="0"
           />
@@ -294,11 +297,11 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
             name="remark"
             value={formData.remark || ""}
             onChange={handleChange}
-            readOnly={readOnly}
+            readOnly={effectiveReadOnly}
             rows={3}
             className={cn(
               "input mt-1",
-              readOnly && "bg-gray-100 cursor-not-allowed",
+              effectiveReadOnly && "bg-gray-100 cursor-not-allowed",
             )}
             placeholder={t("member.remark_placeholder", {
               defaultValue: "Add remarks...",
@@ -323,7 +326,7 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
         )}
       </div>
 
-      {!readOnly && (
+      {!effectiveReadOnly && (
         <div className="p-4 border-t bg-gray-50 flex gap-2">
           <button
             onClick={handleSave}

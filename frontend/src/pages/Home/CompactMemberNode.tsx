@@ -125,26 +125,26 @@ const CompactMemberNode = memo((props: MemberNodeDisplayProps) => {
         type="source"
         position={Position.Right}
         id="right-source"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
       <Handle
         type="target"
         position={Position.Right}
         id="right-target"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
 
       <Handle
         type="source"
         position={Position.Left}
         id="left-source"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
       <Handle
         type="target"
         position={Position.Left}
         id="left-target"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
     </div>
   );

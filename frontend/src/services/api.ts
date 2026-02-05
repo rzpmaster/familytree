@@ -5,9 +5,9 @@ import {
   GraphData,
   Member,
   ParentChildRelationship,
+  Region,
   SpouseRelationship,
   User,
-  Region,
 } from "../types";
 
 const api = axios.create({
@@ -48,8 +48,8 @@ export const deleteMember = async (id: string) => {
 };
 
 export const deleteMembers = async (ids: string[]) => {
-  const response = await api.delete('/members/', {
-    data: { member_ids: ids }
+  const response = await api.delete("/members/", {
+    data: { member_ids: ids },
   });
   return response.data;
 };
@@ -230,6 +230,7 @@ export interface ImportRegion {
   name: string;
   description?: string;
   color?: string;
+  linked_family_id?: string;
   original_id: string;
 }
 
@@ -370,7 +371,8 @@ export const createRegion = async (
   name: string,
   description?: string,
   memberIds?: string[],
-  color?: string
+  color?: string,
+  linkedFamilyId?: string,
 ) => {
   const response = await api.post<Region>("/regions/", {
     family_id: familyId,
@@ -378,13 +380,20 @@ export const createRegion = async (
     description,
     member_ids: memberIds,
     color,
+    linked_family_id: linkedFamilyId,
   });
   return response.data;
 };
 
 export const updateRegion = async (
   id: string,
-  data: { name?: string; description?: string; member_ids?: string[]; color?: string }
+  data: {
+    name?: string;
+    description?: string;
+    member_ids?: string[];
+    color?: string;
+    linked_family_id?: string;
+  },
 ) => {
   const response = await api.put<Region>(`/regions/${id}`, data);
   return response.data;

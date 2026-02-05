@@ -123,7 +123,7 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
         type="source"
         position={Position.Right}
         id="right-source"
-        className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity !bg-[#ff0072]"
+        className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity !bg-red-500"
         title={t("relation.spouse")}
         style={{ top: "50%", transform: "translate(50%, -50%)", zIndex: 10 }}
       />
@@ -131,7 +131,7 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
         type="target"
         position={Position.Right}
         id="right-target"
-        className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity !bg-[#ff0072]"
+        className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity !bg-red-500"
         title={t("relation.spouse")}
         style={{ top: "50%", transform: "translate(50%, -50%)", zIndex: 1 }}
       />
@@ -140,7 +140,7 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
         type="source"
         position={Position.Left}
         id="left-source"
-        className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity !bg-[#ff0072]"
+        className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity !bg-red-500"
         title={t("relation.spouse")}
         style={{ top: "50%", transform: "translate(-50%, -50%)", zIndex: 10 }}
       />
@@ -148,7 +148,7 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
         type="target"
         position={Position.Left}
         id="left-target"
-        className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity !bg-[#ff0072]"
+        className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity !bg-red-500"
         title={t("relation.spouse")}
         style={{ top: "50%", transform: "translate(-50%, -50%)", zIndex: 1 }}
       />

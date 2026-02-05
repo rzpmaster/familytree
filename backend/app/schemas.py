@@ -117,6 +117,7 @@ class RegionBase(BaseModel):
     name: str
     description: Optional[str] = None
     color: Optional[str] = "#EBF8FF"
+    linked_family_id: Optional[str] = None
 
 
 class RegionCreate(RegionBase):
@@ -128,6 +129,7 @@ class RegionUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     color: Optional[str] = None
+    linked_family_id: Optional[str] = None
     member_ids: Optional[List[str]] = None
 
 
@@ -263,6 +265,7 @@ class GraphData(BaseModel):
 # Import Schemas
 class ImportMember(MemberBase):
     original_id: str
+    family_id: Optional[str] = None
 
 
 class ImportSpouse(BaseModel):
