@@ -79,30 +79,51 @@ export function getMemberStatus(
   member: Member,
   currentYear?: number,
 ): "living" | "deceased" | "unborn" {
-  const now = currentYear ? new Date(currentYear, 0, 1) : new Date();
+  const now =
+    currentYear !== undefined ? new Date(currentYear, 0, 1) : new Date();
 
   if (member.birth_date) {
     const birth = parseDate(member.birth_date);
-    if (birth.getTime() > now.getTime()) {
+    if (!isNaN(birth.getTime()) && birth.getTime() > now.getTime()) {
       return "unborn";
     }
   }
 
   if (member.death_date) {
     const death = parseDate(member.death_date);
-    if (death.getTime() <= now.getTime()) {
-      return "deceased";
+    // Only compare if date is valid
+    if (!isNaN(death.getTime())) {
+      if (death.getTime() <= now.getTime()) {
+        return "deceased";
+      }
+      // If death date is in future relative to timeline, they are living
+      // regardless of is_deceased flag (specific date takes precedence)
+      return "living";
     }
-    // If death date is in future relative to timeline, they are living (conceptually)
-    // unless birth date is also in future.
-  } else if (member.is_deceased) {
-    // If explicitly marked as deceased (and no death date, or we rely on flag)
-    // We assume they are deceased unless timeline is before their birth?
-    // If timeline is enabled, `is_deceased` flag might be ambiguous without a date.
-    // We'll assume if `is_deceased` is true, they are deceased regardless of timeline
-    // unless timeline is before birth.
+    // If death date is invalid, fallback to is_deceased flag
+  }
+
+  if (member.is_deceased) {
     return "deceased";
   }
 
   return "living";
+}
+
+export function formatDate(dateStr?: string): string {
+  if (!dateStr) return "";
+  const date = parseDate(dateStr);
+  if (isNaN(date.getTime())) return dateStr;
+
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  const yearStr = year < 0 ? `公元前 ${-year}` : `${year}`;
+  
+  return `${yearStr}年${month}月${day}日`;
+}
+
+export function formatYear(year: number): string {
+  return year < 0 ? `公元前 ${-year}` : `${year}`;
 }

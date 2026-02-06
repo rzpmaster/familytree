@@ -8,6 +8,7 @@ import { useFamilyData } from "@/hooks/familyTree/useFamilyData";
 import { useGraphInteraction } from "@/hooks/familyTree/useGraphInteraction";
 import { useHighlighting } from "@/hooks/familyTree/useHighlighting";
 import { useSettings } from "@/hooks/useSettings";
+import { formatYear } from "@/lib/utils";
 import {
   createRegion,
   deleteMembers,
@@ -199,21 +200,31 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
 
   const handleDeleteAll = useCallback(() => {
     // Filter out linked family members
-    const validMembers = selectedMembers.filter(m => {
-       const member = m.data as Member;
-       return !member.isLinked;
+    const validMembers = selectedMembers.filter((m) => {
+      const member = m.data as Member;
+      return !member.isLinked;
     });
 
     if (validMembers.length > 0) {
       // If we filtered some out, maybe show a toast?
       if (validMembers.length < selectedMembers.length) {
-          toast(t("member.cannot_delete_linked", { defaultValue: "Some members are from linked families and cannot be deleted." }), {
-              icon: 'ℹ️',
-          });
+        toast(
+          t("member.cannot_delete_linked", {
+            defaultValue:
+              "Some members are from linked families and cannot be deleted.",
+          }),
+          {
+            icon: "ℹ️",
+          },
+        );
       }
       setDeleteMembersConfirmOpen(true);
     } else if (selectedMembers.length > 0) {
-        toast.error(t("member.all_linked_cannot_delete", { defaultValue: "Cannot delete linked family members." }));
+      toast.error(
+        t("member.all_linked_cannot_delete", {
+          defaultValue: "Cannot delete linked family members.",
+        }),
+      );
     }
   }, [selectedMembers, t]);
 
@@ -221,9 +232,9 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     try {
       // Re-filter just in case
       const memberIds = selectedMembers
-          .filter(n => !(n.data as Member).isLinked)
-          .map((node) => node.id);
-      
+        .filter((n) => !(n.data as Member).isLinked)
+        .map((node) => node.id);
+
       if (memberIds.length === 0) return;
 
       await deleteMembers(memberIds);
@@ -240,30 +251,40 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     }
   }, [selectedMembers, t, dispatch, fetchData]);
 
-  const getEffectiveMemberIds = useCallback((selectedNodes: Node[]) => {
+  const getEffectiveMemberIds = useCallback(
+    (selectedNodes: Node[]) => {
       const ids = new Set<string>();
       const linkedFamiliesProcessed = new Set<string>();
       let hasLinked = false;
 
-      selectedNodes.forEach(node => {
-          const member = node.data as Member;
-          ids.add(member.id);
+      selectedNodes.forEach((node) => {
+        const member = node.data as Member;
+        ids.add(member.id);
 
-          if (member.isLinked && !linkedFamiliesProcessed.has(member.family_id)) {
-              linkedFamiliesProcessed.add(member.family_id);
-              // Find all members of this linked family in the current graph
-              const familyMembers = allMembers.filter(m => m.family_id === member.family_id && m.isLinked);
-              familyMembers.forEach(m => ids.add(m.id));
-              hasLinked = true;
-          }
+        if (member.isLinked && !linkedFamiliesProcessed.has(member.family_id)) {
+          linkedFamiliesProcessed.add(member.family_id);
+          // Find all members of this linked family in the current graph
+          const familyMembers = allMembers.filter(
+            (m) => m.family_id === member.family_id && m.isLinked,
+          );
+          familyMembers.forEach((m) => ids.add(m.id));
+          hasLinked = true;
+        }
       });
-      
+
       if (hasLinked) {
-         toast(t('region.linked_family_included', { defaultValue: 'Linked family members included automatically' }), {icon: '🔗'});
+        toast(
+          t("region.linked_family_included", {
+            defaultValue: "Linked family members included automatically",
+          }),
+          { icon: "🔗" },
+        );
       }
 
       return Array.from(ids);
-  }, [allMembers, t]);
+    },
+    [allMembers, t],
+  );
 
   const handleAddToRegion = useCallback(
     async (regionId: string) => {
@@ -300,7 +321,15 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
         );
       }
     },
-    [regions, nodes, selectedMembers, t, dispatch, fetchData, getEffectiveMemberIds],
+    [
+      regions,
+      nodes,
+      selectedMembers,
+      t,
+      dispatch,
+      fetchData,
+      getEffectiveMemberIds,
+    ],
   );
 
   const handleCreateRegion = useCallback(() => {
@@ -821,11 +850,11 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
           <Panel position="bottom-center" className="mb-8 w-96 max-w-[90vw]">
             <div className="bg-white/90 p-4 rounded-xl shadow-lg backdrop-blur-sm border">
               <div className="flex justify-between text-xs font-bold text-gray-500 mb-2">
-                <span>{yearRange.min}</span>
+                <span>{formatYear(yearRange.min)}</span>
                 <span className="text-blue-600 text-lg">
-                  {settingsState.timelineYear || yearRange.max}
+                  {formatYear(settingsState.timelineYear || yearRange.max)}
                 </span>
-                <span>{yearRange.max}</span>
+                <span>{formatYear(yearRange.max)}</span>
               </div>
               <input
                 type="range"
