@@ -59,16 +59,35 @@ docker compose -f docker-compose-source.yml up -d --build
 
 2. **Using Docker Images**
 
-- Copy `docker-compose.yml` from this repository to your directory
+- Copy/Download `docker-compose.yml` from this repository to your directory
+
+  ```powershell
+  curl.exe -L -o docker-compose.yml https://raw.githubusercontent.com/rzpmaster/familytree/main/docker-compose.yml
+  ```
+
+  ```bash
+  curl -L -o docker-compose.yml https://raw.githubusercontent.com/rzpmaster/familytree/main/docker-compose.yml
+  ```
+
 - Configure environment variables (optional)
 
-Copy `.env.example` to `.env` and modify as needed.
+  Copy/Download `.env.example` to `.env` and modify as needed.
+
+  ```powershell
+  curl.exe -L -o .env.example https://raw.githubusercontent.com/rzpmaster/familytree/main/.env.example
+  Copy-Item .env.example .env -Force
+  ```
+
+  ```bash
+  curl -L -o .env.example https://raw.githubusercontent.com/rzpmaster/familytree/main/.env.example
+  cp -f .env.example .env
+  ```
 
 - One-command startup
 
-```bash
-docker-compose up -d
-```
+  ```bash
+  docker-compose up -d
+  ```
 
 - Open your browser and visit `http://localhost`.
 
