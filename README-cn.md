@@ -59,10 +59,29 @@
 
 2. **使用镜像**
 
-- 复制本仓库 `docker-compose.yml` 到你到文件夹
+- 复制/下载 本仓库 `docker-compose.yml` 到你到文件夹
+
+  ```powershell
+  curl.exe -L -o docker-compose.yml https://raw.githubusercontent.com/rzpmaster/familytree/main/docker-compose.yml
+  ```
+
+  ```bash
+  curl -L -o docker-compose.yml https://raw.githubusercontent.com/rzpmaster/familytree/main/docker-compose.yml
+  ```
+
 - 修改环境变量（可选）
 
-  复制本仓库 `.env.example` 为 `.env` 并按需修改。
+  复制/下载本仓库 `.env.example` 为 `.env` 并按需修改。
+
+  ```powershell
+  curl.exe -L -o .env.example https://raw.githubusercontent.com/rzpmaster/familytree/main/.env.example
+  Copy-Item .env.example .env -Force
+  ```
+
+  ```bash
+  curl -L -o .env.example https://raw.githubusercontent.com/rzpmaster/familytree/main/.env.example
+  cp -f .env.example .env
+  ```
 
 - 一键启动
 

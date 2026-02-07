@@ -1,23 +1,23 @@
 import ConfirmDialog from "@/components/ConfirmDialog";
+import FamilyManager from "@/components/FamilyManager";
 import MemberDetailPanel from "@/components/SidePanel/MemberDetailPanel";
 import PropertyPanel from "@/components/SidePanel/PropertyPanel";
 import RegionPanel from "@/components/SidePanel/RegionPanel";
-import { RootState } from "@/store";
-import { setLastSelectedFamilyId } from "@/store/familySlice";
-import { Loader2 } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import FamilyManager from "../../components/FamilyManager";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import {
   deleteMember,
   deleteParentChildRelationship,
   deleteSpouseRelationship,
   getFamilies,
-} from "../../services/api";
-import { Family, GraphEdge, Member, RegionState } from "../../types";
+} from "@/services/api";
+import { RootState } from "@/store";
+import { setLastSelectedFamilyId } from "@/store/familySlice";
+import { Family, GraphEdge, Member, RegionState } from "@/types";
+import { Loader2 } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
 import FamilyTreeCanvas from "./FamilyTreeCanvas";
 
 const Home: React.FC = () => {

@@ -14,6 +14,7 @@ const CompactMemberNode = memo((props: MemberNodeDisplayProps) => {
     displayName,
     rawName,
     age,
+    status,
     opacityClass,
     isMale,
     canDelete,
@@ -23,18 +24,19 @@ const CompactMemberNode = memo((props: MemberNodeDisplayProps) => {
   const GenderIcon = isMale ? Mars : Venus;
 
   const { t } = useTranslation();
+  const isDeceased = status === "deceased" || status === "unborn";
 
   return (
     <div
       style={{ width, height }}
       className={cn(
-        "relative group overflow-hidden rounded-xl border-2 bg-white shadow-md transition-all",
+        "relative group overflow-hidden rounded-xl border-2 shadow-md transition-all",
         selected ? "border-blue-500 shadow-xl" : "border-gray-200",
         isMale ? "hover:border-blue-300" : "hover:border-pink-300",
         data.is_fuzzy
           ? "border-dashed border-2 border-slate-500 bg-slate-100"
           : "border-solid",
-        !data.is_deceased ? "bg-white" : "bg-slate-50",
+        !isDeceased ? "bg-white" : "bg-slate-50",
         opacityClass,
       )}
     >
@@ -42,8 +44,9 @@ const CompactMemberNode = memo((props: MemberNodeDisplayProps) => {
       <div
         className={cn(
           "absolute inset-0 pointer-events-none",
-          !data.is_deceased
-            ? isMale ? "bg-blue-200/60"
+          !isDeceased
+            ? isMale
+              ? "bg-blue-200/60"
               : "bg-pink-200/60"
             : isMale
               ? "bg-blue-100/40"

@@ -13,7 +13,7 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
     height,
     displayName,
     age,
-    // status,
+    status,
     opacityClass,
     isMale,
     canDelete,
@@ -21,17 +21,19 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
   } = props;
 
   const { t } = useTranslation();
+  const isDeceased = status === "deceased";
 
   return (
     <div
       style={{ width, height }}
       className={cn(
-        "shadow-md rounded-lg border-2 bg-white transition-all relative group flex flex-col overflow-hidden",
+        "shadow-md rounded-lg border-2 transition-all relative group flex flex-col overflow-hidden",
         selected ? "border-blue-500 shadow-xl" : "border-gray-200",
         isMale ? "hover:border-blue-300" : "hover:border-pink-300",
         data.is_fuzzy
           ? "border-dashed border-2 border-slate-500 bg-slate-100"
           : "border-solid",
+        !isDeceased ? "bg-white" : "bg-slate-50",
         opacityClass,
       )}
     >

@@ -291,7 +291,8 @@ export function useFamilyData({
           return [y1, y2];
         })
         .flat()
-        .filter((y): y is number => y !== null && !isNaN(y));
+        .filter((y): y is number => y !== null && !isNaN(y))
+        .sort((a, b) => a - b);
 
       if (years.length > 0) {
         minY = Math.min(...years) - 10;
