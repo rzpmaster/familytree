@@ -20,7 +20,8 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="p-8 max-w-3xl mx-auto space-y-6">
+    <div className="h-full overflow-y-auto">
+      <div className="p-8 max-w-3xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-8">
         {t("common.settings", { defaultValue: "Settings" })}
       </h1>
@@ -394,6 +395,7 @@ const Settings: React.FC = () => {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

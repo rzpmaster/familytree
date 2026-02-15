@@ -1,28 +1,28 @@
 import { useAuth } from "@/hooks/useAuth";
 import {
-	deleteUser,
-	getFamilyName,
-	getUsers,
-	removeCollaborator,
-	updateCollaboratorRole,
-	updateUserRole,
+  deleteUser,
+  getFamilyName,
+  getUsers,
+  removeCollaborator,
+  updateCollaboratorRole,
+  updateUserRole,
 } from "@/services/api";
 import { User } from "@/types";
 import {
-	ChevronLeft,
-	ChevronRight,
-	Search,
-	Shield,
-	ShieldAlert,
-	Trash2,
-	User as UserIcon,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  Shield,
+  ShieldAlert,
+  Trash2,
+  User as UserIcon,
 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import SharedFamilyRow from "./SharedFamilyRow";
 import { cn } from "../../lib/utils";
+import SharedFamilyRow from "./SharedFamilyRow";
 
 const Admin: React.FC = () => {
   const { t } = useTranslation();
@@ -208,7 +208,8 @@ const Admin: React.FC = () => {
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="h-full overflow-y-auto">
+      <div className="p-8 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
         <Shield className="text-blue-600" />
         {t("admin.dashboard", { defaultValue: "Admin Dashboard" })}
@@ -491,6 +492,7 @@ const Admin: React.FC = () => {
         onConfirm={handleConfirmDelete}
         onCancel={() => setUserToDelete(null)}
       />
+      </div>
     </div>
   );
 };
