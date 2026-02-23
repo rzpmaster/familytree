@@ -54,7 +54,7 @@ const initialState: SettingsState = {
 
   timelineEnabled: false,
   timelineYear: null,
-  compactMode: false,
+  compactMode: true,
 };
 
 const settingsSlice = createSlice({
