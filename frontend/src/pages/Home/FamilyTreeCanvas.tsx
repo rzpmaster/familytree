@@ -8,6 +8,7 @@ import { useFamilyData } from "@/hooks/familyTree/useFamilyData";
 import { useGraphInteraction } from "@/hooks/familyTree/useGraphInteraction";
 import { useHighlighting } from "@/hooks/familyTree/useHighlighting";
 import { useSettings } from "@/hooks/useSettings";
+import { calculateRegionNodes } from "@/lib/graphUtils";
 import { formatYear } from "@/lib/utils";
 import {
   createRegion,
@@ -467,23 +468,19 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     // It might move them to (0,0).
     // So we should only layout members.
     const memberNodes = nodesRef.current.filter((n) => n.type === "member");
-    const regionNodes = nodesRef.current.filter((n) => n.type === "region");
 
     // Edges only connect members usually
     const { nodes: layoutedMemberNodes, edges: layoutedEdges } =
       layoutStrategy.layout([...memberNodes], [...edgesRef.current]);
 
-    // We need to re-calculate regions based on new member positions?
-    // The fetchData/hook logic does this. But we don't want to re-fetch.
-    // We can just keep regions as is for now (they will look wrong until refresh)
-    // OR we can trigger a re-calc locally.
-    // Ideally, we should update member positions on backend, then fetch.
-    // But handleAutoLayout updates frontend state first.
+    // Recalculate regions based on new member positions
+    const updatedRegionNodes = calculateRegionNodes(
+      layoutedMemberNodes,
+      regions,
+      settingsState.compactMode,
+    );
 
-    // Let's just update members. Regions will be outdated until save/refresh.
-    // Or we can manually trigger fetchData after save.
-
-    setNodes([...layoutedMemberNodes, ...regionNodes]); // Keep regions
+    setNodes([...layoutedMemberNodes, ...updatedRegionNodes]);
     setEdges([...layoutedEdges]);
 
     try {

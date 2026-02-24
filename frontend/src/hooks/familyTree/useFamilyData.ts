@@ -1,9 +1,4 @@
-import {
-  getCompactNodeHeight,
-  getCompactNodeWidth,
-  getNodeHeight,
-  getNodeWidth,
-} from "@/config/constants";
+import { calculateRegionNodes } from "@/lib/graphUtils";
 import { parseDate } from "@/lib/utils";
 import { getFamilyGraph } from "@/services/api";
 import { RootState } from "@/store";
@@ -304,57 +299,12 @@ export function useFamilyData({
       const regionNodes: Node[] = [];
       if (graphData.regions) {
         setRegions(graphData.regions);
-
-        graphData.regions.forEach((region: Region) => {
-          const membersInRegion = flowNodes.filter((n) => {
-            const m = n.data as Member;
-            return m.region_ids?.includes(region.id);
-          });
-          if (membersInRegion.length > 0) {
-            let minX = Infinity,
-              minY = Infinity,
-              maxX = -Infinity,
-              maxY = -Infinity;
-
-            const nodeW = compactMode ? getCompactNodeWidth() : getNodeWidth();
-            const nodeH = compactMode
-              ? getCompactNodeHeight()
-              : getNodeHeight();
-
-            membersInRegion.forEach((n) => {
-              const w = nodeW;
-              const h = nodeH;
-
-              // ReactFlow position is top-left
-              if (n.position.x < minX) minX = n.position.x;
-              if (n.position.y < minY) minY = n.position.y;
-              if (n.position.x + w > maxX) maxX = n.position.x + w;
-              if (n.position.y + h > maxY) maxY = n.position.y + h;
-            });
-
-            const padding = 20; // Reduced padding to be "just right"
-            const regionWidth = maxX - minX + padding * 2;
-            const regionHeight = maxY - minY + padding * 2;
-
-            regionNodes.push({
-              id: `region-${region.id}`,
-              type: "region",
-              position: { x: minX - padding, y: minY - padding },
-              data: {
-                label: region.name,
-                description: region.description,
-                color: region.color,
-                width: regionWidth,
-                height: regionHeight,
-                originalRegion: region,
-              },
-              draggable: false,
-              selectable: true,
-              zIndex: -1,
-              style: { zIndex: -1, width: regionWidth, height: regionHeight },
-            });
-          }
-        });
+        const calculatedRegions = calculateRegionNodes(
+          flowNodes,
+          graphData.regions,
+          compactMode
+        );
+        regionNodes.push(...calculatedRegions);
       } else {
         setRegions([]);
       }
