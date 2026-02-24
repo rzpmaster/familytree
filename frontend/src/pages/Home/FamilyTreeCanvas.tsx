@@ -504,6 +504,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     settingsState.compactMode,
     nodesRef,
     edgesRef,
+    regions,
     setNodes,
     setEdges,
     t,
