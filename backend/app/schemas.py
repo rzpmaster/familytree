@@ -197,7 +197,6 @@ class MemberBatchUpdate(BaseModel):
     updates: List[MemberPositionUpdate]
 
 
-
 class Member(MemberBase):
     id: str
     family_id: str

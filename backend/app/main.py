@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import members, relationships, families, users, regions
+
 from .db_init import init_db
+from .routers import families, members, regions, relationships, users
 
 # Initialize database (create DB if not exists, create tables)
 init_db()

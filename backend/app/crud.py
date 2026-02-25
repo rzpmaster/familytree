@@ -244,7 +244,7 @@ def create_member(db: Session, member: schemas.MemberCreate):
     # Extract region_ids from the Pydantic model
     member_data = member.model_dump()
     region_ids = member_data.pop("region_ids", [])
-    
+
     # Extract position data
     pos_x = member_data.pop("position_x", 0)
     pos_y = member_data.pop("position_y", 0)
@@ -256,23 +256,20 @@ def create_member(db: Session, member: schemas.MemberCreate):
         db_member.regions = regions
 
     db.add(db_member)
-    db.flush() # Flush to get ID
-    
+    db.flush()  # Flush to get ID
+
     # Create MemberPosition
     db_pos = models.MemberPosition(
-        member_id=db_member.id,
-        family_id=db_member.family_id,
-        x=pos_x,
-        y=pos_y
+        member_id=db_member.id, family_id=db_member.family_id, x=pos_x, y=pos_y
     )
     db.add(db_pos)
-    
+
     db.commit()
     db.refresh(db_member)
 
     # Manually populate region_ids
     db_member.region_ids = [r.id for r in db_member.regions]
-    
+
     # Manually populate position
     db_member.position_x = pos_x
     db_member.position_y = pos_y
@@ -286,22 +283,22 @@ def get_members(db: Session, family_id: str, skip: int = 0, limit: int = 100):
         db.query(models.Member, models.MemberPosition)
         .outerjoin(
             models.MemberPosition,
-            (models.MemberPosition.member_id == models.Member.id) & 
-            (models.MemberPosition.family_id == family_id)
+            (models.MemberPosition.member_id == models.Member.id)
+            & (models.MemberPosition.family_id == family_id),
         )
         .filter(models.Member.family_id == family_id)
         .offset(skip)
         .limit(limit)
         .all()
     )
-    
+
     members = []
     for m, p in results:
         m.region_ids = [r.id for r in m.regions]
         m.position_x = p.x if p else 0
         m.position_y = p.y if p else 0
         members.append(m)
-        
+
     return members
 
 
@@ -309,23 +306,25 @@ def get_member(db: Session, member_id: str):
     member = db.query(models.Member).filter(models.Member.id == member_id).first()
     if member:
         member.region_ids = [r.id for r in member.regions]
-        
+
         # Get position for the member's home family by default
-        pos = db.query(models.MemberPosition).filter(
-            models.MemberPosition.member_id == member_id,
-            models.MemberPosition.family_id == member.family_id
-        ).first()
-        
+        pos = (
+            db.query(models.MemberPosition)
+            .filter(
+                models.MemberPosition.member_id == member_id,
+                models.MemberPosition.family_id == member.family_id,
+            )
+            .first()
+        )
+
         member.position_x = pos.x if pos else 0
         member.position_y = pos.y if pos else 0
-        
+
     return member
 
 
 def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
-    db_member = (
-        db.query(models.Member).filter(models.Member.id == member_id).first()
-    )
+    db_member = db.query(models.Member).filter(models.Member.id == member_id).first()
     if db_member:
         update_data = member.model_dump(exclude_unset=True)
 
@@ -339,25 +338,27 @@ def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
                     .all()
                 )
                 db_member.regions = regions
-        
+
         # Handle position update (default to home family)
         pos_x = update_data.pop("position_x", None)
         pos_y = update_data.pop("position_y", None)
-        
+
         if pos_x is not None or pos_y is not None:
-            pos = db.query(models.MemberPosition).filter(
-                models.MemberPosition.member_id == member_id,
-                models.MemberPosition.family_id == db_member.family_id
-            ).first()
-            
+            pos = (
+                db.query(models.MemberPosition)
+                .filter(
+                    models.MemberPosition.member_id == member_id,
+                    models.MemberPosition.family_id == db_member.family_id,
+                )
+                .first()
+            )
+
             if not pos:
                 pos = models.MemberPosition(
-                    member_id=member_id,
-                    family_id=db_member.family_id,
-                    x=0, y=0
+                    member_id=member_id, family_id=db_member.family_id, x=0, y=0
                 )
                 db.add(pos)
-                
+
             if pos_x is not None:
                 pos.x = pos_x
             if pos_y is not None:
@@ -369,26 +370,36 @@ def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
         db.commit()
         db.refresh(db_member)
         db_member.region_ids = [r.id for r in db_member.regions]
-        
+
         # Refresh position
-        pos = db.query(models.MemberPosition).filter(
-            models.MemberPosition.member_id == member_id,
-            models.MemberPosition.family_id == db_member.family_id
-        ).first()
+        pos = (
+            db.query(models.MemberPosition)
+            .filter(
+                models.MemberPosition.member_id == member_id,
+                models.MemberPosition.family_id == db_member.family_id,
+            )
+            .first()
+        )
         db_member.position_x = pos.x if pos else 0
         db_member.position_y = pos.y if pos else 0
 
     return db_member
 
 
-def update_members_positions(db: Session, updates: List[schemas.MemberPositionUpdate], family_id: str):
+def update_members_positions(
+    db: Session, updates: List[schemas.MemberPositionUpdate], family_id: str
+):
     # Upsert positions
     for update in updates:
-        pos = db.query(models.MemberPosition).filter(
-            models.MemberPosition.member_id == update.id,
-            models.MemberPosition.family_id == family_id
-        ).first()
-        
+        pos = (
+            db.query(models.MemberPosition)
+            .filter(
+                models.MemberPosition.member_id == update.id,
+                models.MemberPosition.family_id == family_id,
+            )
+            .first()
+        )
+
         if pos:
             pos.x = update.position_x
             pos.y = update.position_y
@@ -397,10 +408,10 @@ def update_members_positions(db: Session, updates: List[schemas.MemberPositionUp
                 member_id=update.id,
                 family_id=family_id,
                 x=update.position_x,
-                y=update.position_y
+                y=update.position_y,
             )
             db.add(pos)
-            
+
     db.commit()
     return True
 
@@ -421,7 +432,7 @@ def delete_member(db: Session, member_id: str):
         db.delete(db_member)
         # Positions should be deleted by cascade or we rely on DB FK cascade.
         # Since I added cascade="all, delete-orphan" to Member.positions, it should be fine.
-        
+
         db.flush()
 
         for region in affected_regions:
@@ -551,13 +562,17 @@ def get_family_graph(db: Session, family_id: str):
     linked_family_map = {
         lr.linked_family_id: lr.id for lr in linked_regions if lr.linked_family_id
     }
-    
+
     # Get positions for ALL members in THIS family context
     member_ids = [m.id for m in members]
-    positions = db.query(models.MemberPosition).filter(
-        models.MemberPosition.member_id.in_(member_ids),
-        models.MemberPosition.family_id == family_id
-    ).all()
+    positions = (
+        db.query(models.MemberPosition)
+        .filter(
+            models.MemberPosition.member_id.in_(member_ids),
+            models.MemberPosition.family_id == family_id,
+        )
+        .all()
+    )
     pos_map = {p.member_id: (p.x, p.y) for p in positions}
 
     for m in members:
@@ -567,7 +582,7 @@ def get_family_graph(db: Session, family_id: str):
             rids.add(linked_family_map[m.family_id])
 
         m.region_ids = list(rids)
-        
+
         # Populate positions
         x, y = pos_map.get(m.id, (0, 0))
         m.position_x = x
@@ -798,7 +813,8 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                                 db.query(models.Region)
                                 .filter(
                                     models.Region.family_id == db_family.id,
-                                    models.Region.linked_family_id == db_member.family_id,
+                                    models.Region.linked_family_id
+                                    == db_member.family_id,
                                 )
                                 .all()
                             )
@@ -822,23 +838,27 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                             if updated:
                                 db.add(db_member)
                                 logger.info(f"Regions updated for {existing_member_id}")
-                                
+
                         # Also create MemberPosition for this family context!
                         # The linked member appears in this family's graph.
-                        pos = db.query(models.MemberPosition).filter(
-                            models.MemberPosition.member_id == existing_member_id,
-                            models.MemberPosition.family_id == db_family.id
-                        ).first()
-                        
+                        pos = (
+                            db.query(models.MemberPosition)
+                            .filter(
+                                models.MemberPosition.member_id == existing_member_id,
+                                models.MemberPosition.family_id == db_family.id,
+                            )
+                            .first()
+                        )
+
                         if not pos:
                             pos = models.MemberPosition(
                                 member_id=existing_member_id,
                                 family_id=db_family.id,
                                 x=m.position_x,
-                                y=m.position_y
+                                y=m.position_y,
                             )
                             db.add(pos)
-                        
+
                     id_map[m.original_id] = existing_member_id
                     continue
 
@@ -861,10 +881,10 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                 ).model_dump()
 
                 r_ids = member_data.pop("region_ids", [])
-                
+
                 pos_x = member_data.pop("position_x", 0)
                 pos_y = member_data.pop("position_y", 0)
-                
+
                 db_member = models.Member(**member_data)
 
                 if r_ids:
@@ -877,16 +897,13 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
 
                 db.add(db_member)
                 db.flush()
-                
+
                 # Create MemberPosition
                 db_pos = models.MemberPosition(
-                    member_id=db_member.id,
-                    family_id=db_family.id,
-                    x=pos_x,
-                    y=pos_y
+                    member_id=db_member.id, family_id=db_family.id, x=pos_x, y=pos_y
                 )
                 db.add(db_pos)
-                
+
                 id_map[m.original_id] = db_member.id
 
             logger.info(f"Processed {len(import_data.members)} members")

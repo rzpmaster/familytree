@@ -1,17 +1,19 @@
 import uuid
+
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    ForeignKey,
-    DateTime,
-    Text,
     Boolean,
-    UniqueConstraint,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
     Table,
+    Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
 from .database import Base
 
 
@@ -116,9 +118,7 @@ class Region(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     family = relationship("Family", back_populates="regions")
-    members = relationship(
-        "Member", secondary=member_regions, back_populates="regions"
-    )
+    members = relationship("Member", secondary=member_regions, back_populates="regions")
 
 
 class Member(Base):
@@ -145,10 +145,10 @@ class Member(Base):
     )
 
     family = relationship("Family", back_populates="members")
-    regions = relationship(
-        "Region", secondary=member_regions, back_populates="members"
+    regions = relationship("Region", secondary=member_regions, back_populates="members")
+    positions = relationship(
+        "MemberPosition", back_populates="member", cascade="all, delete-orphan"
     )
-    positions = relationship("MemberPosition", back_populates="member", cascade="all, delete-orphan")
 
     # Relationships where this member is member1 (spouse)
     spouse_relationships_1 = relationship(
@@ -242,5 +242,7 @@ class MemberPosition(Base):
     family = relationship("Family")
 
     __table_args__ = (
-        UniqueConstraint("member_id", "family_id", name="unique_member_position_per_family"),
+        UniqueConstraint(
+            "member_id", "family_id", name="unique_member_position_per_family"
+        ),
     )
