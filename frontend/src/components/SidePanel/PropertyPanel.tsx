@@ -1,10 +1,10 @@
-import { cn } from "@/lib/utils";
 import { updateSpouseRelationship } from "@/services/api";
 import { GraphEdge } from "@/types";
 import { Calendar, Save, X } from "lucide-react";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { HistoricalDateInput } from "../HistoricalDateInput";
 
 interface PropertyPanelProps {
   edge: GraphEdge;
@@ -74,15 +74,10 @@ const PropertyPanel: React.FC<PropertyPanelProps> = ({
             <Calendar size={14} />
             {t("relation.marriage_date", { defaultValue: "Marriage Date" })}
           </label>
-          <input
-            type="date"
+          <HistoricalDateInput
             value={marriageDate}
-            onChange={(e) => setMarriageDate(e.target.value)}
+            onChange={(val) => setMarriageDate(val)}
             readOnly={readOnly}
-            className={cn(
-              "input transition-all",
-              readOnly && "bg-gray-100 cursor-not-allowed",
-            )}
           />
           {!readOnly && (
             <p className="mt-1 text-xs text-gray-400">

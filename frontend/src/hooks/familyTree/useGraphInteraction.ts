@@ -255,8 +255,7 @@ export function useGraphInteraction({
             position: { x: start.x + dx, y: start.y + dy },
             data: {
               ...(n.data as Member),
-              position_x: start.x + dx,
-              position_y: start.y + dy,
+              // Position is now managed by ReactFlow node.position, not in Member data
             },
           };
         }),

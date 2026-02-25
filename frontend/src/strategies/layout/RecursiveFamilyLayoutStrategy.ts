@@ -39,6 +39,9 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
     // --- Build nodes map ---
     const nodesMap = this.buildDriectedGraph(nodes as Node<Member>[], edges);
 
+    // Global positions map for the layout process
+    const allNodePositions = new Map<string, { x: number; y: number }>();
+
     // --- Find connected components (families) ---
     const components = this.splitFamilyComponents(nodesMap);
 
@@ -47,12 +50,54 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
       const { roots } = this.computeLevelForFamily(familyIds, nodesMap);
       familyRootCache.push({ roots, familyIds });
     }
-    familyRootCache.sort((a, b) =>
-      this.compareSiblingMember(
-        nodesMap.get(a.roots.at(0)).member,
-        nodesMap.get(b.roots.at(0)).member,
-      ),
+
+    // Group by region first to ensure families in the same region are clustered
+    const familiesByRegion = new Map<string, typeof familyRootCache>();
+    for (const item of familyRootCache) {
+      const rootNode =
+        item.roots.length > 0 ? nodesMap.get(item.roots[0]) : undefined;
+      const regionId = rootNode?.member?.region_ids?.[0] ?? "";
+      if (!familiesByRegion.has(regionId)) {
+        familiesByRegion.set(regionId, []);
+      }
+      familiesByRegion.get(regionId)!.push(item);
+    }
+
+    // 1. Sort within each group first
+    for (const group of familiesByRegion.values()) {
+      group.sort((a, b) =>
+        this.compareSiblingMember(
+          nodesMap.get(a.roots[0])?.member,
+          nodesMap.get(b.roots[0])?.member,
+        ),
+      );
+    }
+
+    // 2. Sort groups based on the first element of each group
+    const sortedRegionKeys = Array.from(familiesByRegion.keys()).sort(
+      (keyA, keyB) => {
+        const groupA = familiesByRegion.get(keyA)!;
+        const groupB = familiesByRegion.get(keyB)!;
+        // Safety check
+        if (!groupA.length) return 1;
+        if (!groupB.length) return -1;
+
+        const memberA = nodesMap.get(groupA[0].roots[0])?.member;
+        const memberB = nodesMap.get(groupB[0].roots[0])?.member;
+
+        return this.compareSiblingMember(memberA, memberB);
+      },
     );
+
+    // 3. Flatten
+    const sortedFamilies: typeof familyRootCache = [];
+    for (const regionId of sortedRegionKeys) {
+      const group = familiesByRegion.get(regionId)!;
+      sortedFamilies.push(...group);
+    }
+
+    // Apply sorted result
+    familyRootCache.splice(0, familyRootCache.length, ...sortedFamilies);
 
     // --- Layout each family and offset to avoid overlap ---
     for (const { roots, familyIds } of familyRootCache) {
@@ -418,8 +463,7 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
         const x = xMap.get(id);
         const y = yMap.get(id);
         if (x === undefined || y === undefined) continue;
-        n.member.position_x = x;
-        n.member.position_y = y;
+        allNodePositions.set(id, { x, y });
       }
     } // end for family components
 
@@ -428,11 +472,9 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
     const shiftComponent = (familyIds: string[], dx: number) => {
       if (dx === 0) return;
       for (const id of familyIds) {
-        const n = nodesMap.get(id)?.member;
-        if (!n) continue;
-
-        const nx = (n.position_x ?? 0) + dx;
-        n.position_x = nx;
+        const pos = allNodePositions.get(id);
+        if (!pos) continue;
+        pos.x += dx;
       }
     };
 
@@ -443,10 +485,10 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
       let maxY = Number.NEGATIVE_INFINITY;
 
       for (const id of familyIds) {
-        const n = nodesMap.get(id)?.member;
-        if (!n) continue;
-        const x = n.position_x ?? 0;
-        const y = n.position_y ?? 0;
+        const pos = allNodePositions.get(id);
+        if (!pos) continue;
+        const x = pos.x;
+        const y = pos.y;
         minX = Math.min(minX, x);
         maxX = Math.max(maxX, x + this.nodeWidth);
         minY = Math.min(minY, y);
@@ -468,7 +510,7 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
       };
     };
 
-    for (const familyIds of components) {
+    for (const { familyIds } of familyRootCache) {
       const bounds = getComponentBounds(familyIds);
 
       const dx = globalOffsetX - bounds.minX;
@@ -481,10 +523,12 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
     for (let i = 0; i < nodes.length; i++) {
       const n = nodesMap.get(nodes[i].id);
       if (!n) continue;
+
+      const pos = allNodePositions.get(nodes[i].id);
       nodes[i].data = n.member;
       nodes[i].position = {
-        x: n.member.position_x ?? 0,
-        y: n.member.position_y ?? 0,
+        x: pos?.x ?? nodes[i].position.x ?? 0,
+        y: pos?.y ?? nodes[i].position.y ?? 0,
       };
     }
     return { nodes: nodes, edges: edges };
@@ -497,6 +541,7 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
     const s1 = m1.sort_order ?? Number.POSITIVE_INFINITY;
     const s2 = m2.sort_order ?? Number.POSITIVE_INFINITY;
     if (s1 > 0 && s2 > 0 && s1 !== s2) return s1 - s2;
+
     const birth_date1 = m1.birth_date;
     const birth_date2 = m2.birth_date;
     if (birth_date1 && birth_date2 && birth_date1 !== birth_date2)

@@ -260,7 +260,7 @@ def create_member(db: Session, member: schemas.MemberCreate):
 
     # Create MemberPosition
     db_pos = models.MemberPosition(
-        member_id=db_member.id, family_id=db_member.family_id, x=pos_x, y=pos_y
+        member_id=db_member.id, family_id=member.family_id, x=pos_x, y=pos_y
     )
     db.add(db_pos)
 
@@ -339,30 +339,23 @@ def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
                 )
                 db_member.regions = regions
 
-        # Handle position update (default to home family)
-        pos_x = update_data.pop("position_x", None)
-        pos_y = update_data.pop("position_y", None)
-
-        if pos_x is not None or pos_y is not None:
-            pos = (
-                db.query(models.MemberPosition)
-                .filter(
-                    models.MemberPosition.member_id == member_id,
-                    models.MemberPosition.family_id == db_member.family_id,
-                )
-                .first()
-            )
-
-            if not pos:
-                pos = models.MemberPosition(
-                    member_id=member_id, family_id=db_member.family_id, x=0, y=0
-                )
-                db.add(pos)
-
-            if pos_x is not None:
-                pos.x = pos_x
-            if pos_y is not None:
-                pos.y = pos_y
+        # Handle position update (Explicitly remove them if present, though they should be handled via batch update now)
+        # But if passed here, we can update for the member's OWNING family as a default behavior,
+        # OR we can choose to ignore them to enforce using update_members_positions.
+        # Given the user requirement: "A被链接进B 调整A中节点位置，B中的A的成员也会收到影响。他们应该是独立的"
+        # We must ensure that updating a member via this endpoint (usually edit profile) does NOT overwrite positions blindly.
+        # However, `MemberUpdate` schema might still have position_x/y if the frontend sends it.
+        # Let's check if the frontend sends family_id in the update? No, it's just MemberUpdate.
+        # So we should probably DECOUPLE position update from general member info update completely.
+        # For now, let's remove position update from here to be safe, OR only update for the member's own family_id if strictly necessary.
+        # But since we have `update_members_positions` for drag-drop, let's REMOVE position updating from `update_member`
+        # to prevent accidental cross-family position pollution.
+        
+        # update_data.pop("position_x", None)
+        # update_data.pop("position_y", None)
+        # The above is redundant if we removed them from MemberUpdate schema, but safe to keep or remove.
+        # Actually I removed them from MemberUpdate schema in schemas.py, so they won't be in update_data.
+        # So I can just remove this block.
 
         for key, value in update_data.items():
             setattr(db_member, key, value)
@@ -371,7 +364,9 @@ def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
         db.refresh(db_member)
         db_member.region_ids = [r.id for r in db_member.regions]
 
-        # Refresh position
+        # Refresh position (return current family context position? or owning family?)
+        # Since this is a generic update, maybe return owning family position or 0.
+        # But `get_member` uses owning family. Let's keep consistency.
         pos = (
             db.query(models.MemberPosition)
             .filter(
@@ -389,6 +384,7 @@ def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
 def update_members_positions(
     db: Session, updates: List[schemas.MemberPositionUpdate], family_id: str
 ):
+    logger.info(f"Updating positions for family {family_id}, count: {len(updates)}")
     # Upsert positions
     for update in updates:
         pos = (
@@ -401,9 +397,11 @@ def update_members_positions(
         )
 
         if pos:
+            # logger.info(f"Updating pos for {update.id}: {update.position_x}, {update.position_y}")
             pos.x = update.position_x
             pos.y = update.position_y
         else:
+            logger.info(f"Creating pos for {update.id} in family {family_id}: {update.position_x}, {update.position_y}")
             pos = models.MemberPosition(
                 member_id=update.id,
                 family_id=family_id,
@@ -412,7 +410,16 @@ def update_members_positions(
             )
             db.add(pos)
 
-    db.commit()
+    try:
+        db.commit()
+        # Force refresh of all instances in session to ensure subsequent reads get fresh data
+        db.expire_all()
+        logger.info("Positions committed successfully")
+    except Exception as e:
+        logger.error(f"Error committing positions: {e}")
+        db.rollback()
+        raise
+        
     return True
 
 
@@ -427,12 +434,48 @@ def delete_region(db: Session, region_id: str):
 def delete_member(db: Session, member_id: str):
     db_member = db.query(models.Member).filter(models.Member.id == member_id).first()
     if db_member:
+        # Prepare response data before deletion
+        # Fetch position
+        pos = (
+            db.query(models.MemberPosition)
+            .filter(models.MemberPosition.member_id == member_id)
+            .first()
+        )
+        db_member.position_x = pos.x if pos else 0
+        db_member.position_y = pos.y if pos else 0
+        db_member.region_ids = [r.id for r in db_member.regions]
+        
+        # Create Pydantic model instance to return, ensuring it survives session commit/expiry
+        member_response = schemas.Member.model_validate(db_member)
+
+        # Check for related relationships and delete them first
+        # This is a manual cascade for safety, though database cascade should handle it.
+        # But if the DB constraints are restrictive without ON DELETE CASCADE, we must do it manually.
+        
+        # 1. Spouse Relationships
+        db.query(models.SpouseRelationship).filter(
+            or_(
+                models.SpouseRelationship.member1_id == member_id,
+                models.SpouseRelationship.member2_id == member_id
+            )
+        ).delete(synchronize_session=False)
+        
+        # 2. Parent-Child Relationships
+        db.query(models.ParentChildRelationship).filter(
+            or_(
+                models.ParentChildRelationship.parent_id == member_id,
+                models.ParentChildRelationship.child_id == member_id
+            )
+        ).delete(synchronize_session=False)
+        
+        # 3. Member Positions
+        db.query(models.MemberPosition).filter(
+            models.MemberPosition.member_id == member_id
+        ).delete(synchronize_session=False)
+
         affected_regions = list(db_member.regions)
 
         db.delete(db_member)
-        # Positions should be deleted by cascade or we rely on DB FK cascade.
-        # Since I added cascade="all, delete-orphan" to Member.positions, it should be fine.
-
         db.flush()
 
         for region in affected_regions:
@@ -445,7 +488,8 @@ def delete_member(db: Session, member_id: str):
                 db.delete(region)
 
         db.commit()
-    return db_member
+        return member_response
+    return None
 
 
 def delete_members(db: Session, member_ids: list[str]):
@@ -539,18 +583,6 @@ def delete_parent_child_relationship(db: Session, relationship_id: str):
 
 
 def get_family_graph(db: Session, family_id: str):
-    members = (
-        db.query(models.Member)
-        .filter(
-            or_(
-                models.Member.family_id == family_id,
-                models.Member.regions.any(models.Region.family_id == family_id),
-            )
-        )
-        .limit(1000)
-        .all()
-    )
-
     linked_regions = (
         db.query(models.Region)
         .filter(
@@ -562,7 +594,24 @@ def get_family_graph(db: Session, family_id: str):
     linked_family_map = {
         lr.linked_family_id: lr.id for lr in linked_regions if lr.linked_family_id
     }
+    linked_family_ids = list(linked_family_map.keys())
 
+    conditions = [
+        models.Member.family_id == family_id,
+        models.Member.regions.any(models.Region.family_id == family_id),
+    ]
+    if linked_family_ids:
+        conditions.append(models.Member.family_id.in_(linked_family_ids))
+
+    members = (
+        db.query(models.Member)
+        .filter(or_(*conditions))
+        .limit(2000)
+        .all()
+    )
+
+    logger.info(f"get_family_graph: family_id={family_id}, members={len(members)}")
+    
     # Get positions for ALL members in THIS family context
     member_ids = [m.id for m in members]
     positions = (
@@ -573,6 +622,7 @@ def get_family_graph(db: Session, family_id: str):
         )
         .all()
     )
+    logger.info(f"get_family_graph: found {len(positions)} position records for family {family_id}")
     pos_map = {p.member_id: (p.x, p.y) for p in positions}
 
     for m in members:
@@ -582,11 +632,24 @@ def get_family_graph(db: Session, family_id: str):
             rids.add(linked_family_map[m.family_id])
 
         m.region_ids = list(rids)
-
+        
         # Populate positions
-        x, y = pos_map.get(m.id, (0, 0))
-        m.position_x = x
-        m.position_y = y
+        # Explicitly filter by the requested family_id from the graph request
+        # This ensures we get the position for THIS specific family context
+        # pos_map is already built using family_id filter, so this is correct.
+        pos_tuple = pos_map.get(m.id)
+        if pos_tuple:
+            x, y = pos_tuple
+            m.position_x = x
+            m.position_y = y
+            # logger.info(f"Set position for {m.id} in family {family_id}: {x}, {y}")
+        else:
+            # IMPORTANT: If no position record exists for this family_id, default to 0,0
+            # Do NOT fallback to member.position_x/y (which are removed from model anyway)
+            # or any other family's position.
+            m.position_x = 0
+            m.position_y = 0
+            # logger.info(f"Set default position for {m.id} in family {family_id}: 0, 0")
 
     nodes = []
     member_ids_set = set()
