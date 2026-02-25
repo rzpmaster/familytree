@@ -4,6 +4,7 @@ import CreateRegionDialog from "@/components/Region/CreateRegionDialog";
 import EditRegionDialog from "@/components/Region/EditRegionDialog";
 import LinkFamilyDialog from "@/components/Region/LinkFamilyDialog";
 import RegionNode from "@/components/Region/RegionNode";
+import { FamilyContext } from "@/contexts/FamilyContext";
 import { useFamilyData } from "@/hooks/familyTree/useFamilyData";
 import { useGraphInteraction } from "@/hooks/familyTree/useGraphInteraction";
 import { useHighlighting } from "@/hooks/familyTree/useHighlighting";
@@ -14,7 +15,7 @@ import {
   createRegion,
   deleteMembers,
   deleteRegion,
-  updateMember,
+  updateMembersPositions,
   updateRegion,
 } from "@/services/api";
 import { RootState } from "@/store";
@@ -124,6 +125,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     onNodesChange,
     onEdgesChange,
   } = useGraphInteraction({
+    familyId,
     reactFlowInstance,
     nodesRef,
     edgesRef,
@@ -484,13 +486,14 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     setEdges([...layoutedEdges]);
 
     try {
-      const promises = layoutedMemberNodes.map((node) =>
-        updateMember(node.id, {
-          position_x: Math.round(node.position.x),
-          position_y: Math.round(node.position.y),
-        }),
-      );
-      await Promise.all(promises);
+      const updates = layoutedMemberNodes.map((node) => ({
+        id: node.id,
+        position_x: Math.round(node.position.x),
+        position_y: Math.round(node.position.y),
+      }));
+
+      await updateMembersPositions(familyId, updates);
+
       toast.success(
         t("family.layout_updated", { defaultValue: "Layout updated" }),
       );
@@ -689,9 +692,10 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       className="w-full h-full bg-slate-50 relative"
       ref={reactFlowWrapperRef}
     >
-      <ReactFlow
-        nodes={nodes.map((n) => ({
-          ...n,
+      <FamilyContext.Provider value={currentFamily}>
+        <ReactFlow
+          nodes={nodes.map((n) => ({
+            ...n,
           draggable: !readOnly && n.type === "member", // Only members draggable
           connectable: !readOnly && n.type === "member",
           selected: selectedNodeIds.includes(n.id),
@@ -871,6 +875,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
           </Panel>
         )}
       </ReactFlow>
+      </FamilyContext.Provider>
     </div>
   );
 };

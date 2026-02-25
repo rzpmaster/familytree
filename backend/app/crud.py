@@ -3,14 +3,15 @@ import logging
 import os
 import uuid
 from collections import Counter
-
-logger = logging.getLogger(__name__)
+from typing import List
 
 from sqlalchemy import or_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from . import models, schemas
+
+logger = logging.getLogger(__name__)
 
 
 def generate_uuid():
@@ -243,6 +244,10 @@ def create_member(db: Session, member: schemas.MemberCreate):
     # Extract region_ids from the Pydantic model
     member_data = member.model_dump()
     region_ids = member_data.pop("region_ids", [])
+    
+    # Extract position data
+    pos_x = member_data.pop("position_x", 0)
+    pos_y = member_data.pop("position_y", 0)
 
     db_member = models.Member(**member_data)
 
@@ -251,32 +256,52 @@ def create_member(db: Session, member: schemas.MemberCreate):
         db_member.regions = regions
 
     db.add(db_member)
+    db.flush() # Flush to get ID
+    
+    # Create MemberPosition
+    db_pos = models.MemberPosition(
+        member_id=db_member.id,
+        family_id=db_member.family_id,
+        x=pos_x,
+        y=pos_y
+    )
+    db.add(db_pos)
+    
     db.commit()
     db.refresh(db_member)
 
-    # Manually populate region_ids for response schema if not using relationship loading option
-    # However, Pydantic's from_attributes usually handles relationships if mapped.
-    # But here Member schema has `region_ids: List[str]`.
-    # We need to ensure the response model can extract `region_ids` from `db_member.regions`.
-    # This might require a custom validator or property in the Pydantic model, OR we adjust the response manually.
-    # Or better, we add a property to the ORM model (not persistent) or just let Pydantic handle it if we modify the schema to use `regions` list of objects.
-    # Given the schema change `region_ids: Optional[List[str]]`, we need to make sure `db_member` has `region_ids` attribute.
+    # Manually populate region_ids
     db_member.region_ids = [r.id for r in db_member.regions]
+    
+    # Manually populate position
+    db_member.position_x = pos_x
+    db_member.position_y = pos_y
 
     return db_member
 
 
 def get_members(db: Session, family_id: str, skip: int = 0, limit: int = 100):
-    members = (
-        db.query(models.Member)
+    # Join with MemberPosition to get positions for this family
+    results = (
+        db.query(models.Member, models.MemberPosition)
+        .outerjoin(
+            models.MemberPosition,
+            (models.MemberPosition.member_id == models.Member.id) & 
+            (models.MemberPosition.family_id == family_id)
+        )
         .filter(models.Member.family_id == family_id)
         .offset(skip)
         .limit(limit)
         .all()
     )
-    # Populate region_ids for each member
-    for m in members:
+    
+    members = []
+    for m, p in results:
         m.region_ids = [r.id for r in m.regions]
+        m.position_x = p.x if p else 0
+        m.position_y = p.y if p else 0
+        members.append(m)
+        
     return members
 
 
@@ -284,13 +309,23 @@ def get_member(db: Session, member_id: str):
     member = db.query(models.Member).filter(models.Member.id == member_id).first()
     if member:
         member.region_ids = [r.id for r in member.regions]
+        
+        # Get position for the member's home family by default
+        pos = db.query(models.MemberPosition).filter(
+            models.MemberPosition.member_id == member_id,
+            models.MemberPosition.family_id == member.family_id
+        ).first()
+        
+        member.position_x = pos.x if pos else 0
+        member.position_y = pos.y if pos else 0
+        
     return member
 
 
 def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
     db_member = (
         db.query(models.Member).filter(models.Member.id == member_id).first()
-    )  # Avoid calling get_member to prevent recursion or attribute issues
+    )
     if db_member:
         update_data = member.model_dump(exclude_unset=True)
 
@@ -304,6 +339,29 @@ def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
                     .all()
                 )
                 db_member.regions = regions
+        
+        # Handle position update (default to home family)
+        pos_x = update_data.pop("position_x", None)
+        pos_y = update_data.pop("position_y", None)
+        
+        if pos_x is not None or pos_y is not None:
+            pos = db.query(models.MemberPosition).filter(
+                models.MemberPosition.member_id == member_id,
+                models.MemberPosition.family_id == db_member.family_id
+            ).first()
+            
+            if not pos:
+                pos = models.MemberPosition(
+                    member_id=member_id,
+                    family_id=db_member.family_id,
+                    x=0, y=0
+                )
+                db.add(pos)
+                
+            if pos_x is not None:
+                pos.x = pos_x
+            if pos_y is not None:
+                pos.y = pos_y
 
         for key, value in update_data.items():
             setattr(db_member, key, value)
@@ -311,16 +369,45 @@ def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
         db.commit()
         db.refresh(db_member)
         db_member.region_ids = [r.id for r in db_member.regions]
+        
+        # Refresh position
+        pos = db.query(models.MemberPosition).filter(
+            models.MemberPosition.member_id == member_id,
+            models.MemberPosition.family_id == db_member.family_id
+        ).first()
+        db_member.position_x = pos.x if pos else 0
+        db_member.position_y = pos.y if pos else 0
 
     return db_member
+
+
+def update_members_positions(db: Session, updates: List[schemas.MemberPositionUpdate], family_id: str):
+    # Upsert positions
+    for update in updates:
+        pos = db.query(models.MemberPosition).filter(
+            models.MemberPosition.member_id == update.id,
+            models.MemberPosition.family_id == family_id
+        ).first()
+        
+        if pos:
+            pos.x = update.position_x
+            pos.y = update.position_y
+        else:
+            pos = models.MemberPosition(
+                member_id=update.id,
+                family_id=family_id,
+                x=update.position_x,
+                y=update.position_y
+            )
+            db.add(pos)
+            
+    db.commit()
+    return True
 
 
 def delete_region(db: Session, region_id: str):
     db_region = db.query(models.Region).filter(models.Region.id == region_id).first()
     if db_region:
-        # Many-to-many relationship handles deletion from association table automatically usually,
-        # but let's be safe. The association table rows are deleted, but members remain.
-        # We don't need to manually update members because the link is in the association table.
         db.delete(db_region)
         db.commit()
     return db_region
@@ -329,21 +416,15 @@ def delete_region(db: Session, region_id: str):
 def delete_member(db: Session, member_id: str):
     db_member = db.query(models.Member).filter(models.Member.id == member_id).first()
     if db_member:
-        # Check affected regions before deletion?
-        # With many-to-many, we might want to delete a region if it becomes empty?
-        # Logic: Find regions this member belongs to.
         affected_regions = list(db_member.regions)
 
         db.delete(db_member)
+        # Positions should be deleted by cascade or we rely on DB FK cascade.
+        # Since I added cascade="all, delete-orphan" to Member.positions, it should be fine.
+        
         db.flush()
 
-        # Check if any affected region is now empty
         for region in affected_regions:
-            # We need to count members in this region.
-            # Since we are in a transaction and flushed, the count should reflect deletion.
-            # But we need to query via association table.
-            # count = len(region.members) # This might use cached relationship
-            # Better to use query
             count = (
                 db.query(models.member_regions)
                 .filter(models.member_regions.c.region_id == region.id)
@@ -357,24 +438,20 @@ def delete_member(db: Session, member_id: str):
 
 
 def delete_members(db: Session, member_ids: list[str]):
-    # Get all members to find their regions
     members = db.query(models.Member).filter(models.Member.id.in_(member_ids)).all()
     if not members:
         return []
 
-    # Collect affected regions
     affected_regions = set()
     for m in members:
         for r in m.regions:
             affected_regions.add(r)
 
-    # Delete members
     for member in members:
         db.delete(member)
 
-    db.flush()  # Apply deletions in transaction
+    db.flush()
 
-    # Check affected regions
     for region in affected_regions:
         count = (
             db.query(models.member_regions)
@@ -451,8 +528,6 @@ def delete_parent_child_relationship(db: Session, relationship_id: str):
 
 
 def get_family_graph(db: Session, family_id: str):
-    # members = get_members(db, family_id, limit=1000)
-    # Include linked members that belong to regions of this family
     members = (
         db.query(models.Member)
         .filter(
@@ -465,8 +540,6 @@ def get_family_graph(db: Session, family_id: str):
         .all()
     )
 
-    # Populate region_ids for each member manually as we bypassed get_members
-    # Also handle implicit linked regions
     linked_regions = (
         db.query(models.Region)
         .filter(
@@ -478,23 +551,32 @@ def get_family_graph(db: Session, family_id: str):
     linked_family_map = {
         lr.linked_family_id: lr.id for lr in linked_regions if lr.linked_family_id
     }
+    
+    # Get positions for ALL members in THIS family context
+    member_ids = [m.id for m in members]
+    positions = db.query(models.MemberPosition).filter(
+        models.MemberPosition.member_id.in_(member_ids),
+        models.MemberPosition.family_id == family_id
+    ).all()
+    pos_map = {p.member_id: (p.x, p.y) for p in positions}
 
     for m in members:
-        # Start with explicit regions
         rids = {r.id for r in m.regions}
 
-        # Add implicit linked region if applicable
-        # If the member belongs to a family that is linked by one of our regions,
-        # they are implicitly part of that region.
         if m.family_id and m.family_id in linked_family_map:
             rids.add(linked_family_map[m.family_id])
 
         m.region_ids = list(rids)
+        
+        # Populate positions
+        x, y = pos_map.get(m.id, (0, 0))
+        m.position_x = x
+        m.position_y = y
 
     nodes = []
-    member_ids = set()
+    member_ids_set = set()
     for m in members:
-        member_ids.add(m.id)
+        member_ids_set.add(m.id)
         nodes.append(
             schemas.GraphNode(
                 id=m.id,
@@ -507,24 +589,17 @@ def get_family_graph(db: Session, family_id: str):
         )
 
     edges = []
-    # Spouses
-    # Optimized: Filter relationships by member IDs in SQL if possible, but for now filter in python
-    # Ideally we should query relationships belonging to this family (via member -> family_id)
-    # But current relationship tables don't have family_id directly.
-    # We can join or just query all and filter (slow for large db, ok for demo).
-    # Better: Query relationships where member1_id IN member_ids
-
     spouses = (
         db.query(models.SpouseRelationship)
         .filter(
-            (models.SpouseRelationship.member1_id.in_(member_ids))
-            | (models.SpouseRelationship.member2_id.in_(member_ids))
+            (models.SpouseRelationship.member1_id.in_(member_ids_set))
+            | (models.SpouseRelationship.member2_id.in_(member_ids_set))
         )
         .all()
     )
 
     for s in spouses:
-        if s.member1_id in member_ids or s.member2_id in member_ids:
+        if s.member1_id in member_ids_set or s.member2_id in member_ids_set:
             edges.append(
                 schemas.GraphEdge(
                     id=s.id,
@@ -535,18 +610,17 @@ def get_family_graph(db: Session, family_id: str):
                 )
             )
 
-    # Parent-Child
     parent_child = (
         db.query(models.ParentChildRelationship)
         .filter(
-            (models.ParentChildRelationship.parent_id.in_(member_ids))
-            | (models.ParentChildRelationship.child_id.in_(member_ids))
+            (models.ParentChildRelationship.parent_id.in_(member_ids_set))
+            | (models.ParentChildRelationship.child_id.in_(member_ids_set))
         )
         .all()
     )
 
     for pc in parent_child:
-        if pc.parent_id in member_ids or pc.child_id in member_ids:
+        if pc.parent_id in member_ids_set or pc.child_id in member_ids_set:
             edges.append(
                 schemas.GraphEdge(
                     id=pc.id,
@@ -557,7 +631,6 @@ def get_family_graph(db: Session, family_id: str):
                 )
             )
 
-    # Regions
     regions = db.query(models.Region).filter(models.Region.family_id == family_id).all()
 
     return schemas.GraphData(nodes=nodes, edges=edges, regions=regions)
@@ -576,7 +649,6 @@ def import_family_from_preset(db: Session, key: str, user_id: str):
 
     file_path = os.path.join(os.path.dirname(__file__), "historicol_data", filename)
 
-    # 1) Read JSON
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -587,20 +659,16 @@ def import_family_from_preset(db: Session, key: str, user_id: str):
         logger.error(f"Invalid JSON in preset file: {file_path}, error: {e}")
         return None
 
-    # 2) Override user_id (do not trust preset)
     if not isinstance(data, dict):
         logger.error(f"Preset JSON root must be an object/dict: {file_path}")
         return None
     data["user_id"] = user_id
 
-    # 3) Validate schema (missing property will raise)
     import_data = schemas.FamilyImport.model_validate(data)
 
-    # 4) Call import_family (it already manages transaction via db.begin())
     try:
         return import_family(db, import_data)
     except Exception as e:
-        # Non-DB unexpected errors
         try:
             db.rollback()
         except Exception:
@@ -612,11 +680,7 @@ def import_family_from_preset(db: Session, key: str, user_id: str):
 def import_family(db: Session, import_data: schemas.FamilyImport):
     try:
         logger.info("Starting import_family")
-        with db.begin():  # 事务：成功一次性提交，失败自动回滚
-            # 0. Identify Source Family ID
-            # We assume the most frequent family_id in the members list is the source family ID.
-            # Members belonging to this ID should be CLONED (new members created).
-            # Members belonging to OTHER IDs should be LINKED (if they exist).
+        with db.begin():
             family_ids = [m.family_id for m in import_data.members if m.family_id]
             source_family_id = None
             if family_ids:
@@ -629,11 +693,11 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
             ).model_dump()
             db_family = models.Family(**family_data)
             db.add(db_family)
-            db.flush()  # Ensure ID is generated
+            db.flush()
             logger.info(f"Created family: {db_family.id}")
 
             # 2. Create Regions & Map IDs
-            region_id_map: dict[str, str] = {}  # original_id -> new_db_id
+            region_id_map: dict[str, str] = {}
 
             if import_data.regions:
                 for r in import_data.regions:
@@ -645,15 +709,14 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                         linked_family_id=r.linked_family_id,
                     )
                     db.add(db_region)
-                    db.flush()  # 拿到 db_region.id，不 commit
+                    db.flush()
                     if r.original_id:
                         region_id_map[r.original_id.strip()] = db_region.id
 
             logger.info(f"Created {len(region_id_map)} regions")
 
             # 3. Create Members & Map IDs
-            id_map: dict[str, str] = {}  # original_id -> new_db_id
-            # Helper to resolve ID (reused later)
+            id_map: dict[str, str] = {}
             resolved_ids_cache = {}
 
             def resolve_id(original_id):
@@ -681,7 +744,6 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
 
             for m in import_data.members:
                 new_region_ids = []
-                # Handle multiple region IDs if present, fallback to singular region_id for backward compatibility
                 m_rids = []
                 if hasattr(m, "region_ids") and m.region_ids:
                     m_rids = m.region_ids
@@ -693,23 +755,17 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                     if rid_strip and rid_strip in region_id_map:
                         new_region_ids.append(region_id_map[rid_strip])
 
-                # Determine if we should LINK or CLONE
                 should_link = False
                 if m.family_id and source_family_id:
                     if m.family_id != source_family_id:
                         should_link = True
                 elif m.family_id is None:
-                    # Fallback: if no family_id, assume clone unless explicitly handled?
-                    # Or maybe assume clone.
                     should_link = False
 
-                # Check if member already exists (linked member)
                 existing_member_id = None
                 if should_link:
                     existing_member_id = resolve_id(m.original_id)
 
-                    # If it's a linked member but NOT found in DB, skip it!
-                    # Do NOT create it as a new member in the current family.
                     if not existing_member_id:
                         logger.info(
                             f"External member {m.original_id} (Family: {m.family_id}) not found in DB. Skipping."
@@ -720,8 +776,6 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                     logger.info(
                         f"Member exists and is EXTERNAL: {existing_member_id}. Linking..."
                     )
-                    # Member exists (likely from a linked family)
-                    # We update their regions to include the newly imported regions
                     db_member = (
                         db.query(models.Member)
                         .filter(models.Member.id == existing_member_id)
@@ -729,7 +783,6 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                     )
 
                     if db_member:
-                        # 1. Add to explicitly linked regions (from region_ids)
                         regions_to_add = set()
                         if new_region_ids:
                             regions_from_ids = (
@@ -740,24 +793,16 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                             for r in regions_from_ids:
                                 regions_to_add.add(r)
 
-                        # 2. Auto-link to Linked Family Regions
-                        # If the member belongs to a family that corresponds to one of our new linked regions, add them!
-                        # This handles the case where export data has empty region_ids for linked members.
                         if db_member.family_id:
-                            # Find any new region that links to this member's family
                             linked_regions = (
                                 db.query(models.Region)
                                 .filter(
-                                    models.Region.family_id
-                                    == db_family.id,  # Belongs to current family
-                                    models.Region.linked_family_id
-                                    == db_member.family_id,
+                                    models.Region.family_id == db_family.id,
+                                    models.Region.linked_family_id == db_member.family_id,
                                 )
                                 .all()
                             )
 
-                            # Note: linked_regions might be empty if not yet flushed or committed?
-                            # They were added and flushed in step 2. So they should be queryable in same transaction.
                             for lr in linked_regions:
                                 regions_to_add.add(lr)
                                 logger.info(
@@ -775,18 +820,25 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                                     updated = True
 
                             if updated:
-                                db.add(
-                                    db_member
-                                )  # Force add to session to ensure dirty state
-                                logger.info(
-                                    f"Regions updated for {existing_member_id}"
-                                )
-                        else:
-                            logger.debug(
-                                f"No new regions for existing member {existing_member_id}"
+                                db.add(db_member)
+                                logger.info(f"Regions updated for {existing_member_id}")
+                                
+                        # Also create MemberPosition for this family context!
+                        # The linked member appears in this family's graph.
+                        pos = db.query(models.MemberPosition).filter(
+                            models.MemberPosition.member_id == existing_member_id,
+                            models.MemberPosition.family_id == db_family.id
+                        ).first()
+                        
+                        if not pos:
+                            pos = models.MemberPosition(
+                                member_id=existing_member_id,
+                                family_id=db_family.id,
+                                x=m.position_x,
+                                y=m.position_y
                             )
-
-                    # We map the ID but do not create a new member
+                            db.add(pos)
+                        
                     id_map[m.original_id] = existing_member_id
                     continue
 
@@ -808,8 +860,11 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                     region_ids=new_region_ids,
                 ).model_dump()
 
-                # Extract region_ids for many-to-many assignment
                 r_ids = member_data.pop("region_ids", [])
+                
+                pos_x = member_data.pop("position_x", 0)
+                pos_y = member_data.pop("position_y", 0)
+                
                 db_member = models.Member(**member_data)
 
                 if r_ids:
@@ -822,6 +877,16 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
 
                 db.add(db_member)
                 db.flush()
+                
+                # Create MemberPosition
+                db_pos = models.MemberPosition(
+                    member_id=db_member.id,
+                    family_id=db_family.id,
+                    x=pos_x,
+                    y=pos_y
+                )
+                db.add(db_pos)
+                
                 id_map[m.original_id] = db_member.id
 
             logger.info(f"Processed {len(import_data.members)} members")
@@ -832,11 +897,6 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                 b = resolve_id(s.member2_original_id)
 
                 if a and b:
-                    # Check if relationship already exists
-                    # We check both (a, b) and (b, a) to be safe, though constraint is usually on specific pair
-                    # But if we treat spouse as undirected, we should check both.
-                    # Based on UniqueConstraint("member1_id", "member2_id"), it's directed in DB schema.
-                    # But let's assume we don't want to duplicate if (a,b) exists.
                     exists_rel = (
                         db.query(models.SpouseRelationship)
                         .filter(
@@ -847,7 +907,6 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                     )
 
                     if not exists_rel:
-                        # Try reverse too if model logic implies undirected uniqueness (optional but safe)
                         exists_reverse = (
                             db.query(models.SpouseRelationship)
                             .filter(
@@ -878,7 +937,6 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                 c = resolve_id(pc.child_original_id)
 
                 if p and c:
-                    # Check existence
                     exists_pc = (
                         db.query(models.ParentChildRelationship)
                         .filter(
@@ -903,18 +961,12 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                             f"Parent-Child relationship already exists: {p} -> {c}"
                         )
 
-            # 刷新 family（可选）
-            # 注意：在 db.begin() 块内，flush 是可以将变更发送到数据库的。
-            # refresh 通常用于重新加载数据。
             db.flush()
-            # db.refresh(db_family) # 在 begin() 块内 refresh 是安全的
-
             logger.info("Import completed successfully")
             return db_family
 
     except SQLAlchemyError as e:
         logger.error(f"SQLAlchemyError in import_family: {e}")
-        # 事务上下文会自动 rollback，这里抛出让上层处理
         raise
     except Exception as e:
         logger.error(f"Unexpected error in import_family: {e}")

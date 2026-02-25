@@ -186,6 +186,18 @@ class MemberBatchDelete(BaseModel):
     member_ids: List[str]
 
 
+class MemberPositionUpdate(BaseModel):
+    id: str
+    position_x: int
+    position_y: int
+
+
+class MemberBatchUpdate(BaseModel):
+    family_id: str
+    updates: List[MemberPositionUpdate]
+
+
+
 class Member(MemberBase):
     id: str
     family_id: str

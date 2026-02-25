@@ -137,8 +137,7 @@ class Member(Base):
     remark = Column(String, nullable=True)
     birth_place = Column(String, nullable=True)
     photo_url = Column(String, nullable=True)
-    position_x = Column(Integer, default=0)
-    position_y = Column(Integer, default=0)
+    # position_x and position_y moved to MemberPosition table
     sort_order = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
@@ -149,6 +148,7 @@ class Member(Base):
     regions = relationship(
         "Region", secondary=member_regions, back_populates="members"
     )
+    positions = relationship("MemberPosition", back_populates="member", cascade="all, delete-orphan")
 
     # Relationships where this member is member1 (spouse)
     spouse_relationships_1 = relationship(
@@ -222,4 +222,25 @@ class ParentChildRelationship(Base):
         UniqueConstraint(
             "parent_id", "child_id", "relationship_type", name="unique_parent_child"
         ),
+    )
+
+
+class MemberPosition(Base):
+    __tablename__ = "member_positions"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    member_id = Column(String, ForeignKey("members.id"), nullable=False)
+    family_id = Column(String, ForeignKey("families.id"), nullable=False)
+    x = Column(Integer, default=0)
+    y = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), onupdate=func.now(), server_default=func.now()
+    )
+
+    member = relationship("Member", back_populates="positions")
+    family = relationship("Family")
+
+    __table_args__ = (
+        UniqueConstraint("member_id", "family_id", name="unique_member_position_per_family"),
     )

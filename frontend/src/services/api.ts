@@ -42,6 +42,17 @@ export const updateMember = async (id: string, member: Partial<Member>) => {
   return response.data;
 };
 
+export const updateMembersPositions = async (
+  familyId: string,
+  updates: { id: string; position_x: number; position_y: number }[],
+) => {
+  const response = await api.put("/members/batch/positions", {
+    family_id: familyId,
+    updates,
+  });
+  return response.data;
+};
+
 export const deleteMember = async (id: string) => {
   const response = await api.delete(`/members/${id}`);
   return response.data;
@@ -127,13 +138,6 @@ export const getFamilyName = async (familyId: string) => {
   }
 };
 
-export const getFamily = async (familyId: string, userId?: string) => {
-  const url = userId
-    ? `/families/${familyId}?user_id=${userId}`
-    : `/families/${familyId}`;
-  const response = await api.get<Family>(url);
-  return response.data;
-};
 export const getFamilies = async (userId?: string) => {
   // If userId is provided, we might want to filter.
   // Currently backend reads user_id from query param to filter for My Families + Shared.
