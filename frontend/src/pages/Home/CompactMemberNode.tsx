@@ -115,38 +115,38 @@ const CompactMemberNode = memo((props: MemberNodeDisplayProps) => {
       <Handle
         type="target"
         position={Position.Top}
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+        className="!z-[60] !w-3 !h-3 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
       />
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
+        className="!z-[60] !w-3 !h-3 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity"
       />
 
       <Handle
         type="source"
         position={Position.Right}
         id="right-source"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
+        className="!z-[60] !w-3 !h-3 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
       <Handle
         type="target"
         position={Position.Right}
         id="right-target"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
+        className="!z-[60] !w-3 !h-3 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
 
       <Handle
         type="source"
         position={Position.Left}
         id="left-source"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
+        className="!z-[60] !w-3 !h-3 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
       <Handle
         type="target"
         position={Position.Left}
         id="left-target"
-        className="!z-[60] !w-4 !h-4 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
+        className="!z-[60] !w-3 !h-3 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
       />
     </div>
   );

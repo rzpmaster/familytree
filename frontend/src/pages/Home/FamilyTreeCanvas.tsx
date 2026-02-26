@@ -667,7 +667,9 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     setNodes((nds) =>
       nds.map((n) => {
         if (n.type === "region") return n;
-        return { ...n, zIndex: undefined };
+        // Restore base zIndex if available, otherwise undefined
+        const baseZIndex = (n.data)?.baseZIndex;
+        return { ...n, zIndex: baseZIndex ?? undefined };
       }),
     );
   }, [setNodes]);

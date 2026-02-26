@@ -19,6 +19,7 @@ function applyHighlightPure(
     return {
       nodes: currentNodes.map((n) => ({
         ...n,
+        zIndex: (n.data as any)?.baseZIndex ?? n.zIndex,
         // Sync 'selected' state
         selected: safeSelectedNIds.includes(n.id),
         style: { ...n.style, opacity: 1 },
@@ -95,6 +96,11 @@ function applyHighlightPure(
 
   const newNodes = currentNodes.map((node) => ({
     ...node,
+    // Restore base zIndex if not overridden by selection or hover logic in Canvas
+    // However, canvas logic is imperative via setNodes. 
+    // This pure function returns NEW objects.
+    // We must preserve zIndex from 'node' if it exists.
+    zIndex: (node.data as any)?.baseZIndex ?? node.zIndex, 
     selected: safeSelectedNIds.includes(node.id),
     style: {
       ...node.style,
