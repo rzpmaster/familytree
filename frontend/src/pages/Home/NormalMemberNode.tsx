@@ -216,14 +216,12 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
         position={Position.Right}
         id="right-source"
         className="!z-[60] !w-3 !h-3 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
-        style={{ top: "50%", transform: "translate(50%, -50%)" }}
       />
       <Handle
         type="target"
         position={Position.Right}
         id="right-target"
         className="!z-[60] !w-3 !h-3 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
-        style={{ top: "50%", transform: "translate(50%, -50%)" }}
       />
 
       <Handle
@@ -231,14 +229,12 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
         position={Position.Left}
         id="left-source"
         className="!z-[60] !w-3 !h-3 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
-        style={{ top: "50%", transform: "translate(-50%, -50%)" }}
       />
       <Handle
         type="target"
         position={Position.Left}
         id="left-target"
         className="!z-[60] !w-3 !h-3 !border-2 !opacity-0 group-hover:!opacity-100 transition-opacity !bg-pink-500"
-        style={{ top: "50%", transform: "translate(-50%, -50%)" }}
       />
     </div>
   );
