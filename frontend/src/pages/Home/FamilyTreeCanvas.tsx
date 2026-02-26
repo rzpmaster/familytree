@@ -513,6 +513,9 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       );
       // Refresh to update regions
       fetchData();
+      setTimeout(() => {
+        reactFlowInstance.current?.fitView({ duration: 800 });
+      }, 100);
     } catch (e) {
       console.error("Failed to save layout", e);
       toast.error("Failed to save layout");

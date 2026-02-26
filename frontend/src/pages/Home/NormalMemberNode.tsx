@@ -18,10 +18,12 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
     isMale,
     canDelete,
     onDelete,
+    dimDeceased,
   } = props;
 
   const { t } = useTranslation();
   const isDeceased = status === "deceased";
+  const isDeceasedStyle = isDeceased && dimDeceased;
   const GenderIcon = isMale ? Mars : Venus;
 
   // Format birth and death dates for compact display
@@ -41,17 +43,50 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
   const deathYear = data.death_date ? getDisplayYear(data.death_date) : "";
   const timeline = `${birthYear} - ${isDeceased ? (deathYear || "?") : ""}`;
 
+  // Visual styles for NormalMemberNode
+  const containerBorder = selected
+    ? "border-blue-500 shadow-xl"
+    : isDeceasedStyle
+      ? "border-slate-300"
+      : "border-gray-200";
+
+  const containerBg = isDeceasedStyle
+    ? "bg-slate-50"
+    : isDeceased
+      ? "bg-slate-50" // Subtle gray bg for undimmed deceased
+      : "bg-white";
+
+  const headerBg = !isDeceasedStyle
+    ? isDeceased
+      ? isMale
+        ? "bg-blue-50 border-blue-100" // Lighter than living
+        : "bg-pink-50 border-pink-100"
+      : isMale
+        ? "bg-blue-100 border-blue-200" // Standard living header
+        : "bg-pink-100 border-pink-200"
+    : "bg-slate-100 border-slate-200";
+
+  const headerIconColor = !isDeceasedStyle
+    ? isDeceased
+      ? isMale
+        ? "text-blue-500" // Slightly muted compared to living
+        : "text-pink-500"
+      : isMale
+        ? "text-blue-700" // Standard living color
+        : "text-pink-700"
+    : "text-slate-400";
+
   return (
     <div
       style={{ width, height }}
       className={cn(
-        "shadow-md rounded-lg border-2 transition-all relative group flex flex-col overflow-hidden bg-white",
-        selected ? "border-blue-500 shadow-xl" : "border-gray-200",
+        "shadow-md rounded-lg border-2 transition-all relative group flex flex-col overflow-hidden",
+        containerBorder,
         isMale ? "hover:border-blue-300" : "hover:border-pink-300",
         data.is_fuzzy
           ? "border-dashed border-2 border-slate-500 bg-slate-100"
           : "border-solid",
-        isDeceased && "bg-slate-50",
+        containerBg,
         opacityClass,
       )}
     >
@@ -70,11 +105,7 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
       <div
         className={cn(
           "px-2 py-1.5 border-b flex justify-between items-center shrink-0 h-9 z-10",
-          !isDeceased
-            ? isMale
-              ? "bg-blue-100 border-blue-200"
-              : "bg-pink-100 border-pink-200"
-            : "bg-slate-100 border-slate-200",
+          headerBg,
         )}
       >
         <div className="flex items-center gap-1.5 overflow-hidden w-full">
@@ -90,16 +121,14 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
             size={14}
             className={cn(
               "shrink-0",
-              !isDeceased
-                ? (isMale ? "text-blue-600" : "text-pink-600")
-                : "text-slate-400"
+              headerIconColor,
             )}
           />
 
           <span
             className={cn(
               "font-bold text-sm truncate flex-1",
-              isDeceased ? "text-slate-500" : "text-gray-800"
+              isDeceasedStyle ? "text-gray-600" : "text-gray-800"
             )}
             title={data.name}
           >
@@ -116,16 +145,17 @@ const NormalMemberNode = memo((props: MemberNodeDisplayProps) => {
       {/* Content Body - White background by default */}
       <div className={cn(
         "flex flex-1 p-2 gap-2 overflow-hidden z-10 relative",
-        isDeceased ? "bg-slate-50/50" : "bg-white/50"
+        isDeceasedStyle ? "bg-slate-50/50" : "bg-white/50"
       )}>
         
         {/* Left: Avatar / Photo */}
         <div className="shrink-0 z-10">
           <div className={cn(
             "w-12 h-12 rounded-full flex items-center justify-center overflow-hidden border bg-white shadow-sm",
-            !isDeceased 
+            !isDeceasedStyle 
               ? (isMale ? "border-blue-100" : "border-pink-100")
-              : "border-slate-200 grayscale", // Grayscale for deceased
+              : "border-slate-200", 
+            isDeceasedStyle && "grayscale", // Grayscale for deceased only if style applied
             data.photo_url ? "border-0" : ""
           )}>
             {data.photo_url ? (

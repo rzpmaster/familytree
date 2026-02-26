@@ -29,6 +29,7 @@ export interface MemberNodeDisplayProps {
   isMale: boolean;
   canDelete: boolean;
   onDelete: (e: React.MouseEvent) => void;
+  dimDeceased?: boolean;
 }
 
 const MemberNode = memo(({ data, selected }: NodeProps<Member>) => {
@@ -82,7 +83,9 @@ const MemberNode = memo(({ data, selected }: NodeProps<Member>) => {
     if (!showNotLiving || !showDeceased) {
       opacityClass = "opacity-0 pointer-events-none";
     } else if (dimDeceased) {
-      opacityClass = "opacity-60 grayscale";
+      // Remove opacity-60 and grayscale here, as we handle visual dimming inside components now
+      // to keep text readable.
+      opacityClass = "";
     }
   } else if (status === "unborn") {
     if (!showNotLiving || !showUnborn) {
@@ -114,6 +117,7 @@ const MemberNode = memo(({ data, selected }: NodeProps<Member>) => {
     isMale,
     canDelete,
     onDelete,
+    dimDeceased,
   };
 
   return compactMode ? (
