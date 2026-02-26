@@ -45,7 +45,7 @@ export default {
       no_user_found: "未找到用户信息，已自动创建或请联系管理员。"
     },
     family: {
-      management: "家谱管理",
+      management: "家谱",
       select: "选择家谱",
       create_new: "创建新家谱",
       name: "家谱名称",
@@ -107,6 +107,10 @@ export default {
     },
     member: {
       add: "添加成员",
+      batch_edit: "批量编辑",
+      batch_edit_title: "批量编辑成员",
+      save_success: "保存成功",
+      save_failed: "保存失败",
       add_failed: "添加成员失败",
       details: "成员详情",
       name: "姓名",
@@ -162,16 +166,16 @@ export default {
       display: "显示设置",
       privacy_mode: "隐私模式",
       privacy_mode_desc: "节点上只显示姓氏",
-      
+
       show_living: "显示在世成员",
       show_living_desc: "显示当前在世的成员",
-      
+
       show_not_living: "显示不在世成员",
       show_not_living_desc: "包含已逝世和未出生的成员",
-      
+
       show_deceased: "显示已逝世",
       dim_deceased: "淡显已逝世",
-      
+
       show_unborn: "显示未出生",
       dim_unborn: "淡显未出生",
 
@@ -197,6 +201,15 @@ export default {
       confirm_delete_user: "确定要删除用户“{{name}}”吗？",
       no_users_found: "未找到匹配的用户",
       search_placeholder: "搜索姓名或邮箱...",
+      search_family_placeholder: "搜索家谱名称或ID...",
+      users: "用户",
+      families: "家谱",
+      load_families_failed: "加载家谱失败",
+      no_families_found: "未找到匹配的家谱",
+      delete_family: "删除家谱",
+      confirm_delete_family: "确定要删除家谱“{{name}}”吗？",
+      family_deleted: "家谱已删除",
+      delete_family_failed: "删除家谱失败",
       showing: "显示",
       to: "至",
       of: "共",

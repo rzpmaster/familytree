@@ -1,3 +1,4 @@
+import BatchEditMemberDialog from "@/components/BatchEditMemberDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import FamilyManager from "@/components/FamilyManager";
 import CreateRegionDialog from "@/components/Region/CreateRegionDialog";
@@ -30,7 +31,7 @@ import {
   NormalLayoutStrategy,
 } from "@/strategies/layout/RecursiveFamilyLayoutStrategy";
 import { Family, GraphEdge, Member, Region, RegionState } from "@/types";
-import { Focus, Layout, Link, Plus } from "lucide-react";
+import { Edit, Focus, Layout, Link, Plus } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -182,6 +183,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   const [createRegionDialogOpen, setCreateRegionDialogOpen] = useState(false);
   const [linkFamilyDialogOpen, setLinkFamilyDialogOpen] = useState(false);
   const [editRegionDialogOpen, setEditRegionDialogOpen] = useState(false);
+  const [batchEditDialogOpen, setBatchEditDialogOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteMembersConfirmOpen, setDeleteMembersConfirmOpen] =
     useState(false);
@@ -197,7 +199,19 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
   );
 
   const allMembers = useMemo(
-    () => nodes.filter((n) => n.type === "member").map((n) => n.data as Member),
+    () =>
+      nodes
+        .filter((n) => n.type === "member")
+        .sort((a, b) => {
+          // Sort by Y (generation) then X (order)
+          // Use a threshold for Y to group same generation
+          const yDiff = a.position.y - b.position.y;
+          if (Math.abs(yDiff) < 50) {
+            return a.position.x - b.position.x;
+          }
+          return yDiff;
+        })
+        .map((n) => n.data as Member),
     [nodes],
   );
 
@@ -749,6 +763,13 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
             selectedCount={selectedMembers.length}
           />
 
+          <BatchEditMemberDialog
+            isOpen={batchEditDialogOpen}
+            onClose={() => setBatchEditDialogOpen(false)}
+            members={allMembers}
+            onUpdate={fetchData}
+          />
+
           <LinkFamilyDialog
             isOpen={linkFamilyDialogOpen}
             currentFamilyId={familyId}
@@ -804,48 +825,58 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
                 onSelectFamily={onSelectFamily}
                 onFamilyCreated={onFamilyCreated}
               />
-
-              {!readOnly && onAddMember && (
+            </div>
+          </Panel>
+          <Panel position="top-right" className="flex flex-col items-end gap-2">
+            <div className="flex gap-2">
+              {!readOnly && (
+                <button
+                  onClick={handleLinkFamily}
+                  className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
+                  title={t("family.link_family", { defaultValue: "Link Family" })}
+                >
+                  <Link size={16} />
+                  {t("family.link_family", { defaultValue: "Link Family" })}
+                </button>
+              )}
+              <button
+                onClick={handleCenterView}
+                className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
+                title={t("family.center_view", { defaultValue: "Center View" })}
+              >
+                <Focus size={16} />
+                {t("family.center_view", { defaultValue: "Center View" })}
+              </button>
+              {!readOnly && (
+                <button
+                  onClick={handleAutoLayout}
+                  className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
+                  title={t("family.auto_layout", { defaultValue: "Auto Layout" })}
+                >
+                  <Layout size={16} />
+                  {t("family.auto_layout", { defaultValue: "Auto Layout" })}
+                </button>
+              )}
+            </div>
+            {!readOnly && onAddMember && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setBatchEditDialogOpen(true)}
+                  className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-blue-600"
+                  title={t("member.batch_edit")}
+                >
+                  <Edit size={16} />
+                  {t("member.batch_edit")}
+                </button>
                 <button
                   onClick={handleAddMemberClick}
-                  className="bg-white p-2 rounded shadow-md border hover:bg-gray-50
-                   flex items-center gap-2 text-sm font-medium text-blue-600"
+                  className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-blue-600"
                   title={t("member.add")}
                 >
                   <Plus size={16} />
                   {t("member.add")}
                 </button>
-              )}
-            </div>
-          </Panel>
-          <Panel position="top-right" className="flex gap-2">
-            {!readOnly && (
-              <button
-                onClick={handleLinkFamily}
-                className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
-                title={t("family.link_family", { defaultValue: "Link Family" })}
-              >
-                <Link size={16} />
-                {t("family.link_family", { defaultValue: "Link Family" })}
-              </button>
-            )}
-            <button
-              onClick={handleCenterView}
-              className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
-              title={t("family.center_view", { defaultValue: "Center View" })}
-            >
-              <Focus size={16} />
-              {t("family.center_view", { defaultValue: "Center View" })}
-            </button>
-            {!readOnly && (
-              <button
-                onClick={handleAutoLayout}
-                className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
-                title={t("family.auto_layout", { defaultValue: "Auto Layout" })}
-              >
-                <Layout size={16} />
-                {t("family.auto_layout", { defaultValue: "Auto Layout" })}
-              </button>
+              </div>
             )}
           </Panel>
 

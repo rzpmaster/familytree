@@ -31,10 +31,7 @@ export const getMembers = async (familyId: string) => {
 };
 
 export const createMember = async (
-  member: Omit<Member, "id" | "created_at" | "updated_at"> & {
-    position_x?: number;
-    position_y?: number;
-  },
+  member: Omit<Member, "id" | "created_at" | "updated_at">,
 ) => {
   const response = await api.post<Member>("/members/", member);
   return response.data;
@@ -42,7 +39,7 @@ export const createMember = async (
 
 export const updateMember = async (
   id: string,
-  member: Partial<Member> & { position_x?: number; position_y?: number },
+  member: Partial<Member>,
 ) => {
   const response = await api.put<Member>(`/members/${id}`, member);
   return response.data;

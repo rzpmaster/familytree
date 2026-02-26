@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { cn, getSurname } from "../../lib/utils";
-import { createMember, updateMember } from "../../services/api";
+import { createMember, updateMember, updateMembersPositions } from "../../services/api";
 import { Member, RegionState } from "../../types";
 import { HistoricalDateInput } from "../HistoricalDateInput";
 import { MultiSelectionActions } from "../MultiSelectionActions";
@@ -82,7 +82,7 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
     try {
       if (isNewMember) {
         // Create new member
-        await createMember({
+        const newMember = await createMember({
           name: formData.name || "",
           surname: formData.surname,
           gender: formData.gender || "male",
@@ -94,10 +94,18 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
           birth_place: formData.birth_place,
           photo_url: formData.photo_url,
           family_id: member.family_id,
-          position_x: initialPosition ? Math.round(initialPosition.x) : 0,
-          position_y: initialPosition ? Math.round(initialPosition.y) : 0,
           sort_order: formData.sort_order,
         });
+
+        if (initialPosition) {
+          await updateMembersPositions(member.family_id, [
+            {
+              id: newMember.id,
+              position_x: Math.round(initialPosition.x),
+              position_y: Math.round(initialPosition.y),
+            },
+          ]);
+        }
         toast.success("Member added successfully");
       } else {
         // Update existing

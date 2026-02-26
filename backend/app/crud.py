@@ -245,10 +245,6 @@ def create_member(db: Session, member: schemas.MemberCreate):
     member_data = member.model_dump()
     region_ids = member_data.pop("region_ids", [])
 
-    # Extract position data
-    pos_x = member_data.pop("position_x", 0)
-    pos_y = member_data.pop("position_y", 0)
-
     db_member = models.Member(**member_data)
 
     if region_ids:
@@ -260,7 +256,7 @@ def create_member(db: Session, member: schemas.MemberCreate):
 
     # Create MemberPosition
     db_pos = models.MemberPosition(
-        member_id=db_member.id, family_id=member.family_id, x=pos_x, y=pos_y
+        member_id=db_member.id, family_id=member.family_id, x=0, y=0
     )
     db.add(db_pos)
 
@@ -269,10 +265,6 @@ def create_member(db: Session, member: schemas.MemberCreate):
 
     # Manually populate region_ids
     db_member.region_ids = [r.id for r in db_member.regions]
-
-    # Manually populate position
-    db_member.position_x = pos_x
-    db_member.position_y = pos_y
 
     return db_member
 
@@ -295,8 +287,6 @@ def get_members(db: Session, family_id: str, skip: int = 0, limit: int = 100):
     members = []
     for m, p in results:
         m.region_ids = [r.id for r in m.regions]
-        m.position_x = p.x if p else 0
-        m.position_y = p.y if p else 0
         members.append(m)
 
     return members
@@ -306,19 +296,6 @@ def get_member(db: Session, member_id: str):
     member = db.query(models.Member).filter(models.Member.id == member_id).first()
     if member:
         member.region_ids = [r.id for r in member.regions]
-
-        # Get position for the member's home family by default
-        pos = (
-            db.query(models.MemberPosition)
-            .filter(
-                models.MemberPosition.member_id == member_id,
-                models.MemberPosition.family_id == member.family_id,
-            )
-            .first()
-        )
-
-        member.position_x = pos.x if pos else 0
-        member.position_y = pos.y if pos else 0
 
     return member
 
@@ -339,44 +316,12 @@ def update_member(db: Session, member_id: str, member: schemas.MemberUpdate):
                 )
                 db_member.regions = regions
 
-        # Handle position update (Explicitly remove them if present, though they should be handled via batch update now)
-        # But if passed here, we can update for the member's OWNING family as a default behavior,
-        # OR we can choose to ignore them to enforce using update_members_positions.
-        # Given the user requirement: "A被链接进B 调整A中节点位置，B中的A的成员也会收到影响。他们应该是独立的"
-        # We must ensure that updating a member via this endpoint (usually edit profile) does NOT overwrite positions blindly.
-        # However, `MemberUpdate` schema might still have position_x/y if the frontend sends it.
-        # Let's check if the frontend sends family_id in the update? No, it's just MemberUpdate.
-        # So we should probably DECOUPLE position update from general member info update completely.
-        # For now, let's remove position update from here to be safe, OR only update for the member's own family_id if strictly necessary.
-        # But since we have `update_members_positions` for drag-drop, let's REMOVE position updating from `update_member`
-        # to prevent accidental cross-family position pollution.
-        
-        # update_data.pop("position_x", None)
-        # update_data.pop("position_y", None)
-        # The above is redundant if we removed them from MemberUpdate schema, but safe to keep or remove.
-        # Actually I removed them from MemberUpdate schema in schemas.py, so they won't be in update_data.
-        # So I can just remove this block.
-
         for key, value in update_data.items():
             setattr(db_member, key, value)
 
         db.commit()
         db.refresh(db_member)
         db_member.region_ids = [r.id for r in db_member.regions]
-
-        # Refresh position (return current family context position? or owning family?)
-        # Since this is a generic update, maybe return owning family position or 0.
-        # But `get_member` uses owning family. Let's keep consistency.
-        pos = (
-            db.query(models.MemberPosition)
-            .filter(
-                models.MemberPosition.member_id == member_id,
-                models.MemberPosition.family_id == db_member.family_id,
-            )
-            .first()
-        )
-        db_member.position_x = pos.x if pos else 0
-        db_member.position_y = pos.y if pos else 0
 
     return db_member
 
@@ -436,13 +381,7 @@ def delete_member(db: Session, member_id: str):
     if db_member:
         # Prepare response data before deletion
         # Fetch position
-        pos = (
-            db.query(models.MemberPosition)
-            .filter(models.MemberPosition.member_id == member_id)
-            .first()
-        )
-        db_member.position_x = pos.x if pos else 0
-        db_member.position_y = pos.y if pos else 0
+        # Position logic removed from Member model
         db_member.region_ids = [r.id for r in db_member.regions]
         
         # Create Pydantic model instance to return, ensuring it survives session commit/expiry
@@ -633,35 +572,21 @@ def get_family_graph(db: Session, family_id: str):
 
         m.region_ids = list(rids)
         
-        # Populate positions
-        # Explicitly filter by the requested family_id from the graph request
-        # This ensures we get the position for THIS specific family context
-        # pos_map is already built using family_id filter, so this is correct.
-        pos_tuple = pos_map.get(m.id)
-        if pos_tuple:
-            x, y = pos_tuple
-            m.position_x = x
-            m.position_y = y
-            # logger.info(f"Set position for {m.id} in family {family_id}: {x}, {y}")
-        else:
-            # IMPORTANT: If no position record exists for this family_id, default to 0,0
-            # Do NOT fallback to member.position_x/y (which are removed from model anyway)
-            # or any other family's position.
-            m.position_x = 0
-            m.position_y = 0
-            # logger.info(f"Set default position for {m.id} in family {family_id}: 0, 0")
-
     nodes = []
     member_ids_set = set()
     for m in members:
         member_ids_set.add(m.id)
+        
+        # Look up position
+        pos = pos_map.get(m.id, (0, 0))
+        
         nodes.append(
             schemas.GraphNode(
                 id=m.id,
                 name=m.name,
                 gender=m.gender,
-                x=m.position_x,
-                y=m.position_y,
+                x=pos[0],
+                y=pos[1],
                 data=m,
             )
         )
@@ -917,8 +842,8 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                             pos = models.MemberPosition(
                                 member_id=existing_member_id,
                                 family_id=db_family.id,
-                                x=m.position_x,
-                                y=m.position_y,
+                                x=0,
+                                y=0,
                             )
                             db.add(pos)
 
@@ -937,16 +862,11 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
                     remark=m.remark,
                     birth_place=m.birth_place,
                     photo_url=m.photo_url,
-                    position_x=m.position_x,
-                    position_y=m.position_y,
                     sort_order=m.sort_order,
                     region_ids=new_region_ids,
                 ).model_dump()
 
                 r_ids = member_data.pop("region_ids", [])
-
-                pos_x = member_data.pop("position_x", 0)
-                pos_y = member_data.pop("position_y", 0)
 
                 db_member = models.Member(**member_data)
 
@@ -963,7 +883,7 @@ def import_family(db: Session, import_data: schemas.FamilyImport):
 
                 # Create MemberPosition
                 db_pos = models.MemberPosition(
-                    member_id=db_member.id, family_id=db_family.id, x=pos_x, y=pos_y
+                    member_id=db_member.id, family_id=db_family.id, x=0, y=0
                 )
                 db.add(db_pos)
 

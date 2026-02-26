@@ -161,8 +161,6 @@ class MemberBase(BaseModel):
 
 class MemberCreate(MemberBase):
     family_id: str
-    position_x: Optional[int] = 0
-    position_y: Optional[int] = 0
 
 
 class MemberUpdate(BaseModel):
@@ -198,8 +196,6 @@ class MemberBatchUpdate(BaseModel):
 class Member(MemberBase):
     id: str
     family_id: str
-    position_x: int
-    position_y: int
     created_at: datetime
     updated_at: datetime
     # Return region_ids explicitly if needed, or rely on MemberBase
