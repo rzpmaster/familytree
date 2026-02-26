@@ -17,14 +17,14 @@ export default {
       saving: "保存中...",
       leave_empty_if_unknown: "如果不清楚可留空",
       settings: "设置",
-      close: "关闭"
+      close: "关闭",
     },
     nav: {
       home: "首页",
       manage: "家谱管理",
       settings: "设置",
       admin: "系统管理",
-      superadmin: "超级管理员"
+      superadmin: "超级管理员",
     },
     auth: {
       login: "登录",
@@ -42,7 +42,7 @@ export default {
       have_account: "已有账号？",
       register_now: "立即注册",
       login_now: "立即登录",
-      no_user_found: "未找到用户信息，已自动创建或请联系管理员。"
+      no_user_found: "未找到用户信息，已自动创建或请联系管理员。",
     },
     family: {
       management: "家谱",
@@ -66,13 +66,14 @@ export default {
       gender_ratio: "性别统计",
       oldest_member: "最年长",
       youngest_member: "最近出生",
+      longest_living: "最长寿",
       export_json: "导出 JSON",
       import: "导入家谱",
       export_success: "导出成功",
       export_failed: "导出失败",
       import_success: "导入成功",
       import_failed: "导入失败",
-      import_historical: "导入开发者数据",
+      import_dev_data: "导入开发者数据",
       not_found: "未找到家族信息，请检查后台。",
       auto_layout: "自动布局",
       center_view: "居中显示",
@@ -103,7 +104,7 @@ export default {
       remove_collaborator: "移除协作者",
       confirm_remove_collaborator: "确定要移除该协作者吗？",
       collaborator_removed: "协作者已移除",
-      remove_collaborator_failed: "移除协作者失败"
+      remove_collaborator_failed: "移除协作者失败",
     },
     member: {
       add: "添加成员",
@@ -125,16 +126,17 @@ export default {
       confirm_delete: "确定要删除该成员吗？",
       age: "年龄",
       age_unit: "岁",
+      years_old: "岁",
       remark: "备注",
       remark_placeholder: "添加备注...",
       is_deceased: "已逝世",
       deceased_abbr: "逝",
       is_fuzzy: "模糊节点",
       surname_auto_hint: "如果为空，将自动截取名字的第一个字符",
-      remark_label: "备注"
+      remark_label: "备注",
     },
     relation: {
-      instructions: "连接手柄以建立关系：<br/>左右连接 = 配偶<br/>上下连接 = 父母/子女",
+      instructions:"连接手柄以建立关系：<br/>左右连接 = 配偶<br/>上下连接 = 父母/子女",
       father: "父亲",
       mother: "母亲",
       spouse: "配偶",
@@ -152,33 +154,32 @@ export default {
       role_mother: "母亲",
       role_spouse: "配偶",
       role_son: "儿子",
-      role_daughter: "女儿"
+      role_daughter: "女儿",
     },
     validation: {
       spouse_same_gender: "配偶必须是异性。",
       spouse_no_overlap: "配偶必须有共同的生活时间（生卒年无交集）。",
       parent_too_young: "父母年龄必须比孩子大至少 12 岁。",
-      child_born_too_late: "孩子的出生日期相对于父母的逝世日期不合理（遗腹子规则）。",
-      too_many_parents: "一个孩子不能有多个同性别的父母（最多1父1母）。"
+      child_born_too_late:"孩子的出生日期相对于父母的逝世日期不合理（遗腹子规则）。",
+      too_many_parents: "一个孩子不能有多个同性别的父母（最多1父1母）。",
     },
     settings: {
       language: "语言",
+      developer_mode: "开发者模式",
+      developer_mode_desc: "开启开发者高级功能，尝鲜不稳定功能（慎用）",
       display: "显示设置",
       privacy_mode: "隐私模式",
       privacy_mode_desc: "节点上只显示姓氏",
-
       show_living: "显示在世成员",
       show_living_desc: "显示当前在世的成员",
-
+      show_spouses: "显示配偶",
+      show_spouses_desc: "在图谱中显示配偶（伴侣）",
       show_not_living: "显示不在世成员",
       show_not_living_desc: "包含已逝世和未出生的成员",
-
       show_deceased: "显示已逝世",
       dim_deceased: "淡显已逝世",
-
       show_unborn: "显示未出生",
       dim_unborn: "淡显未出生",
-
       timeline: "时间线模式",
       timeline_desc: "启用时间轴滑块查看历史状态",
       compact_mode: "紧凑模式",
@@ -186,7 +187,7 @@ export default {
       focus_mode: "聚焦模式",
       enable_focus_mode: "开启聚焦模式",
       focus_mode_desc: "选中人物时高亮显示相关成员",
-      focus_relations: "聚焦关系范围"
+      focus_relations: "聚焦关系范围",
     },
     admin: {
       dashboard: "管理员仪表盘",
@@ -213,12 +214,12 @@ export default {
       showing: "显示",
       to: "至",
       of: "共",
-      results: "条结果"
+      results: "条结果",
     },
     presets: {
       han_dynasty: "汉朝皇室",
       tang_dynasty: "唐朝皇室",
-      ming_dynasty: "明朝皇室"
-    }
+      ming_dynasty: "明朝皇室",
+    },
   }
-}
+};

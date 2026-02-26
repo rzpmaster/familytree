@@ -1,5 +1,7 @@
 import { useSettings } from "@/hooks/useSettings";
+import { getMemberStatus } from "@/lib/utils";
 import { SettingsState } from "@/store/settingsSlice";
+import { Member } from "@/types";
 import { useCallback } from "react";
 import { Edge, Node } from "reactflow";
 
@@ -12,23 +14,96 @@ function applyHighlightPure(
   settings: SettingsState,
 ) {
   const safeSelectedNIds = selectedNIds || [];
-  const { focusModeEnabled, focusRelations } = settings;
+  const {
+    focusModeEnabled,
+    focusRelations,
+    timelineEnabled,
+    timelineYear,
+    showLiving,
+    showNotLiving,
+    showDeceased,
+    showUnborn,
+    showSpouses,
+  } = settings;
 
-  // No selection OR focus off -> reset opacity
+  const effectiveYear =
+    timelineEnabled && timelineYear !== null ? timelineYear : undefined;
+
+  // 1. Identify hidden nodes based on settings
+  const hiddenNodeIds = new Set<string>();
+
+  currentNodes.forEach((n) => {
+    if (n.type === "member") {
+      const member = n.data as Member;
+      const status = getMemberStatus(member, effectiveYear);
+
+      if (status === "living") {
+        if (!showLiving) hiddenNodeIds.add(n.id);
+      } else if (status === "deceased") {
+        if (!showNotLiving || !showDeceased) hiddenNodeIds.add(n.id);
+      } else if (status === "unborn") {
+        if (!showNotLiving || !showUnborn) hiddenNodeIds.add(n.id);
+      }
+
+      // Check for spouses (wives) to hide
+      if (!showSpouses) {
+        const isFemale = member.gender === "female";
+        if (isFemale) {
+          const hasParent = currentEdges.some(
+            (e) => e.target === n.id && e.data?.type === "parent-child",
+          );
+
+          if (!hasParent) {
+            // Check if has spouse connection
+            const hasSpouse = currentEdges.some(
+              (e) =>
+                (e.source === n.id || e.target === n.id) &&
+                e.data?.type === "spouse",
+            );
+
+            if (hasSpouse) {
+              hiddenNodeIds.add(n.id);
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // No selection OR focus off -> reset opacity (but respect hidden nodes for edges)
   if ((safeSelectedNIds.length === 0 && !selectedEId) || !focusModeEnabled) {
     return {
-      nodes: currentNodes.map((n) => ({
-        ...n,
-        zIndex: (n.data as any)?.baseZIndex ?? n.zIndex,
-        // Sync 'selected' state
-        selected: safeSelectedNIds.includes(n.id),
-        style: { ...n.style, opacity: 1 },
-      })),
-      edges: currentEdges.map((e) => ({
-        ...e,
-        selected: e.id === selectedEId,
-        style: { ...e.style, opacity: 1 },
-      })),
+      nodes: currentNodes.map((n) => {
+        const isHidden = hiddenNodeIds.has(n.id);
+        return {
+          ...n,
+          zIndex: n.data?.baseZIndex ?? n.zIndex,
+          // Sync 'selected' state
+          selected: safeSelectedNIds.includes(n.id),
+          style: {
+            ...n.style,
+            opacity: isHidden ? 0 : 1,
+            pointerEvents: (isHidden
+              ? "none"
+              : "all") as React.CSSProperties["pointerEvents"],
+          },
+        };
+      }),
+      edges: currentEdges.map((e) => {
+        const isHidden =
+          hiddenNodeIds.has(e.source) || hiddenNodeIds.has(e.target);
+        return {
+          ...e,
+          selected: e.id === selectedEId,
+          style: {
+            ...e.style,
+            opacity: isHidden ? 0 : 1,
+            pointerEvents: (isHidden
+              ? "none"
+              : "all") as React.CSSProperties["pointerEvents"],
+          },
+        };
+      }),
     };
   }
 
@@ -94,19 +169,25 @@ function applyHighlightPure(
     }
   }
 
-  const newNodes = currentNodes.map((node) => ({
-    ...node,
-    // Restore base zIndex if not overridden by selection or hover logic in Canvas
-    // However, canvas logic is imperative via setNodes. 
-    // This pure function returns NEW objects.
-    // We must preserve zIndex from 'node' if it exists.
-    zIndex: (node.data as any)?.baseZIndex ?? node.zIndex, 
-    selected: safeSelectedNIds.includes(node.id),
-    style: {
-      ...node.style,
-      opacity: relevantNodeIds.has(node.id) ? 1 : 0.1,
-    },
-  }));
+  const newNodes = currentNodes.map((node) => {
+    const isHidden = hiddenNodeIds.has(node.id);
+    return {
+      ...node,
+      // Restore base zIndex if not overridden by selection or hover logic in Canvas
+      // However, canvas logic is imperative via setNodes.
+      // This pure function returns NEW objects.
+      // We must preserve zIndex from 'node' if it exists.
+      zIndex: node.data?.baseZIndex ?? node.zIndex,
+      selected: safeSelectedNIds.includes(node.id),
+      style: {
+        ...node.style,
+        opacity: isHidden ? 0 : relevantNodeIds.has(node.id) ? 1 : 0.1,
+        pointerEvents: (isHidden
+          ? "none"
+          : "all") as React.CSSProperties["pointerEvents"],
+      },
+    };
+  });
 
   const newEdges = currentEdges.map((edge) => {
     let isRelevant = false;
@@ -117,12 +198,18 @@ function applyHighlightPure(
         relevantNodeIds.has(edge.source) && relevantNodeIds.has(edge.target);
     }
 
+    const isHidden =
+      hiddenNodeIds.has(edge.source) || hiddenNodeIds.has(edge.target);
+
     return {
       ...edge,
       selected: edge.id === selectedEId,
       style: {
         ...edge.style,
-        opacity: isRelevant ? 1 : 0.1,
+        opacity: isHidden ? 0 : isRelevant ? 1 : 0.1,
+        pointerEvents: (isHidden
+          ? "none"
+          : "all") as React.CSSProperties["pointerEvents"],
       },
     };
   });
@@ -133,20 +220,23 @@ function applyHighlightPure(
 export function useHighlighting() {
   const { state: settings } = useSettings();
 
-  const applyHighlight = useCallback((
-    nodes: Node[],
-    edges: Edge[],
-    selectedNodeIds: string[],
-    selectedEdgeId: string | null
-  ) => {
-    return applyHighlightPure(
-      nodes,
-      edges,
-      selectedNodeIds,
-      selectedEdgeId,
-      settings
-    );
-  }, [settings]);
+  const applyHighlight = useCallback(
+    (
+      nodes: Node[],
+      edges: Edge[],
+      selectedNodeIds: string[],
+      selectedEdgeId: string | null,
+    ) => {
+      return applyHighlightPure(
+        nodes,
+        edges,
+        selectedNodeIds,
+        selectedEdgeId,
+        settings,
+      );
+    },
+    [settings],
+  );
 
   return { applyHighlight, settings };
 }

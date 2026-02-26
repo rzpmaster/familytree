@@ -66,13 +66,14 @@ export default {
       gender_ratio: "Gender Ratio",
       oldest_member: "Oldest",
       youngest_member: "Youngest",
+      longest_living: "Longest Living",
       export_json: "Export JSON",
       import: "Import Family",
       export_success: "Export successful",
       export_failed: "Export failed",
       import_success: "Import successful",
       import_failed: "Import failed",
-      import_historical: "Import Developer Data",
+      import_dev_data: "Import Developer Data",
       not_found: "No family found. Please check backend.",
       auto_layout: "Auto Layout",
       center_view: "Center View",
@@ -114,6 +115,7 @@ export default {
       add_failed: "Failed to add member",
       details: "Member Details",
       name: "Name",
+      surname: "Surname",
       gender: "Gender",
       male: "Male",
       female: "Female",
@@ -124,6 +126,7 @@ export default {
       confirm_delete: "Are you sure you want to delete this member?",
       age: "Age",
       age_unit: "",
+      years_old: "years old",
       remark: "Remark",
       remark_placeholder: "Add remarks...",
       is_deceased: "Deceased",
@@ -162,22 +165,21 @@ export default {
     },
     settings: {
       language: "Language",
+      developer_mode: "Developer Mode",
+      developer_mode_desc: "Enable advanced developer features",
       display: "Display Settings",
       privacy_mode: "Privacy Mode",
       privacy_mode_desc: "Only show surname on nodes",
-
       show_living: "Show Living",
       show_living_desc: "Display members who are currently alive",
-
+      show_spouses: "Show Spouses",
+      show_spouses_desc: "Display spouses (partners) in the tree",
       show_not_living: "Show Not Living",
       show_not_living_desc: "Includes deceased and unborn members",
-
       show_deceased: "Show Deceased",
       dim_deceased: "Dim Deceased",
-
       show_unborn: "Show Unborn",
       dim_unborn: "Dim Unborn",
-
       timeline: "Timeline Mode",
       timeline_desc: "Enable timeline slider to view history",
       compact_mode: "Compact Mode",
@@ -218,6 +220,6 @@ export default {
       han_dynasty: "Han Dynasty",
       tang_dynasty: "Tang Dynasty",
       ming_dynasty: "Ming Dynasty"
-    }
+    },
   }
-}
+};

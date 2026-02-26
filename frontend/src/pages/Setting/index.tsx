@@ -1,7 +1,7 @@
 import { useSettings } from "@/hooks/useSettings";
 import { cn } from "@/lib/utils";
 import { FocusRelations } from "@/store/settingsSlice";
-import { Check, Focus, Globe, LayoutTemplate } from "lucide-react";
+import { Check, Focus, Globe, LayoutTemplate, Terminal } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -21,7 +21,7 @@ const Settings: React.FC = () => {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="p-8 max-w-3xl mx-auto space-y-6">
+      <div className="p-8 max-w-5xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-8">
           {t("common.settings", { defaultValue: "Settings" })}
         </h1>
@@ -59,12 +59,49 @@ const Settings: React.FC = () => {
           </div>
         </div>
 
+        {/* Developer Mode */}
+        <div className="card p-6">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-800">
+                <Terminal size={20} className="text-gray-600" />
+                {t("settings.developer_mode", {
+                  defaultValue: "Developer Mode",
+                })}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {t("settings.developer_mode_desc", {
+                  defaultValue:
+                    "Enable advanced developer features (e.g. import historical data)",
+                })}
+              </p>
+            </div>
+            <div className="flex items-center">
+              <button
+                onClick={() => actions.setDeveloperMode(!state.developerMode)}
+                className={cn(
+                  "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                  state.developerMode ? "bg-purple-600" : "bg-gray-200",
+                )}
+              >
+                <span
+                  className={cn(
+                    "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                    state.developerMode ? "translate-x-6" : "translate-x-1",
+                  )}
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Display Settings */}
         <div className="card p-6">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-800">
+          <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-800">
             <LayoutTemplate size={20} className="text-green-600" />
             {t("settings.display", { defaultValue: "Display Settings" })}
           </h2>
+          <div className="my-4 border-t" />
 
           <div className="space-y-6">
             {/* Privacy Mode */}
@@ -120,6 +157,36 @@ const Settings: React.FC = () => {
                   className={cn(
                     "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
                     state.showLiving ? "translate-x-6" : "translate-x-1",
+                  )}
+                />
+              </button>
+            </div>
+
+            {/* Show Spouses */}
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="font-medium text-gray-700">
+                  {t("settings.show_spouses", {
+                    defaultValue: "Show Spouses",
+                  })}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {t("settings.show_spouses_desc", {
+                    defaultValue: "Display spouses (partners) in the tree",
+                  })}
+                </div>
+              </div>
+              <button
+                onClick={() => actions.setShowSpouses(!state.showSpouses)}
+                className={cn(
+                  "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                  state.showSpouses ? "bg-green-600" : "bg-gray-200",
+                )}
+              >
+                <span
+                  className={cn(
+                    "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                    state.showSpouses ? "translate-x-6" : "translate-x-1",
                   )}
                 />
               </button>
@@ -269,36 +336,6 @@ const Settings: React.FC = () => {
               )}
             </div>
 
-            {/* Timeline */}
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="font-medium text-gray-700">
-                  {t("settings.timeline", { defaultValue: "Timeline Mode" })}
-                </div>
-                <div className="text-sm text-gray-500">
-                  {t("settings.timeline_desc", {
-                    defaultValue: "Enable timeline slider to view history",
-                  })}
-                </div>
-              </div>
-              <button
-                onClick={() =>
-                  actions.setTimelineEnabled(!state.timelineEnabled)
-                }
-                className={cn(
-                  "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
-                  state.timelineEnabled ? "bg-green-600" : "bg-gray-200",
-                )}
-              >
-                <span
-                  className={cn(
-                    "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
-                    state.timelineEnabled ? "translate-x-6" : "translate-x-1",
-                  )}
-                />
-              </button>
-            </div>
-
             {/* Compact Mode */}
             <div className="flex justify-between items-center">
               <div>
@@ -326,6 +363,38 @@ const Settings: React.FC = () => {
                 />
               </button>
             </div>
+
+            {/* Timeline */}
+            {state.developerMode && (
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="font-medium text-gray-700">
+                    {t("settings.timeline", { defaultValue: "Timeline Mode" })}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {t("settings.timeline_desc", {
+                      defaultValue: "Enable timeline slider to view history",
+                    })}
+                  </div>
+                </div>
+                <button
+                  onClick={() =>
+                    actions.setTimelineEnabled(!state.timelineEnabled)
+                  }
+                  className={cn(
+                    "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                    state.timelineEnabled ? "bg-green-600" : "bg-gray-200",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                      state.timelineEnabled ? "translate-x-6" : "translate-x-1",
+                    )}
+                  />
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

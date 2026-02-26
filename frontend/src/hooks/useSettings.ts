@@ -3,15 +3,17 @@ import type { FocusRelations } from "@/store/settingsSlice";
 import {
   resetSettings,
   setCompactMode,
+  setDeveloperMode,
+  setDimDeceased,
+  setDimUnborn,
   setFocusMode,
   setLanguage,
   setPrivacyMode,
+  setShowDeceased,
   setShowLiving,
   setShowNotLiving,
-  setShowDeceased,
-  setDimDeceased,
+  setShowSpouses,
   setShowUnborn,
-  setDimUnborn,
   setTimelineEnabled,
   toggleFocusRelation,
 } from "@/store/settingsSlice";
@@ -27,16 +29,19 @@ export function useSettings() {
       dispatch(toggleFocusRelation(key)),
     setLanguage: (lang: string) => dispatch(setLanguage(lang)),
     setPrivacyMode: (enabled: boolean) => dispatch(setPrivacyMode(enabled)),
-    
+
     setShowLiving: (enabled: boolean) => dispatch(setShowLiving(enabled)),
     setShowNotLiving: (enabled: boolean) => dispatch(setShowNotLiving(enabled)),
     setShowDeceased: (enabled: boolean) => dispatch(setShowDeceased(enabled)),
     setDimDeceased: (enabled: boolean) => dispatch(setDimDeceased(enabled)),
     setShowUnborn: (enabled: boolean) => dispatch(setShowUnborn(enabled)),
     setDimUnborn: (enabled: boolean) => dispatch(setDimUnborn(enabled)),
+    setShowSpouses: (enabled: boolean) => dispatch(setShowSpouses(enabled)),
 
-    setTimelineEnabled: (enabled: boolean) => dispatch(setTimelineEnabled(enabled)),
+    setTimelineEnabled: (enabled: boolean) =>
+      dispatch(setTimelineEnabled(enabled)),
     setCompactMode: (enabled: boolean) => dispatch(setCompactMode(enabled)),
+    setDeveloperMode: (enabled: boolean) => dispatch(setDeveloperMode(enabled)),
     resetSettings: () => dispatch(resetSettings()),
   };
 
