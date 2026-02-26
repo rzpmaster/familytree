@@ -222,19 +222,21 @@ export function useFamilyData({
             // because it originates from (or is shared with) a linked family.
             res.nodes.forEach((linkedNode) => {
               const existingIndex = combinedGraphNodes.findIndex(
-                (mainNode) => mainNode.id === linkedNode.id
+                (mainNode) => mainNode.id === linkedNode.id,
               );
-              
+
               if (existingIndex !== -1) {
                 const existingNode = combinedGraphNodes[existingIndex];
                 const existingMember = existingNode.data as Member;
                 const linkedMember = linkedNode.data as Member;
 
                 // Merge region_ids
-                const mergedRegionIds = Array.from(new Set([
-                  ...(existingMember.region_ids || []),
-                  ...(linkedMember.region_ids || [])
-                ]));
+                const mergedRegionIds = Array.from(
+                  new Set([
+                    ...(existingMember.region_ids || []),
+                    ...(linkedMember.region_ids || []),
+                  ]),
+                );
 
                 // Update the existing node
                 combinedGraphNodes[existingIndex] = {
@@ -243,7 +245,7 @@ export function useFamilyData({
                     ...existingMember,
                     region_ids: mergedRegionIds,
                     isLinked: true, // Force read-only even if it's local
-                  }
+                  },
                 };
               }
             });
@@ -271,6 +273,25 @@ export function useFamilyData({
         data: node.data,
       }));
 
+      // Sort and assign baseZIndex for newly fetched nodes to ensure correct layering
+      // Sort by Y (top to bottom) then X (left to right)
+      // This is the same logic as in RecursiveFamilyLayoutStrategy
+      flowNodes.sort((a, b) => {
+        if (Math.abs(a.position.y - b.position.y) > 10) {
+          return a.position.y - b.position.y;
+        }
+        return a.position.x - b.position.x;
+      });
+
+      // Assign baseZIndex
+      for (let i = 0; i < flowNodes.length; i++) {
+        const zIndex = i + 10;
+        flowNodes[i].zIndex = zIndex;
+        if (flowNodes[i].data) {
+          flowNodes[i].data.baseZIndex = zIndex;
+        }
+      }
+
       // Calculate Year Range
       let minY = 1900;
       let maxY = new Date().getFullYear();
@@ -290,8 +311,8 @@ export function useFamilyData({
         .sort((a, b) => a - b);
 
       if (years.length > 0) {
-        minY = Math.min(...years) - 10;
-        maxY = Math.max(...years) + 10;
+        minY = Math.min(...years) - 50;
+        maxY = Math.max(...years) + 50;
         setYearRange({ min: minY, max: maxY });
       }
 
@@ -302,7 +323,7 @@ export function useFamilyData({
         const calculatedRegions = calculateRegionNodes(
           flowNodes,
           graphData.regions,
-          compactMode
+          compactMode,
         );
         regionNodes.push(...calculatedRegions);
       } else {

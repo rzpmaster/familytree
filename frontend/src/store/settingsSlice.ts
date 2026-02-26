@@ -24,10 +24,12 @@ export type SettingsState = {
   dimDeceased: boolean; // 淡显已逝世
   showUnborn: boolean; // 显示未出生
   dimUnborn: boolean; // 淡显未出生
+  showSpouses: boolean; // 显示配偶
 
   timelineEnabled: boolean; // 是否启用时间线
   timelineYear: number | null; // 时间线当前年份 (null 表示使用当前时间)
   compactMode: boolean; // 紧凑模式
+  developerMode: boolean; // 开发者模式
 };
 
 export const defaultFocusRelations: FocusRelations = {
@@ -51,10 +53,12 @@ const initialState: SettingsState = {
   dimDeceased: false,
   showUnborn: true,
   dimUnborn: false,
+  showSpouses: true,
 
   timelineEnabled: false,
   timelineYear: null,
   compactMode: true,
+  developerMode: false,
 };
 
 const settingsSlice = createSlice({
@@ -98,6 +102,9 @@ const settingsSlice = createSlice({
     setDimUnborn(state, action: PayloadAction<boolean>) {
       state.dimUnborn = action.payload;
     },
+    setShowSpouses(state, action: PayloadAction<boolean>) {
+      state.showSpouses = action.payload;
+    },
 
     setTimelineEnabled(state, action: PayloadAction<boolean>) {
       state.timelineEnabled = action.payload;
@@ -109,6 +116,12 @@ const settingsSlice = createSlice({
 
     setCompactMode(state, action: PayloadAction<boolean>) {
       state.compactMode = action.payload;
+    },
+    setDeveloperMode(state, action: PayloadAction<boolean>) {
+      state.developerMode = action.payload;
+      if (!state.developerMode) {
+        state.timelineEnabled = false;
+      }
     },
 
     resetSettings(state) {
@@ -134,9 +147,11 @@ export const {
   setDimDeceased,
   setShowUnborn,
   setDimUnborn,
+  setShowSpouses,
   setTimelineEnabled,
   setTimelineYear,
   setCompactMode,
+  setDeveloperMode,
   resetSettings,
 } = settingsSlice.actions;
 

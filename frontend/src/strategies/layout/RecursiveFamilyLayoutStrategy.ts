@@ -531,6 +531,7 @@ class RecursiveFamilyLayoutStrategy implements LayoutStrategy {
         y: pos?.y ?? nodes[i].position.y ?? 0,
       };
     }
+
     return { nodes: nodes, edges: edges };
   }
 

@@ -513,6 +513,9 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       );
       // Refresh to update regions
       fetchData();
+      setTimeout(() => {
+        reactFlowInstance.current?.fitView({ duration: 800 });
+      }, 100);
     } catch (e) {
       console.error("Failed to save layout", e);
       toast.error("Failed to save layout");
@@ -667,7 +670,9 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     setNodes((nds) =>
       nds.map((n) => {
         if (n.type === "region") return n;
-        return { ...n, zIndex: undefined };
+        // Restore base zIndex if available, otherwise undefined
+        const baseZIndex = n.data?.baseZIndex;
+        return { ...n, zIndex: baseZIndex ?? undefined };
       }),
     );
   }, [setNodes]);
@@ -833,7 +838,9 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
                 <button
                   onClick={handleLinkFamily}
                   className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
-                  title={t("family.link_family", { defaultValue: "Link Family" })}
+                  title={t("family.link_family", {
+                    defaultValue: "Link Family",
+                  })}
                 >
                   <Link size={16} />
                   {t("family.link_family", { defaultValue: "Link Family" })}
@@ -851,7 +858,9 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
                 <button
                   onClick={handleAutoLayout}
                   className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
-                  title={t("family.auto_layout", { defaultValue: "Auto Layout" })}
+                  title={t("family.auto_layout", {
+                    defaultValue: "Auto Layout",
+                  })}
                 >
                   <Layout size={16} />
                   {t("family.auto_layout", { defaultValue: "Auto Layout" })}
@@ -881,7 +890,10 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
           </Panel>
 
           {settingsState.timelineEnabled && (
-            <Panel position="bottom-center" className="mb-8 w-96 max-w-[90vw]">
+            <Panel
+              position="bottom-center"
+              className="mb-8 w-[600px] max-w-[90vw]"
+            >
               <div className="bg-white/90 p-4 rounded-xl shadow-lg backdrop-blur-sm border">
                 <div className="flex justify-between text-xs font-bold text-gray-500 mb-2">
                   <span>{formatYear(yearRange.min)}</span>

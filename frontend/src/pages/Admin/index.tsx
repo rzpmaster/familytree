@@ -1,4 +1,3 @@
-import { useAuth } from "@/hooks/useAuth";
 import {
   deleteUser,
   getFamilyName,
@@ -8,11 +7,7 @@ import {
   updateUserRole,
 } from "@/services/api";
 import { User } from "@/types";
-import {
-  Shield,
-  Users,
-  User as UserIcon,
-} from "lucide-react";
+import { Shield, User as UserIcon, Users } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -22,7 +17,6 @@ import UserManagement from "./UserManagement";
 
 const Admin: React.FC = () => {
   const { t } = useTranslation();
-  const { user: currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState<"users" | "families">("users");
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -168,7 +162,7 @@ const Admin: React.FC = () => {
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="p-8 max-w-6xl mx-auto">
+      <div className="p-8 max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
           <Shield className="text-blue-600" />
           {t("admin.dashboard", { defaultValue: "Admin Dashboard" })}
