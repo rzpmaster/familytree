@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { cn, getSurname } from "../../lib/utils";
 import { createMember, updateMember } from "../../services/api";
 import { Member, RegionState } from "../../types";
+import { HistoricalDateInput } from "../HistoricalDateInput";
 import { MultiSelectionActions } from "../MultiSelectionActions";
 
 interface MemberDetailProps {
@@ -13,6 +14,7 @@ interface MemberDetailProps {
   onUpdate: () => void; // Trigger refresh
   readOnly?: boolean;
   regionState?: RegionState | null;
+  initialPosition?: { x: number; y: number };
 }
 
 const MemberDetailPanel: React.FC<MemberDetailProps> = ({
@@ -21,6 +23,7 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
   onUpdate,
   readOnly = false,
   regionState,
+  initialPosition,
 }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<Partial<Member>>({});
@@ -91,8 +94,8 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
           birth_place: formData.birth_place,
           photo_url: formData.photo_url,
           family_id: member.family_id,
-          position_x: Math.round(member.position_x),
-          position_y: Math.round(member.position_y),
+          position_x: initialPosition ? Math.round(initialPosition.x) : 0,
+          position_y: initialPosition ? Math.round(initialPosition.y) : 0,
           sort_order: formData.sort_order,
         });
         toast.success("Member added successfully");
@@ -219,16 +222,13 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
           <label className="block text-sm font-medium text-gray-700">
             {t("member.birth_date")}
           </label>
-          <input
-            type="date"
-            name="birth_date"
+          <HistoricalDateInput
             value={formData.birth_date || ""}
-            onChange={handleChange}
+            onChange={(val) =>
+              setFormData((prev) => ({ ...prev, birth_date: val }))
+            }
             readOnly={effectiveReadOnly}
-            className={cn(
-              "input mt-1",
-              effectiveReadOnly && "bg-gray-100 cursor-not-allowed",
-            )}
+            className="mt-1"
           />
         </div>
 
@@ -236,16 +236,13 @@ const MemberDetailPanel: React.FC<MemberDetailProps> = ({
           <label className="block text-sm font-medium text-gray-700">
             {t("member.death_date")}
           </label>
-          <input
-            type="date"
-            name="death_date"
+          <HistoricalDateInput
             value={formData.death_date || ""}
-            onChange={handleChange}
+            onChange={(val) =>
+              setFormData((prev) => ({ ...prev, death_date: val }))
+            }
             readOnly={effectiveReadOnly}
-            className={cn(
-              "input mt-1",
-              effectiveReadOnly && "bg-gray-100 cursor-not-allowed",
-            )}
+            className="mt-1"
           />
         </div>
 

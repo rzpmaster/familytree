@@ -4,6 +4,7 @@ import CreateRegionDialog from "@/components/Region/CreateRegionDialog";
 import EditRegionDialog from "@/components/Region/EditRegionDialog";
 import LinkFamilyDialog from "@/components/Region/LinkFamilyDialog";
 import RegionNode from "@/components/Region/RegionNode";
+import { FamilyContext } from "@/contexts/FamilyContext";
 import { useFamilyData } from "@/hooks/familyTree/useFamilyData";
 import { useGraphInteraction } from "@/hooks/familyTree/useGraphInteraction";
 import { useHighlighting } from "@/hooks/familyTree/useHighlighting";
@@ -14,7 +15,7 @@ import {
   createRegion,
   deleteMembers,
   deleteRegion,
-  updateMember,
+  updateMembersPositions,
   updateRegion,
 } from "@/services/api";
 import { RootState } from "@/store";
@@ -124,6 +125,7 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     onNodesChange,
     onEdgesChange,
   } = useGraphInteraction({
+    familyId,
     reactFlowInstance,
     nodesRef,
     edgesRef,
@@ -484,13 +486,14 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     setEdges([...layoutedEdges]);
 
     try {
-      const promises = layoutedMemberNodes.map((node) =>
-        updateMember(node.id, {
-          position_x: Math.round(node.position.x),
-          position_y: Math.round(node.position.y),
-        }),
-      );
-      await Promise.all(promises);
+      const updates = layoutedMemberNodes.map((node) => ({
+        id: node.id,
+        position_x: Math.round(node.position.x),
+        position_y: Math.round(node.position.y),
+      }));
+
+      await updateMembersPositions(familyId, updates);
+
       toast.success(
         t("family.layout_updated", { defaultValue: "Layout updated" }),
       );
@@ -504,8 +507,10 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
     settingsState.compactMode,
     nodesRef,
     edgesRef,
+    regions,
     setNodes,
     setEdges,
+    familyId,
     t,
     fetchData,
   ]);
@@ -688,46 +693,47 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
       className="w-full h-full bg-slate-50 relative"
       ref={reactFlowWrapperRef}
     >
-      <ReactFlow
-        nodes={nodes.map((n) => ({
-          ...n,
-          draggable: !readOnly && n.type === "member", // Only members draggable
-          connectable: !readOnly && n.type === "member",
-          selected: selectedNodeIds.includes(n.id),
-        }))}
-        edges={edges.map((e) => ({ ...e, deletable: !readOnly }))}
-        onInit={(instance) => (reactFlowInstance.current = instance)}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnectStart={onConnectStart}
-        onConnectEnd={onConnectEnd}
-        onConnect={readOnly ? undefined : onConnect}
-        connectionMode={ConnectionMode.Loose}
-        onNodeDrag={onNodeDrag}
-        onNodeDragStop={onNodeDragStop}
-        onNodeClick={onNodeClick}
-        onEdgeClick={onEdgeClick}
-        onNodeMouseEnter={onNodeMouseEnter}
-        onNodeMouseLeave={onNodeMouseLeave}
-        onPaneClick={onPaneClick}
-        onMoveEnd={onMoveEnd}
-        onSelectionChange={onSelectionChange}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        nodesConnectable={!readOnly}
-        nodesDraggable={!readOnly}
-        elementsSelectable={true}
-        selectionOnDrag={true}
-        selectionMode={SelectionMode.Partial}
-        panOnDrag={true}
-        selectionKeyCode="Shift"
-        multiSelectionKeyCode="Control"
-      >
-        <Background />
-        <Controls />
+      <FamilyContext.Provider value={currentFamily}>
+        <ReactFlow
+          nodes={nodes.map((n) => ({
+            ...n,
+            draggable: !readOnly && n.type === "member", // Only members draggable
+            connectable: !readOnly && n.type === "member",
+            selected: selectedNodeIds.includes(n.id),
+          }))}
+          edges={edges.map((e) => ({ ...e, deletable: !readOnly }))}
+          onInit={(instance) => (reactFlowInstance.current = instance)}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnectStart={onConnectStart}
+          onConnectEnd={onConnectEnd}
+          onConnect={readOnly ? undefined : onConnect}
+          connectionMode={ConnectionMode.Loose}
+          onNodeDrag={onNodeDrag}
+          onNodeDragStop={onNodeDragStop}
+          onNodeClick={onNodeClick}
+          onEdgeClick={onEdgeClick}
+          onNodeMouseEnter={onNodeMouseEnter}
+          onNodeMouseLeave={onNodeMouseLeave}
+          onPaneClick={onPaneClick}
+          onMoveEnd={onMoveEnd}
+          onSelectionChange={onSelectionChange}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          nodesConnectable={!readOnly}
+          nodesDraggable={!readOnly}
+          elementsSelectable={true}
+          selectionOnDrag={true}
+          selectionMode={SelectionMode.Partial}
+          panOnDrag={true}
+          selectionKeyCode="Shift"
+          multiSelectionKeyCode="Control"
+        >
+          <Background />
+          <Controls />
 
-        {/* Region Panel - Moved to Home.tsx to prevent flickering */}
-        {/* <RegionPanel
+          {/* Region Panel - Moved to Home.tsx to prevent flickering */}
+          {/* <RegionPanel
           selectedCount={selectedMembers.length}
           onDeleteAll={handleDeleteAll}
           onCreateRegion={handleCreateRegion}
@@ -735,141 +741,142 @@ const FamilyTreeCanvas: React.FC<FamilyTreeCanvasProps> = ({
           regions={regions}
         /> */}
 
-        {/* Dialogs */}
-        <CreateRegionDialog
-          isOpen={createRegionDialogOpen}
-          onClose={() => setCreateRegionDialogOpen(false)}
-          onConfirm={handleConfirmCreateRegion}
-          selectedCount={selectedMembers.length}
-        />
+          {/* Dialogs */}
+          <CreateRegionDialog
+            isOpen={createRegionDialogOpen}
+            onClose={() => setCreateRegionDialogOpen(false)}
+            onConfirm={handleConfirmCreateRegion}
+            selectedCount={selectedMembers.length}
+          />
 
-        <LinkFamilyDialog
-          isOpen={linkFamilyDialogOpen}
-          currentFamilyId={familyId}
-          onClose={() => setLinkFamilyDialogOpen(false)}
-          onConfirm={handleConfirmLinkFamily}
-        />
+          <LinkFamilyDialog
+            isOpen={linkFamilyDialogOpen}
+            currentFamilyId={familyId}
+            onClose={() => setLinkFamilyDialogOpen(false)}
+            onConfirm={handleConfirmLinkFamily}
+          />
 
-        <EditRegionDialog
-          isOpen={editRegionDialogOpen}
-          onClose={() => setEditRegionDialogOpen(false)}
-          onConfirm={handleConfirmEditRegion}
-          onDelete={handleDeleteRegion}
-          initialColor={editingRegion?.color || "#EBF8FF"}
-          initialName={editingRegion?.name || ""}
-          initialDescription={editingRegion?.description || ""}
-          currentMemberIds={currentRegionMemberIds}
-          allMembers={allMembers}
-          linkedFamilyId={editingRegion?.linked_family_id}
-        />
+          <EditRegionDialog
+            isOpen={editRegionDialogOpen}
+            onClose={() => setEditRegionDialogOpen(false)}
+            onConfirm={handleConfirmEditRegion}
+            onDelete={handleDeleteRegion}
+            initialColor={editingRegion?.color || "#EBF8FF"}
+            initialName={editingRegion?.name || ""}
+            initialDescription={editingRegion?.description || ""}
+            currentMemberIds={currentRegionMemberIds}
+            allMembers={allMembers}
+            linkedFamilyId={editingRegion?.linked_family_id}
+          />
 
-        <ConfirmDialog
-          isOpen={deleteConfirmOpen}
-          title={t("region.delete_title", { defaultValue: "Delete Region" })}
-          message={t("region.confirm_delete", {
-            defaultValue: "Are you sure you want to delete this region?",
-          })}
-          onConfirm={executeDeleteRegion}
-          onCancel={() => {
-            setDeleteConfirmOpen(false);
-            setEditRegionDialogOpen(true); // Re-open edit dialog if canceled
-          }}
-          confirmText={t("common.delete", { defaultValue: "Delete" })}
-          cancelText={t("common.cancel", { defaultValue: "Cancel" })}
-        />
+          <ConfirmDialog
+            isOpen={deleteConfirmOpen}
+            title={t("region.delete_title", { defaultValue: "Delete Region" })}
+            message={t("region.confirm_delete", {
+              defaultValue: "Are you sure you want to delete this region?",
+            })}
+            onConfirm={executeDeleteRegion}
+            onCancel={() => {
+              setDeleteConfirmOpen(false);
+              setEditRegionDialogOpen(true); // Re-open edit dialog if canceled
+            }}
+            confirmText={t("common.delete", { defaultValue: "Delete" })}
+            cancelText={t("common.cancel", { defaultValue: "Cancel" })}
+          />
 
-        <ConfirmDialog
-          isOpen={deleteMembersConfirmOpen}
-          title={t("common.delete", { defaultValue: "Delete" })}
-          message={t("common.confirm_delete_all", {
-            defaultValue: "Are you sure you want to delete these members?",
-          })}
-          onConfirm={executeDeleteAll}
-          onCancel={() => setDeleteMembersConfirmOpen(false)}
-          confirmText={t("common.delete", { defaultValue: "Delete" })}
-          cancelText={t("common.cancel", { defaultValue: "Cancel" })}
-        />
+          <ConfirmDialog
+            isOpen={deleteMembersConfirmOpen}
+            title={t("common.delete", { defaultValue: "Delete" })}
+            message={t("common.confirm_delete_all", {
+              defaultValue: "Are you sure you want to delete these members?",
+            })}
+            onConfirm={executeDeleteAll}
+            onCancel={() => setDeleteMembersConfirmOpen(false)}
+            confirmText={t("common.delete", { defaultValue: "Delete" })}
+            cancelText={t("common.cancel", { defaultValue: "Cancel" })}
+          />
 
-        <Panel position="top-center">
-          <div className="flex flex-col items-center gap-2">
-            <FamilyManager
-              families={families}
-              currentFamily={currentFamily}
-              onSelectFamily={onSelectFamily}
-              onFamilyCreated={onFamilyCreated}
-            />
-
-            {!readOnly && onAddMember && (
-              <button
-                onClick={handleAddMemberClick}
-                className="bg-white p-2 rounded shadow-md border hover:bg-gray-50
-                   flex items-center gap-2 text-sm font-medium text-blue-600"
-                title={t("member.add")}
-              >
-                <Plus size={16} />
-                {t("member.add")}
-              </button>
-            )}
-          </div>
-        </Panel>
-        <Panel position="top-right" className="flex gap-2">
-          {!readOnly && (
-            <button
-              onClick={handleLinkFamily}
-              className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
-              title={t("family.link_family", { defaultValue: "Link Family" })}
-            >
-              <Link size={16} />
-              {t("family.link_family", { defaultValue: "Link Family" })}
-            </button>
-          )}
-          <button
-            onClick={handleCenterView}
-            className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
-            title={t("family.center_view", { defaultValue: "Center View" })}
-          >
-            <Focus size={16} />
-            {t("family.center_view", { defaultValue: "Center View" })}
-          </button>
-          {!readOnly && (
-            <button
-              onClick={handleAutoLayout}
-              className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
-              title={t("family.auto_layout", { defaultValue: "Auto Layout" })}
-            >
-              <Layout size={16} />
-              {t("family.auto_layout", { defaultValue: "Auto Layout" })}
-            </button>
-          )}
-        </Panel>
-
-        {settingsState.timelineEnabled && (
-          <Panel position="bottom-center" className="mb-8 w-96 max-w-[90vw]">
-            <div className="bg-white/90 p-4 rounded-xl shadow-lg backdrop-blur-sm border">
-              <div className="flex justify-between text-xs font-bold text-gray-500 mb-2">
-                <span>{formatYear(yearRange.min)}</span>
-                <span className="text-blue-600 text-lg">
-                  {formatYear(settingsState.timelineYear || yearRange.max)}
-                </span>
-                <span>{formatYear(yearRange.max)}</span>
-              </div>
-              <input
-                type="range"
-                min={yearRange.min}
-                max={yearRange.max}
-                value={settingsState.timelineYear || yearRange.max}
-                onChange={(e) =>
-                  dispatch(setTimelineYear(parseInt(e.target.value)))
-                }
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+          <Panel position="top-center">
+            <div className="flex flex-col items-center gap-2">
+              <FamilyManager
+                families={families}
+                currentFamily={currentFamily}
+                onSelectFamily={onSelectFamily}
+                onFamilyCreated={onFamilyCreated}
               />
-              <div className="text-center mt-1 text-xs text-gray-400">
-                {t("timeline.drag_to_travel", { defaultValue: "Timeline" })}
-              </div>
+
+              {!readOnly && onAddMember && (
+                <button
+                  onClick={handleAddMemberClick}
+                  className="bg-white p-2 rounded shadow-md border hover:bg-gray-50
+                   flex items-center gap-2 text-sm font-medium text-blue-600"
+                  title={t("member.add")}
+                >
+                  <Plus size={16} />
+                  {t("member.add")}
+                </button>
+              )}
             </div>
           </Panel>
-        )}
-      </ReactFlow>
+          <Panel position="top-right" className="flex gap-2">
+            {!readOnly && (
+              <button
+                onClick={handleLinkFamily}
+                className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
+                title={t("family.link_family", { defaultValue: "Link Family" })}
+              >
+                <Link size={16} />
+                {t("family.link_family", { defaultValue: "Link Family" })}
+              </button>
+            )}
+            <button
+              onClick={handleCenterView}
+              className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
+              title={t("family.center_view", { defaultValue: "Center View" })}
+            >
+              <Focus size={16} />
+              {t("family.center_view", { defaultValue: "Center View" })}
+            </button>
+            {!readOnly && (
+              <button
+                onClick={handleAutoLayout}
+                className="bg-white p-2 rounded shadow-md border hover:bg-gray-50 flex items-center gap-2 text-sm font-medium text-gray-700"
+                title={t("family.auto_layout", { defaultValue: "Auto Layout" })}
+              >
+                <Layout size={16} />
+                {t("family.auto_layout", { defaultValue: "Auto Layout" })}
+              </button>
+            )}
+          </Panel>
+
+          {settingsState.timelineEnabled && (
+            <Panel position="bottom-center" className="mb-8 w-96 max-w-[90vw]">
+              <div className="bg-white/90 p-4 rounded-xl shadow-lg backdrop-blur-sm border">
+                <div className="flex justify-between text-xs font-bold text-gray-500 mb-2">
+                  <span>{formatYear(yearRange.min)}</span>
+                  <span className="text-blue-600 text-lg">
+                    {formatYear(settingsState.timelineYear || yearRange.max)}
+                  </span>
+                  <span>{formatYear(yearRange.max)}</span>
+                </div>
+                <input
+                  type="range"
+                  min={yearRange.min}
+                  max={yearRange.max}
+                  value={settingsState.timelineYear || yearRange.max}
+                  onChange={(e) =>
+                    dispatch(setTimelineYear(parseInt(e.target.value)))
+                  }
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+                <div className="text-center mt-1 text-xs text-gray-400">
+                  {t("timeline.drag_to_travel", { defaultValue: "Timeline" })}
+                </div>
+              </div>
+            </Panel>
+          )}
+        </ReactFlow>
+      </FamilyContext.Provider>
     </div>
   );
 };

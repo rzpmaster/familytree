@@ -155,14 +155,14 @@ class MemberBase(BaseModel):
     remark: Optional[str] = None
     birth_place: Optional[str] = None
     photo_url: Optional[str] = None
-    position_x: Optional[int] = 0
-    position_y: Optional[int] = 0
     sort_order: Optional[int] = 0
     region_ids: Optional[List[str]] = []
 
 
 class MemberCreate(MemberBase):
     family_id: str
+    position_x: Optional[int] = 0
+    position_y: Optional[int] = 0
 
 
 class MemberUpdate(BaseModel):
@@ -176,8 +176,6 @@ class MemberUpdate(BaseModel):
     remark: Optional[str] = None
     birth_place: Optional[str] = None
     photo_url: Optional[str] = None
-    position_x: Optional[int] = None
-    position_y: Optional[int] = None
     sort_order: Optional[int] = None
     region_ids: Optional[List[str]] = None
 
@@ -186,9 +184,22 @@ class MemberBatchDelete(BaseModel):
     member_ids: List[str]
 
 
+class MemberPositionUpdate(BaseModel):
+    id: str
+    position_x: int
+    position_y: int
+
+
+class MemberBatchUpdate(BaseModel):
+    family_id: str
+    updates: List[MemberPositionUpdate]
+
+
 class Member(MemberBase):
     id: str
     family_id: str
+    position_x: int
+    position_y: int
     created_at: datetime
     updated_at: datetime
     # Return region_ids explicitly if needed, or rely on MemberBase

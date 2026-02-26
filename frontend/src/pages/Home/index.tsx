@@ -29,6 +29,10 @@ const Home: React.FC = () => {
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<GraphEdge | null>(null);
   const [regionState, setRegionState] = useState<RegionState | null>(null);
+  const [newMemberPosition, setNewMemberPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const [refreshKey, setRefreshKey] = useState(0); // to force refresh canvas
   const [confirmState, setConfirmState] = useState<{
     isOpen: boolean;
@@ -211,14 +215,14 @@ const Home: React.FC = () => {
   const handleAddMember = async (position: { x: number; y: number }) => {
     if (!family) return;
 
+    setNewMemberPosition(position);
+
     // Let's make a dummy member with ID 'new_member'.
     const dummyMember: Member = {
       id: "new_member",
       family_id: family.id,
       name: "",
       gender: "male",
-      position_x: position.x,
-      position_y: position.y,
       created_at: "",
       updated_at: "",
     };
@@ -293,10 +297,14 @@ const Home: React.FC = () => {
           {selectedMember ? (
             <MemberDetailPanel
               member={selectedMember}
-              onClose={() => setSelectedMember(null)}
+              onClose={() => {
+                setSelectedMember(null);
+                setNewMemberPosition(null);
+              }}
               onUpdate={handleRefresh}
               readOnly={isReadOnly}
               regionState={regionState}
+              initialPosition={newMemberPosition || undefined}
             />
           ) : selectedEdge ? (
             <PropertyPanel

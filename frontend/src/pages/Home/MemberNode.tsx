@@ -4,12 +4,12 @@ import {
   getNodeHeight,
   getNodeWidth,
 } from "@/config/constants";
+import { useFamily } from "@/contexts/FamilyContext";
 import { useAuth } from "@/hooks/useAuth";
 import { getAge, getMemberStatus, getSurname } from "@/lib/utils";
-import { getFamily } from "@/services/api";
 import { RootState } from "@/store";
-import { Family, Member } from "@/types";
-import React, { memo, useEffect, useState } from "react";
+import { Member } from "@/types";
+import React, { memo } from "react";
 import { useSelector } from "react-redux";
 import { NodeProps } from "reactflow";
 import CompactMemberNode from "./CompactMemberNode";
@@ -50,17 +50,7 @@ const MemberNode = memo(({ data, selected }: NodeProps<Member>) => {
   const width = compactMode ? getCompactNodeWidth() : getNodeWidth();
   const height = compactMode ? getCompactNodeHeight() : getNodeHeight();
 
-  const lastSelectedFamilyId = useSelector(
-    (root: RootState) => root.family.lastSelectedFamilyId,
-  );
-
-  const [family, setFamily] = useState<Family | null>(null);
-  useEffect(() => {
-    if (!lastSelectedFamilyId || !user?.id) return;
-    getFamily(String(lastSelectedFamilyId), user.id)
-      .then(setFamily)
-      .catch(() => {});
-  }, [lastSelectedFamilyId, user?.id]);
+  const family = useFamily();
 
   const canDelete =
     !!user &&

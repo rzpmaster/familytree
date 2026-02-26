@@ -44,6 +44,14 @@ def update_member(
     return db_member
 
 
+@router.put("/batch/positions", status_code=204)
+def update_members_positions(
+    batch: schemas.MemberBatchUpdate, db: Session = Depends(get_db)
+):
+    crud.update_members_positions(db, updates=batch.updates, family_id=batch.family_id)
+    return None
+
+
 @router.delete("/", status_code=204)
 def delete_members(batch: schemas.MemberBatchDelete, db: Session = Depends(get_db)):
     crud.delete_members(db, member_ids=batch.member_ids)

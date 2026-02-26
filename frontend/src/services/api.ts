@@ -31,14 +31,31 @@ export const getMembers = async (familyId: string) => {
 };
 
 export const createMember = async (
-  member: Omit<Member, "id" | "created_at" | "updated_at">,
+  member: Omit<Member, "id" | "created_at" | "updated_at"> & {
+    position_x?: number;
+    position_y?: number;
+  },
 ) => {
   const response = await api.post<Member>("/members/", member);
   return response.data;
 };
 
-export const updateMember = async (id: string, member: Partial<Member>) => {
+export const updateMember = async (
+  id: string,
+  member: Partial<Member> & { position_x?: number; position_y?: number },
+) => {
   const response = await api.put<Member>(`/members/${id}`, member);
+  return response.data;
+};
+
+export const updateMembersPositions = async (
+  familyId: string,
+  updates: { id: string; position_x: number; position_y: number }[],
+) => {
+  const response = await api.put("/members/batch/positions", {
+    family_id: familyId,
+    updates,
+  });
   return response.data;
 };
 
@@ -127,13 +144,6 @@ export const getFamilyName = async (familyId: string) => {
   }
 };
 
-export const getFamily = async (familyId: string, userId?: string) => {
-  const url = userId
-    ? `/families/${familyId}?user_id=${userId}`
-    : `/families/${familyId}`;
-  const response = await api.get<Family>(url);
-  return response.data;
-};
 export const getFamilies = async (userId?: string) => {
   // If userId is provided, we might want to filter.
   // Currently backend reads user_id from query param to filter for My Families + Shared.

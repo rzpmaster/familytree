@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine.url import make_url
-from .database import Base, engine, SQLALCHEMY_DATABASE_URL
+
+from .database import SQLALCHEMY_DATABASE_URL, Base, engine
 
 
 def ensure_db_exists():
@@ -69,7 +70,10 @@ def init_db():
                 # SQLite and Postgres support ADD COLUMN
                 # Note: MySQL might require type length, using TEXT to be safe or VARCHAR(255)
                 # But here we use String equivalent.
-                conn.execute(text("ALTER TABLE regions ADD COLUMN linked_family_id VARCHAR(255)"))
+                conn.execute(
+                    text("ALTER TABLE regions ADD COLUMN linked_family_id VARCHAR(255)")
+                )
                 print("Migration successful.")
     except Exception as e:
+        print(f"Migration check failed (ignorable if fresh db): {e}")
         print(f"Migration check failed (ignorable if fresh db): {e}")

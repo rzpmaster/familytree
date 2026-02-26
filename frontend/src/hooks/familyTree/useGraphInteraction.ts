@@ -1,7 +1,7 @@
 import {
   createParentChildRelationship,
   createSpouseRelationship,
-  updateMember,
+  updateMembersPositions,
 } from "@/services/api";
 import { GraphEdge, Member } from "@/types";
 import { RuleEngine } from "@/validation/RuleEngine";
@@ -30,6 +30,7 @@ import {
 } from "reactflow";
 
 interface UseGraphInteractionProps {
+  familyId: string;
   reactFlowInstance: React.MutableRefObject<ReactFlowInstance | null>;
   nodesRef: React.MutableRefObject<Node[]>;
   edgesRef: React.MutableRefObject<Edge[]>;
@@ -43,6 +44,7 @@ interface UseGraphInteractionProps {
 }
 
 export function useGraphInteraction({
+  familyId,
   nodesRef,
   edgesRef,
   readOnly,
@@ -253,8 +255,7 @@ export function useGraphInteraction({
             position: { x: start.x + dx, y: start.y + dy },
             data: {
               ...(n.data as Member),
-              position_x: start.x + dx,
-              position_y: start.y + dy,
+              // Position is now managed by ReactFlow node.position, not in Member data
             },
           };
         }),
@@ -277,22 +278,30 @@ export function useGraphInteraction({
 
       try {
         const latestNodes = nodesRef.current;
-        const promises = idsToSave.map((id) => {
-          const n = latestNodes.find((x) => x.id === id);
-          if (!n) return Promise.resolve();
-          return updateMember(id, {
-            position_x: Math.round(n.position.x),
-            position_y: Math.round(n.position.y),
-          });
-        });
+        const updates = idsToSave
+          .map((id) => {
+            const n = latestNodes.find((x) => x.id === id);
+            if (!n) return null;
+            return {
+              id,
+              position_x: Math.round(n.position.x),
+              position_y: Math.round(n.position.y),
+            };
+          })
+          .filter(
+            (u): u is { id: string; position_x: number; position_y: number } =>
+              u !== null,
+          );
 
-        await Promise.all(promises);
+        if (updates.length > 0) {
+          await updateMembersPositions(familyId, updates);
+        }
       } catch (err) {
         console.error("Failed to update positions", err);
         toast.error("Failed to save position");
       }
     },
-    [readOnly, selectedNodeIds, nodesRef],
+    [readOnly, selectedNodeIds, nodesRef, familyId],
   );
 
   // 7. On Nodes Change
