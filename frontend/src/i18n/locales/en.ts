@@ -107,6 +107,10 @@ export default {
     },
     member: {
       add: "Add Member",
+      batch_edit: "Batch Edit",
+      batch_edit_title: "Batch Edit Members",
+      save_success: "Saved successfully",
+      save_failed: "Failed to save",
       add_failed: "Failed to add member",
       details: "Member Details",
       name: "Name",
@@ -161,16 +165,16 @@ export default {
       display: "Display Settings",
       privacy_mode: "Privacy Mode",
       privacy_mode_desc: "Only show surname on nodes",
-      
+
       show_living: "Show Living",
       show_living_desc: "Display members who are currently alive",
-      
+
       show_not_living: "Show Not Living",
       show_not_living_desc: "Includes deceased and unborn members",
-      
+
       show_deceased: "Show Deceased",
       dim_deceased: "Dim Deceased",
-      
+
       show_unborn: "Show Unborn",
       dim_unborn: "Dim Unborn",
 

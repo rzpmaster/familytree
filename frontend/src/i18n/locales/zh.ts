@@ -107,6 +107,10 @@ export default {
     },
     member: {
       add: "添加成员",
+      batch_edit: "批量编辑",
+      batch_edit_title: "批量编辑成员",
+      save_success: "保存成功",
+      save_failed: "保存失败",
       add_failed: "添加成员失败",
       details: "成员详情",
       name: "姓名",
@@ -162,16 +166,16 @@ export default {
       display: "显示设置",
       privacy_mode: "隐私模式",
       privacy_mode_desc: "节点上只显示姓氏",
-      
+
       show_living: "显示在世成员",
       show_living_desc: "显示当前在世的成员",
-      
+
       show_not_living: "显示不在世成员",
       show_not_living_desc: "包含已逝世和未出生的成员",
-      
+
       show_deceased: "显示已逝世",
       dim_deceased: "淡显已逝世",
-      
+
       show_unborn: "显示未出生",
       dim_unborn: "淡显未出生",
 
